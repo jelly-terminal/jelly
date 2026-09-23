@@ -7,8 +7,6 @@ struct RootView: View {
     let configStore: ConfigStore
     let license: LicenseService
 
-    @State private var isTrialBannerDismissed = false
-
     var body: some View {
         let theme = configStore.theme
         let settings = configStore.settings
@@ -52,15 +50,6 @@ struct RootView: View {
                     }
 
                     VStack(spacing: 8) {
-                        if case .trial(let daysRemaining) = license.status, !isTrialBannerDismissed {
-                            TrialBanner(
-                                daysRemaining: daysRemaining,
-                                onActivate: { model.isLicenseSheetPresented = true },
-                                onDismiss: { isTrialBannerDismissed = true }
-                            )
-                            .transition(.move(edge: .top).combined(with: .opacity))
-                        }
-
                         let diagnostics = configStore.visibleDiagnostics
                         if !diagnostics.isEmpty {
                             DiagnosticsBanner(

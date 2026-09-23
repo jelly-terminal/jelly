@@ -25,9 +25,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         projects = ProjectStore(lastSnapshot?.projects ?? [])
         _ = configStore.observe { [weak self] in self?.configChanged() }
         configChanged()
-        newWindow()
-        pendingOpenURLs.forEach(importFile)
-        pendingOpenURLs = []
+        if license.status.isLicensed {
+            startSession()
+        } else {
+            presentActivation()
+        }
         autosave = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated { self?.saveSnapshot() }
         }
@@ -60,7 +62,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func application(_ application: NSApplication, open urls: [URL]) {
-        guard configStore != nil else {
+        guard configStore != nil, activationController == nil else {
             pendingOpenURLs += urls
             return
         }
@@ -68,7 +70,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc func newWindow() {
-        guard license.status.allowsUsage else {
+        guard license.status.allowsUsage, activationController == nil else {
             presentActivation()
             return
         }
@@ -152,19 +154,50 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    private func startSession() {
+        newWindow()
+        pendingOpenURLs.forEach(importFile)
+        pendingOpenURLs = []
+    }
+
     private func presentActivation() {
         if activationController == nil {
-            let reason = license.status == .trialExpired
-                ? "Your trial has ended. Enter a license key to keep using \(AppInfo.name)."
-                : "Enter a license key to use \(AppInfo.name)."
-            activationController = ActivationWindowController(license: license, reason: reason) { [weak self] in
-                self?.activationController = nil
-                self?.newWindow()
-            }
+            let canContinue = license.status.allowsUsage
+            activationController = ActivationWindowController(
+                license: license,
+                reason: activationReason,
+                dismissTitle: canContinue ? "Continue Trial" : "Quit",
+                onActivated: { [weak self] in
+                    self?.activationController = nil
+                    self?.startSession()
+                },
+                onDismiss: { [weak self] in
+                    guard let self, self.license.status.allowsUsage else {
+                        NSApp.terminate(nil)
+                        return
+                    }
+                    self.activationController?.close()
+                    self.activationController = nil
+                    self.startSession()
+                }
+            )
         }
         activationController?.showWindow(nil)
         activationController?.window?.makeKeyAndOrderFront(nil)
         NSApp.activate()
+    }
+
+    private var activationReason: String {
+        switch license.status {
+        case .trial(let daysRemaining):
+            daysRemaining == 1
+                ? "1 day left in your trial. Enter a license key or keep trying \(AppInfo.name)."
+                : "\(daysRemaining) days left in your trial. Enter a license key or keep trying \(AppInfo.name)."
+        case .trialExpired:
+            "Your trial has ended. Buy a license to keep using \(AppInfo.name)."
+        case .licensed:
+            "Enter a license key to use \(AppInfo.name)."
+        }
     }
 
     private var keyController: MainWindowController? {

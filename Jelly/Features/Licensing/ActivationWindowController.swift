@@ -4,11 +4,11 @@ import SwiftUI
 final class ActivationWindowController: NSWindowController {
     private var onActivated: (() -> Void)?
 
-    init(license: LicenseService, reason: String, onActivated: @escaping () -> Void) {
+    init(license: LicenseService, reason: String, dismissTitle: String, onActivated: @escaping () -> Void, onDismiss: @escaping () -> Void) {
         self.onActivated = onActivated
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 380, height: 260),
-            styleMask: [.titled, .closable],
+            styleMask: [.titled],
             backing: .buffered,
             defer: false
         )
@@ -21,9 +21,9 @@ final class ActivationWindowController: NSWindowController {
             rootView: LicenseSheet(
                 license: license,
                 reason: reason,
-                dismissTitle: "Quit",
+                dismissTitle: dismissTitle,
                 onActivated: { [weak self] in self?.finish() },
-                onDismiss: { NSApp.terminate(nil) }
+                onDismiss: onDismiss
             )
         )
     }

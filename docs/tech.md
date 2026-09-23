@@ -10,7 +10,7 @@
 | Terminal surface | AppKit `NSView` backed by `CAMetalLayer`, our own Metal renderer |
 | VT parsing and screen state | SwiftTerm's headless `Terminal`, behind a `TerminalEngine` protocol |
 | PTY | `forkpty` + non-blocking read loop, one I/O thread per pane |
-| Config | TOML via TOMLKit, `~/.config/jelly/jelly.toml` |
+| Config | TOML via our own parser in `JellyCore/TOML` (line numbers, comment-preserving edits), `~/.config/jelly/jelly.toml` |
 | Persistence | JSON in `~/Library/Application Support/<bundle id>/` |
 | Updates | Sparkle 2 (SPM), EdDSA-signed appcast on GitHub Releases |
 | Release | GitHub Actions, Developer ID, notarized DMG ([release.md](release.md)) |
@@ -37,12 +37,15 @@ Jelly/                         App target (file-system synchronized group)
     Search/
     Import/                    .toml drop / File → Import → preview sheet → merge
     Updates/                   UpdaterService
-  Resources/                   Assets.xcassets, Themes/*.toml
+  Resources/                   Assets.xcassets
 Packages/
   JellyCore/                   No UI. Config, themes, models, persistence, split tree
     Sources/JellyCore/
-      Config/                  Schema, Loader, Merger, Watcher, Diagnostics
-      Theme/                   Theme, Color, ThemeStore
+      TOML/                    Parser, Writer, Editor (in-place, comment-preserving)
+      Config/                  Settings, decoders, Loader, Importer, Watcher, Diagnostics
+      Keybinds/                KeyChord, KeyAction, Keybinds
+      Resources/Themes/        Built-in themes (*.toml)
+      Theme/                   Theme, RGBColor, ThemeDecoder, BuiltinThemes
       Workspace/               Session, Tab, PaneTree, Project
       Persistence/             SnapshotStore
     Tests/JellyCoreTests/
@@ -64,7 +67,7 @@ scripts/release-notes.sh
 Makefile
 ```
 
-Both packages use `swift-tools-version: 6.2`, `platforms: [.macOS("26.0")]`. `JellyCore` uses `.defaultIsolation(MainActor.self)`; `JellyTerminal` does not, because PTY I/O and parsing run off the main actor.
+Both packages use `swift-tools-version: 6.2`, `platforms: [.macOS("26.0")]`. Neither uses default MainActor isolation: `JellyCore` is `Sendable` value types shared with the terminal thread, and PTY I/O and parsing in `JellyTerminal` run off the main actor.
 
 Dependency direction: **App → JellyTerminal → JellyCore**. Nothing in the packages imports SwiftUI except `JellyTerminal/View`, which needs only AppKit.
 
@@ -194,8 +197,8 @@ See [config.md](config.md) for the format. Internals:
 
 - `ConfigLoader` reads `~/.config/jelly/jelly.toml`, then decodes into `Settings` (typed, with defaults for every key). Unknown or invalid keys produce `Diagnostic`s with a line number instead of errors.
 - `ConfigWatcher` uses a `DispatchSource` file-system watch on the file and its directory, so editors that write atomically are still caught. It debounces by 100ms.
-- `ConfigMerger` applies a dropped `.toml` file to the user's config. It edits the TOML document itself rather than re-serializing, so the user's comments and ordering survive.
-- `ThemeStore` loads built-in themes from the bundle, then `~/.config/jelly/themes/*.toml`. A user theme with the same `id` replaces the built-in one.
+- `ConfigImporter` builds an `ImportPlan` (what changes, which themes are new or replaced) for the preview, then applies it with `TOMLEditor`, which edits the source text in place so the user's comments and ordering survive.
+- `ConfigLoader` loads built-in themes from the `JellyCore` bundle, then `~/.config/jelly/themes/*.toml`. A user theme with the same `id` replaces the built-in one.
 
 ## Persistence
 
@@ -230,7 +233,7 @@ Measured with Instruments (Time Profiler, Metal System Trace) before each releas
 Unit tests live in the packages (`swift test`) and only cover logic where a bug is likely and hard to catch by using the app. No UI tests, no snapshot tests, no tests of Codable round-trips, defaults, or wrappers around Apple APIs.
 
 **JellyCore**
-- `ConfigMerger`: settings merged key by key, themes upserted by `id`, the user's comments kept, tables that don't exist yet created.
+- `ConfigImporter`: settings merged key by key, themes upserted by `id`, the user's comments kept, tables that don't exist yet created.
 - `ConfigLoader`: an invalid value produces a diagnostic with the right line and falls back to the default, while the rest of the file still loads.
 - `Color`: hex parsing (`#rgb`, `#rrggbb`, `#rrggbbaa`) and rejection of bad input; a theme palette must have 16 entries.
 - `PaneTree`: split, close (the sibling takes the parent's place), focus by direction, and resize ratios kept within bounds.

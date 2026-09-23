@@ -1,0 +1,16 @@
+[[theme]]
+id = "jelly-light"
+name = "Jelly Light"
+appearance = "light"
+background = "#fafbfc"
+foreground = "#1f2430"
+cursor = "#1f2430"
+cursor-text = "#fafbfc"
+selection = "#c7dbff"
+accent = "#2463d9"
+palette = [
+  "#1f2430", "#d1344b", "#1f8a4c", "#a86b00",
+  "#2463d9", "#8a3fd1", "#0f8a9c", "#d0d5dd",
+  "#6b7280", "#e5485f", "#2aa35e", "#c78200",
+  "#3b7af0", "#a05be6", "#14a3b8", "#f3f4f6",
+]

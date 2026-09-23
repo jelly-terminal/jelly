@@ -1,0 +1,16 @@
+[[theme]]
+id = "jelly-dark"
+name = "Jelly Dark"
+appearance = "dark"
+background = "#0e1117"
+foreground = "#d5dbe5"
+cursor = "#e6edf3"
+cursor-text = "#0e1117"
+selection = "#2a3a55"
+accent = "#6ea8ff"
+palette = [
+  "#1c2230", "#ff6b7f", "#7ee2a8", "#f2c46d",
+  "#6ea8ff", "#c08cff", "#5fd4e6", "#c9d1dc",
+  "#5b6577", "#ff8a9a", "#9af0bf", "#ffd78c",
+  "#8fbcff", "#d4a9ff", "#86e3f0", "#ffffff",
+]

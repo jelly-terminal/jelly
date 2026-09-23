@@ -27,13 +27,13 @@ docs/
 ## Rules
 
 - **macOS 26+ only.** No iOS or cross-platform code, no `#available` checks below 26.
-- **Swift 6 strict concurrency.** The app target and `JellyCore` are MainActor by default. PTY I/O and parsing in `JellyTerminal` run on their own thread per pane; never block the main thread on them.
+- **Swift 6 strict concurrency.** The app target is MainActor by default. `JellyCore` is plain `Sendable` value types (only `ConfigWatcher` is `@MainActor`). PTY I/O and parsing in `JellyTerminal` run on their own thread per pane; never block the main thread on them.
 - **Terminal output never drives SwiftUI directly.** Only throttled `PaneModel` updates (title, cwd, size) reach the chrome.
 - **Glass is chrome only.** Never put `.glassEffect` behind terminal text. Sizes and spacing come from `Metrics`, not literals in views.
 - **Not sandboxed.** Hardened runtime stays on.
 - **Config never crashes the app.** Invalid values become diagnostics and fall back to defaults.
 - **No code comments.** Names should carry the meaning.
-- **No new dependencies** beyond SwiftTerm, TOMLKit and Sparkle without asking.
+- **No new dependencies** beyond SwiftTerm and Sparkle without asking. TOML is parsed by our own `JellyCore/TOML`.
 - Nothing is called "stable" before v1.
 
 ## Build and test

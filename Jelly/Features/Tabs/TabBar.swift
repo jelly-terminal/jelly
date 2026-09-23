@@ -12,9 +12,8 @@ struct TabBar: View {
 
     var body: some View {
         HStack(spacing: Metrics.tabSpacing) {
-            GlassEffectContainer(spacing: Metrics.tabSpacing) {
-                HStack(spacing: Metrics.tabSpacing) {
-                    ForEach(workspace.tabs) { tab in
+            HStack(spacing: Metrics.tabSpacing) {
+                ForEach(workspace.tabs) { tab in
                         TabItem(
                             tab: tab,
                             isSelected: tab.id == workspace.selectedID,
@@ -27,7 +26,6 @@ struct TabBar: View {
                             insertion: .opacity.combined(with: .scale(scale: 0.9, anchor: .leading)),
                             removal: .opacity.combined(with: .scale(scale: 0.85))
                         ))
-                    }
                 }
             }
             .animation(Self.animation, value: workspace.tabs.map(\.id))
@@ -97,14 +95,18 @@ private struct TabItem: View {
         .padding(.leading, Metrics.tabHorizontalPadding / 2)
         .padding(.trailing, Metrics.tabHorizontalPadding)
         .frame(height: Metrics.tabHeight)
-        .frame(maxWidth: Metrics.tabMaxWidth)
+        .frame(maxWidth: Metrics.tabMaxWidth, alignment: .leading)
         .background {
-            if isSelected {
-                Color.clear
-                    .glassEffect(.regular, in: .capsule)
-                    .matchedGeometryEffect(id: "selection", in: selection)
-            } else if isHovered {
-                Capsule().fill(Color(theme.foreground).opacity(0.06))
+            ZStack {
+                if isHovered, !isSelected {
+                    Capsule().fill(Color(theme.foreground).opacity(0.06))
+                }
+                if isSelected {
+                    Capsule()
+                        .fill(.clear)
+                        .glassEffect(.regular, in: .capsule)
+                        .matchedGeometryEffect(id: "selection", in: selection)
+                }
             }
         }
         .contentShape(.capsule)

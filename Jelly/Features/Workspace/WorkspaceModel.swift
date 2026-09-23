@@ -31,6 +31,9 @@ final class WorkspaceModel {
         var shell = settings.shell
         if let directory { shell.workingDirectory = .path(directory) }
         let surface = TerminalSurface(appVersion: AppInfo.version, settings: settings, theme: configStore.theme)
+        if let reference = tabs.first?.surface, reference.frame.size != .zero {
+            surface.frame = reference.frame
+        }
         configStore.report(surface.apply(settings: settings, theme: configStore.theme))
         let tab = TabModel(surface: surface)
         surface.onExit = { [weak self, weak tab] _ in

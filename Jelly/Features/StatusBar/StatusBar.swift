@@ -31,6 +31,7 @@ struct StatusBar: View {
         }
         .padding(.horizontal, Metrics.chromePadding)
         .frame(height: Metrics.statusBarHeight)
+        .transaction { $0.animation = nil }
     }
 
     private var separator: some View {

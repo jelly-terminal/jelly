@@ -7,6 +7,10 @@ struct RootView: View {
     let configStore: ConfigStore
     let license: LicenseService
 
+    private var trialDaysRemaining: Int? {
+        if case .trial(let daysRemaining) = license.status { daysRemaining } else { nil }
+    }
+
     var body: some View {
         let theme = configStore.theme
         let settings = configStore.settings
@@ -28,6 +32,8 @@ struct RootView: View {
                         workspace: workspace,
                         theme: theme,
                         leadingInset: model.isSidebarVisible ? Metrics.chromePadding / 2 : Metrics.tabSpacing,
+                        trialDaysRemaining: trialDaysRemaining,
+                        onTrial: { model.isLicenseSheetPresented = true },
                         onClose: { workspace.requestClose($0, in: model.window) },
                         onFind: { workspace.selectedTab?.surface.showFind() }
                     )

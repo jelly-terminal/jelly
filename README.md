@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="Jelly/Resources/Assets.xcassets/AppIcon.appiconset/icon_512x512@2x.png" width="128" height="128" alt="Jelly icon">
+  <img src="assets/logo.png" width="128" height="128" alt="Jelly icon">
 </p>
 
 <h1 align="center">Jelly</h1>
@@ -53,26 +53,6 @@ make test    # swift test in both packages
 make kill    # stop running Jelly processes
 make clean   # remove the derived data directory
 ```
-
-## Project layout
-
-```
-Jelly/                  App target: App/, Features/<Feature>/, Resources/
-Packages/JellyCore/      Config, themes, workspace model, persistence. No UI.
-Packages/JellyTerminal/  TerminalSurface (SwiftTerm), shell launch, fonts.
-Config/                  Info.plist extras (Sparkle), entitlements
-docs/                    Product, architecture, config, release, roadmap
-```
-
-Dependencies only flow one way: App → JellyTerminal → JellyCore.
-
-## Documentation
-
-- [`docs/product.md`](docs/product.md) — what Jelly does and how it looks
-- [`docs/tech.md`](docs/tech.md) — architecture, layout, engine, fonts, renderer, testing scope
-- [`docs/config.md`](docs/config.md) — `jelly.toml` format and every key
-- [`docs/release.md`](docs/release.md) — signing, notarization, Sparkle, CI
-- [`docs/roadmap.md`](docs/roadmap.md) — what's in which version
 
 ## Contributing
 

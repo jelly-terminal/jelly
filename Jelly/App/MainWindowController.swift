@@ -1,10 +1,20 @@
 import AppKit
+import JellyCore
+import JellyTerminal
 import SwiftUI
 
 final class MainWindowController: NSWindowController, NSWindowDelegate {
+    let model: WindowModel
     var onClose: (() -> Void)?
 
-    init() {
+    private let configStore: ConfigStore
+    private var keyMonitor: Any?
+    private var observerID: UUID?
+
+    init(configStore: ConfigStore) {
+        self.configStore = configStore
+        model = WindowModel(configStore: configStore)
+
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 1100, height: 720),
             styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
@@ -15,23 +25,71 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
         window.titleVisibility = .hidden
         window.isReleasedWhenClosed = false
         window.minSize = NSSize(width: 520, height: 320)
-        window.setFrameAutosaveName("JellyMainWindow")
-        window.contentViewController = NSHostingController(rootView: RootView())
-        if window.frame.origin == .zero { window.center() }
+        window.tabbingMode = .disallowed
+        let hosting = NSHostingController(rootView: RootView(model: model, configStore: configStore))
+        hosting.sizingOptions = []
+        window.contentViewController = hosting
+        window.setContentSize(NSSize(width: 1100, height: 720))
+        if !window.setFrameUsingName(Self.frameName) { window.center() }
+        window.setFrameAutosaveName(Self.frameName)
         super.init(window: window)
+
         window.delegate = self
+        model.window = window
+        model.workspace.onEmpty = { [weak window] in window?.close() }
+        observerID = configStore.observe { [weak self] in self?.applyWindowSettings() }
+        applyWindowSettings()
+        installKeyMonitor()
+        model.workspace.newTab()
     }
 
     required init?(coder: NSCoder) { fatalError() }
 
-    func windowWillClose(_ notification: Notification) {
-        onClose?()
-    }
-}
+    private static let frameName = "JellyMainWindow"
 
-struct RootView: View {
-    var body: some View {
-        Text("Jelly")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+    func perform(_ action: KeyAction) -> Bool {
+        model.actions.perform(action)
+    }
+
+    private func installKeyMonitor() {
+        keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            guard let self, event.window === self.window, self.model.pendingImport == nil,
+                  let chord = KeyChord(event: event),
+                  let action = self.configStore.config.keybinds[chord],
+                  self.perform(action)
+            else { return event }
+            return nil
+        }
+    }
+
+    private func applyWindowSettings() {
+        guard let window else { return }
+        let translucent = configStore.settings.window.backgroundOpacity < 1
+        window.isOpaque = !translucent
+        window.backgroundColor = translucent ? .clear : NSColor(configStore.theme.background)
+        window.appearance = NSAppearance(named: configStore.theme.appearance == .dark ? .darkAqua : .aqua)
+    }
+
+    func windowShouldClose(_ sender: NSWindow) -> Bool {
+        guard configStore.settings.confirmQuit, model.workspace.hasForegroundProcesses else { return true }
+        let alert = NSAlert()
+        alert.messageText = "Close this window?"
+        alert.informativeText = "Processes are still running in some tabs."
+        alert.addButton(withTitle: "Close")
+        alert.addButton(withTitle: "Cancel")
+        alert.beginSheetModal(for: sender) { response in
+            guard response == .alertFirstButtonReturn else { return }
+            self.model.workspace.onEmpty = nil
+            sender.close()
+        }
+        return false
+    }
+
+    func windowWillClose(_ notification: Notification) {
+        if let keyMonitor { NSEvent.removeMonitor(keyMonitor) }
+        if let observerID { configStore.removeObserver(observerID) }
+        model.workspace.onEmpty = nil
+        model.workspace.terminateAll()
+        onClose?()
     }
 }

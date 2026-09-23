@@ -1,4 +1,4 @@
-public struct RGBColor: Equatable, Hashable, Sendable {
+public struct ThemeColor: Equatable, Hashable, Sendable {
     public var red: UInt8
     public var green: UInt8
     public var blue: UInt8

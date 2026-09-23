@@ -32,6 +32,12 @@ public final class TerminalSurface: LocalProcessTerminalView {
 
     public required init?(coder: NSCoder) { fatalError() }
 
+    public var hasForegroundProcess: Bool {
+        guard isRunning, process.childfd >= 0 else { return false }
+        let group = tcgetpgrp(process.childfd)
+        return group > 0 && group != process.shellPid
+    }
+
     public var gridSize: (cols: Int, rows: Int) {
         (terminal.cols, terminal.rows)
     }
@@ -59,20 +65,33 @@ public final class TerminalSurface: LocalProcessTerminalView {
         }
 
         installColors(theme.palette.map(Self.terminalColor))
-        nativeForegroundColor = Self.nsColor(theme.foreground)
-        nativeBackgroundColor = Self.nsColor(theme.background)
+        nativeForegroundColor = NSColor(theme.foreground)
+        nativeBackgroundColor = NSColor(theme.background)
         backgroundOpacity = settings.window.backgroundOpacity
-        caretColor = Self.nsColor(theme.cursor)
-        caretTextColor = Self.nsColor(theme.cursorText)
-        selectedTextBackgroundColor = Self.nsColor(theme.selection)
+        caretColor = NSColor(theme.cursor)
+        caretTextColor = NSColor(theme.cursorText)
+        selectedTextBackgroundColor = NSColor(theme.selection)
         if let selectionText = theme.selectionText {
-            selectedTextForegroundColor = Self.nsColor(selectionText)
+            selectedTextForegroundColor = NSColor(selectionText)
         }
         terminal.setCursorStyle(Self.cursorStyle(settings.cursor))
         if terminal.options.scrollback != settings.scrollback {
             terminal.changeHistorySize(settings.scrollback)
         }
         return resolved.diagnostics
+    }
+
+    public func stop() {
+        guard isRunning else { return }
+        terminate()
+    }
+
+    public func copySelection() {
+        copy(self)
+    }
+
+    public func pasteClipboard() {
+        paste(self)
     }
 
     public func sendText(_ text: String) {
@@ -129,17 +148,8 @@ public final class TerminalSurface: LocalProcessTerminalView {
         }
     }
 
-    private static func terminalColor(_ color: JellyCore.RGBColor) -> SwiftTerm.Color {
+    private static func terminalColor(_ color: ThemeColor) -> SwiftTerm.Color {
         SwiftTerm.Color(red8: UInt16(color.red), green8: UInt16(color.green), blue8: UInt16(color.blue))
-    }
-
-    static func nsColor(_ color: JellyCore.RGBColor) -> NSColor {
-        NSColor(
-            srgbRed: CGFloat(color.red) / 255,
-            green: CGFloat(color.green) / 255,
-            blue: CGFloat(color.blue) / 255,
-            alpha: CGFloat(color.alpha) / 255
-        )
     }
 }
 

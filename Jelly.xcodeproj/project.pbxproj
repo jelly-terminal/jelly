@@ -6,6 +6,12 @@
 	objectVersion = 110;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		3C9E4A213063B70000C337D7 /* JellyCore in Frameworks */ = {isa = PBXBuildFile; productRef = 3C9E4A113063B70000C337D7 /* JellyCore */; };
+		3C9E4A223063B70000C337D7 /* JellyTerminal in Frameworks */ = {isa = PBXBuildFile; productRef = 3C9E4A123063B70000C337D7 /* JellyTerminal */; };
+		3C9E4A233063B70000C337D7 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 3C9E4A133063B70000C337D7 /* Sparkle */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		3C9E49563063B69400C337D7 /* Jelly.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Jelly.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -22,6 +28,9 @@
 		3C9E49533063B69400C337D7 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				3C9E4A213063B70000C337D7 /* JellyCore in Frameworks */,
+				3C9E4A223063B70000C337D7 /* JellyTerminal in Frameworks */,
+				3C9E4A233063B70000C337D7 /* Sparkle in Frameworks */,
 			);
 		};
 /* End PBXFrameworksBuildPhase section */
@@ -60,6 +69,11 @@
 				3C9E49583063B69400C337D7 /* Jelly */,
 			);
 			name = Jelly;
+			packageProductDependencies = (
+				3C9E4A113063B70000C337D7 /* JellyCore */,
+				3C9E4A123063B70000C337D7 /* JellyTerminal */,
+				3C9E4A133063B70000C337D7 /* Sparkle */,
+			);
 			productName = Jelly;
 			productReference = 3C9E49563063B69400C337D7 /* Jelly.app */;
 			productType = "com.apple.product-type.application";
@@ -88,6 +102,11 @@
 			);
 			mainGroup = 3C9E494D3063B69400C337D7;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				3C9E4A013063B70000C337D7 /* XCLocalSwiftPackageReference "Packages/JellyCore" */,
+				3C9E4A023063B70000C337D7 /* XCLocalSwiftPackageReference "Packages/JellyTerminal" */,
+				3C9E4A033063B70000C337D7 /* XCRemoteSwiftPackageReference "Sparkle" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3C9E49573063B69400C337D7 /* Products */;
 			projectDirPath = "";
@@ -320,6 +339,46 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		3C9E4A013063B70000C337D7 /* XCLocalSwiftPackageReference "Packages/JellyCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/JellyCore;
+		};
+		3C9E4A023063B70000C337D7 /* XCLocalSwiftPackageReference "Packages/JellyTerminal" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/JellyTerminal;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3C9E4A033063B70000C337D7 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.9.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3C9E4A113063B70000C337D7 /* JellyCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3C9E4A013063B70000C337D7 /* XCLocalSwiftPackageReference "Packages/JellyCore" */;
+			productName = JellyCore;
+		};
+		3C9E4A123063B70000C337D7 /* JellyTerminal */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3C9E4A023063B70000C337D7 /* XCLocalSwiftPackageReference "Packages/JellyTerminal" */;
+			productName = JellyTerminal;
+		};
+		3C9E4A133063B70000C337D7 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3C9E4A033063B70000C337D7 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 3C9E494E3063B69400C337D7 /* Project object */;
 	validationLevel = 1;

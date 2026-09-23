@@ -59,17 +59,17 @@ struct ConfigDocumentTests {
     }
 
     @Test(arguments: [
-        ("#0af", RGBColor(red: 0, green: 0xAA, blue: 0xFF)),
-        ("#1A2b3C", RGBColor(red: 0x1A, green: 0x2B, blue: 0x3C)),
-        ("#11223380", RGBColor(red: 0x11, green: 0x22, blue: 0x33, alpha: 0x80)),
+        ("#0af", ThemeColor(red: 0, green: 0xAA, blue: 0xFF)),
+        ("#1A2b3C", ThemeColor(red: 0x1A, green: 0x2B, blue: 0x3C)),
+        ("#11223380", ThemeColor(red: 0x11, green: 0x22, blue: 0x33, alpha: 0x80)),
     ])
-    func parsesHexColors(hex: String, color: RGBColor) {
-        #expect(RGBColor(hex: hex) == color)
+    func parsesHexColors(hex: String, color: ThemeColor) {
+        #expect(ThemeColor(hex: hex) == color)
     }
 
     @Test(arguments: ["0af", "#0afx", "#12345", "#", "#ggg"])
     func rejectsBadHexColors(hex: String) {
-        #expect(RGBColor(hex: hex) == nil)
+        #expect(ThemeColor(hex: hex) == nil)
     }
 
     @Test func builtinThemesAllLoad() {

@@ -1,5 +1,5 @@
 DERIVED := build
-XCB := xcodebuild -project Jelly.xcodeproj -scheme Jelly -derivedDataPath $(DERIVED)
+XCB := xcodebuild -project Jelly.xcodeproj -scheme Jelly -derivedDataPath $(DERIVED) -skipPackagePluginValidation
 
 .PHONY: debug prod build test kill clean
 

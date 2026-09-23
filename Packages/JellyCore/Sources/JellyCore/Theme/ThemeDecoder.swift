@@ -3,7 +3,7 @@ enum ThemeDecoder {
         var reader = TableReader(table, path: "theme[\(index)]")
         var failed = false
 
-        func color(_ key: String, required: Bool) -> RGBColor? {
+        func color(_ key: String, required: Bool) -> ThemeColor? {
             guard let hex = reader.string(key) else {
                 if required, table[key] == nil {
                     reader.missing(key)
@@ -11,7 +11,7 @@ enum ThemeDecoder {
                 if required { failed = true }
                 return nil
             }
-            guard let color = RGBColor(hex: hex) else {
+            guard let color = ThemeColor(hex: hex) else {
                 reader.report(key, "'\(hex)' is not a hex color (#rgb, #rrggbb or #rrggbbaa)")
                 if required { failed = true }
                 return nil
@@ -28,14 +28,14 @@ enum ThemeDecoder {
         let background = color("background", required: true)
         let foreground = color("foreground", required: true)
 
-        var palette: [RGBColor] = []
+        var palette: [ThemeColor] = []
         if let hexes = reader.strings("palette") {
             if hexes.count != 16 {
                 reader.report("palette", "needs exactly 16 colors, found \(hexes.count)")
                 failed = true
             }
             for hex in hexes {
-                guard let parsed = RGBColor(hex: hex) else {
+                guard let parsed = ThemeColor(hex: hex) else {
                     reader.report("palette", "'\(hex)' is not a hex color")
                     failed = true
                     continue

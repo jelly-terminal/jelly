@@ -45,7 +45,7 @@ Packages/
       Config/                  Settings, decoders, Loader, Importer, Watcher, Diagnostics
       Keybinds/                KeyChord, KeyAction, Keybinds
       Resources/Themes/        Built-in themes (*.toml)
-      Theme/                   Theme, RGBColor, ThemeDecoder, BuiltinThemes
+      Theme/                   Theme, ThemeColor, ThemeDecoder, BuiltinThemes
       Workspace/               Session, Tab, PaneTree, Project
       Persistence/             SnapshotStore
     Tests/JellyCoreTests/

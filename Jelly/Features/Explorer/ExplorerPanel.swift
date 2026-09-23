@@ -24,11 +24,12 @@ struct ExplorerPanel: View {
                                 explorer.toggle(row.entry)
                             }
                                 .id(row.id)
-                                .onTapGesture {
+                                .onTapGesture(count: 2) { open(row.entry) }
+                                .simultaneousGesture(TapGesture().onEnded {
                                     explorer.selection = row.entry.url
                                     isFocused = true
-                                }
-                                .simultaneousGesture(TapGesture(count: 2).onEnded { open(row.entry) })
+                                })
+                                .onDrag { NSItemProvider(object: row.entry.url as NSURL) }
                         }
                     }
                     .padding(Metrics.explorerPadding)
@@ -150,7 +151,7 @@ struct ExplorerPanel: View {
             activate(entry)
         case .escape:
             if explorer.filter.isEmpty { model.focusTerminal() } else { explorer.filter = "" }
-        case .delete:
+        case .delete, .deleteForward, KeyEquivalent("\u{08}"):
             guard !explorer.filter.isEmpty else { return .ignored }
             explorer.filter.removeLast()
         default:

@@ -15,6 +15,7 @@ struct Sidebar: View {
             HStack {
                 Spacer()
                 SidebarToggle(model: model, theme: theme)
+                    .offset(y: -(Metrics.sidebarInset + Metrics.sidebarPadding) / 2)
             }
             .frame(height: Metrics.tabBarHeight - Metrics.sidebarInset - Metrics.sidebarPadding)
 

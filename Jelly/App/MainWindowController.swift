@@ -8,12 +8,14 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
     var onClose: ((WorkspaceSnapshot) -> Void)?
 
     private let configStore: ConfigStore
+    private let license: LicenseService
     private var keyMonitor: Any?
     private var observerID: UUID?
     private var trafficLights: TrafficLights?
 
-    init(configStore: ConfigStore, projects: ProjectStore, snapshot: WorkspaceSnapshot?) {
+    init(configStore: ConfigStore, projects: ProjectStore, license: LicenseService, snapshot: WorkspaceSnapshot?) {
         self.configStore = configStore
+        self.license = license
         model = WindowModel(configStore: configStore, projects: projects, snapshot: snapshot)
 
         let window = NSWindow(
@@ -28,7 +30,7 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
         window.minSize = NSSize(width: 520, height: 320)
         window.tabbingMode = .disallowed
         window.titlebarSeparatorStyle = .none
-        let hosting = NSHostingController(rootView: RootView(model: model, configStore: configStore))
+        let hosting = NSHostingController(rootView: RootView(model: model, configStore: configStore, license: license))
         hosting.sizingOptions = []
         hosting.sceneBridgingOptions = []
         window.contentViewController = hosting

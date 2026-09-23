@@ -5,6 +5,9 @@ import SwiftUI
 struct RootView: View {
     @Bindable var model: WindowModel
     let configStore: ConfigStore
+    let license: LicenseService
+
+    @State private var isTrialBannerDismissed = false
 
     var body: some View {
         let theme = configStore.theme
@@ -48,14 +51,25 @@ struct RootView: View {
                         }
                     }
 
-                    let diagnostics = configStore.visibleDiagnostics
-                    if !diagnostics.isEmpty {
-                        DiagnosticsBanner(
-                            diagnostics: diagnostics,
-                            onOpenConfig: configStore.openConfigFile,
-                            onDismiss: { configStore.dismissedDiagnostics += diagnostics }
-                        )
-                        .transition(.move(edge: .top).combined(with: .opacity))
+                    VStack(spacing: 8) {
+                        if case .trial(let daysRemaining) = license.status, !isTrialBannerDismissed {
+                            TrialBanner(
+                                daysRemaining: daysRemaining,
+                                onActivate: { model.isLicenseSheetPresented = true },
+                                onDismiss: { isTrialBannerDismissed = true }
+                            )
+                            .transition(.move(edge: .top).combined(with: .opacity))
+                        }
+
+                        let diagnostics = configStore.visibleDiagnostics
+                        if !diagnostics.isEmpty {
+                            DiagnosticsBanner(
+                                diagnostics: diagnostics,
+                                onOpenConfig: configStore.openConfigFile,
+                                onDismiss: { configStore.dismissedDiagnostics += diagnostics }
+                            )
+                            .transition(.move(edge: .top).combined(with: .opacity))
+                        }
                     }
                 }
                 .animation(.smooth, value: configStore.visibleDiagnostics.count)
@@ -95,6 +109,14 @@ struct RootView: View {
             Button("OK", role: .cancel) {}
         } message: {
             Text(model.importError ?? "")
+        }
+        .sheet(isPresented: $model.isLicenseSheetPresented) {
+            LicenseSheet(
+                license: license,
+                dismissTitle: "Cancel",
+                onActivated: { model.isLicenseSheetPresented = false },
+                onDismiss: { model.isLicenseSheetPresented = false }
+            )
         }
     }
 }

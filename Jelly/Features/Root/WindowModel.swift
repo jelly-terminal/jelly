@@ -12,6 +12,7 @@ final class WindowModel {
     var renamingSessionID: UUID?
     var pendingImport: PendingImport?
     var importError: String?
+    var isLicenseSheetPresented = false
 
     @ObservationIgnored let configStore: ConfigStore
     @ObservationIgnored let projects: ProjectStore

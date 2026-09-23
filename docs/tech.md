@@ -38,6 +38,9 @@ Jelly/                         App target (file-system synchronized group)
     Workspace/                 SessionModel, WorkspaceModel (tabs), TabModel (pane tree), PaneModel, ProjectStore, ActionHandler
     Panes/                     PaneArea (cards, headers, dividers), PaneLayout, PaneHeader
     Sidebar/                   Sidebar (Sessions, Projects), SidebarToggle
+    Explorer/                  ExplorerPanel, ExplorerModel (lazy tree, watchers), DirectoryLister (off main)
+    Viewer/                    ViewerCard, ViewerModel (history, links, live reload), ViewerLoader (off main), TextFileView
+    Markdown/                  MarkdownView and one view per block kind, MarkdownStyle (theme colours, inline and code highlighting)
     Tabs/                      TabBar
     Terminal/                  TerminalHost (NSViewRepresentable positioning surfaces)
     StatusBar/
@@ -45,7 +48,7 @@ Jelly/                         App target (file-system synchronized group)
     Import/                    PendingImport, ImportSheet, ConfigImportService
     Updates/                   UpdaterService (Sparkle)
     Settings/                  SettingsWindowController (toolbar tabs), one view per tab, ShortcutRecorder
-  Shared/                      Metrics, AppInfo, KeyChord+Event, ThemeColor+SwiftUI
+  Shared/                      Metrics, AppInfo, KeyChord+Event, ThemeColor+SwiftUI, FileWatcher
   Resources/                   Assets.xcassets
 Packages/
   JellyCore/                   No UI. Plain Sendable value types.
@@ -55,6 +58,8 @@ Packages/
       Keybinds/                KeyChord, KeyAction, KeyActionCatalog (names, titles, groups), Keybinds, KeybindEditor
       Theme/                   Theme, ThemeColor, ThemeDecoder, BuiltinThemes
       Workspace/               PaneTree, WorkspaceSnapshot, SnapshotStore
+      Markdown/                MarkdownParser (CommonMark + GFM blocks), MarkdownDocument (blocks, outline, anchors)
+      Syntax/                  SyntaxHighlighter (byte scanner), SyntaxLanguage (rule tables and aliases), SyntaxToken
       Resources/Themes/        Built-in themes (*.toml)
     Tests/JellyCoreTests/
   JellyTerminal/               Everything that touches SwiftTerm
@@ -91,6 +96,8 @@ Dependency direction: **App → JellyTerminal → JellyCore**. Only `JellyTermin
 - **Workspace model.** `WindowModel` → `[SessionModel]` → `WorkspaceModel` → `[TabModel]` → `[PaneModel]`. A tab holds a `PaneTree` layout, its panes (each owning one `TerminalSurface`), the focused pane and an optional zoomed pane. All surfaces stay alive; a restored session starts its shells only when first opened. A pane whose shell exits closes itself; the last pane closes the tab.
 - **Pane layout.** `PaneLayout` turns the tree into card frames (with `Metrics.paneGap` between them) and divider handles. `PaneArea` draws it in three layers from the same layout: card fills, then `TerminalHost` (one AppKit container holding every surface, placing the selected tab's surfaces inside their cards and hiding the rest), then headers, borders and divider handles. The container only takes hits inside card bodies, so SwiftUI handles headers and dividers. It watches the window's first responder to report which pane was clicked.
 - **Chrome vs. content.** Terminal output never touches SwiftUI state. Only title, cwd and grid-size callbacks reach `TabModel`.
+- **Explorer and viewer.** The explorer follows the focused pane's directory, read from its shell with `proc_pidinfo` once a second while the panel is open. Directory listing, file reading, Markdown parsing and highlighting all run off the main thread; each expanded folder and the open file have a `DispatchSource` watcher, debounced and re-armed after atomic saves. The viewer covers the pane area. While it's open, `TerminalHost` gets no cards, so the surfaces are hidden but stay attached and keep running. Copy and paste go to the terminal only when a surface is first responder; otherwise they go down the responder chain, so viewer text can be copied.
+- **Syntax highlighting.** It uses its own lexer in `JellyCore`, with no dependency: a byte scanner driven by per-language tables (comments, strings, keywords, literals, capitalised types, calls, shell variables, tags, diff lines). Colours come from the theme's ANSI palette, so code matches the terminal.
 - **Config.** `ConfigStore` loads and watches the config, tracks light/dark appearance, and notifies each window, which re-applies settings and theme to its surfaces.
 
 ## Terminal
@@ -201,6 +208,8 @@ Unit tests live in the packages (`swift test`) and only cover logic where a bug 
 - `ConfigImporter`: values replaced in place with comments kept, missing keys added to the right table, inline tables merged, unchanged values skipped, replaced themes flagged, broken configs refused.
 - `ConfigDocument`: invalid values fall back and report their line; syntax errors keep defaults; `none` unbinds; themes need 16 valid colors; hex parsing; built-in themes load.
 - `PaneTree`: split, close (the sibling takes the parent's place), focus by direction, ratio bounds, equalize.
+- `SyntaxHighlighter`: tokens for words, escaped strings and comments; aliases; shell variables and literal single quotes; tokens split per line across multi-line comments and strings; diff lines.
+- `MarkdownParser` / `MarkdownDocument`: ATX, setext and rules told apart; soft and hard breaks; fences (longer closers, unclosed); nested lists with tasks, code and lazy lines; quotes with lazy lines; table cells with escaped pipes and code spans; GitHub-style heading anchors.
 
 **JellyTerminal**
 - `ShellLaunch`: order of precedence, `-` prefix on `argv[0]`, working directory, environment (Jelly identity, other terminals' variables dropped, user overrides).

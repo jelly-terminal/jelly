@@ -40,6 +40,8 @@ public struct Keybinds: Equatable, Sendable {
             "cmd+ctrl+]": .sessionNext,
             "cmd+ctrl+[": .sessionPrevious,
             "cmd+0": .sidebarToggle,
+            "cmd+e": .explorerToggle,
+            "cmd+shift+m": .markdownPreview,
             "cmd+f": .find,
             "cmd+k": .clear,
             "cmd+c": .copy,
@@ -51,6 +53,7 @@ public struct Keybinds: Equatable, Sendable {
             "cmd+shift+,": .configReload,
             "cmd+up": .promptPrevious,
             "cmd+down": .promptNext,
+            "cmd+backspace": .text("\u{15}"),
         ]
         for index in 1...9 {
             map["cmd+\(index)"] = .tabGoto(index)

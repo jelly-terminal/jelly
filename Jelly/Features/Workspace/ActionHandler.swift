@@ -48,15 +48,19 @@ struct ActionHandler {
             window.selectSession(number: number)
         case .sidebarToggle:
             withAnimation(Sidebar.animation) { window.isSidebarVisible.toggle() }
+        case .explorerToggle:
+            window.toggleExplorer()
+        case .markdownPreview:
+            window.togglePreview()
         case .find:
             surface?.showFind()
         case .clear:
             surface?.clearScreen()
         case .copy:
-            guard let surface else { return false }
+            guard let surface, window.window?.firstResponder === surface else { return false }
             surface.copySelection()
         case .paste:
-            guard let surface else { return false }
+            guard let surface, window.window?.firstResponder === surface else { return false }
             surface.pasteClipboard()
         case .fontIncrease:
             configStore.fontSizeDelta += 1

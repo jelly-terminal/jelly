@@ -96,7 +96,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
         if let controller = keyController {
-            _ = controller.perform(action)
+            guard !controller.perform(action) else { return }
+            switch action {
+            case .copy: NSApp.sendAction(#selector(NSText.copy(_:)), to: nil, from: sender)
+            case .paste: NSApp.sendAction(#selector(NSText.paste(_:)), to: nil, from: sender)
+            default: break
+            }
             return
         }
         switch action {

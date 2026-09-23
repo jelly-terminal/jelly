@@ -16,7 +16,7 @@ extension KeyAction {
         .paneFocus(.left), .paneFocus(.right), .paneFocus(.up), .paneFocus(.down),
         .sessionNew, .sessionNext, .sessionPrevious,
     ] + (1...9).map { .sessionGoto($0) } + [
-        .sidebarToggle, .find,
+        .sidebarToggle, .explorerToggle, .markdownPreview, .find,
         .copy, .paste, .clear, .promptPrevious, .promptNext,
         .fontIncrease, .fontDecrease, .fontReset,
         .settingsOpen, .configOpen, .configReload,
@@ -42,6 +42,8 @@ extension KeyAction {
         case .sessionPrevious: "session.previous"
         case .sessionGoto(let number): "session.goto:\(number)"
         case .sidebarToggle: "sidebar.toggle"
+        case .explorerToggle: "explorer.toggle"
+        case .markdownPreview: "markdown.preview"
         case .find: "find"
         case .clear: "clear"
         case .copy: "copy"
@@ -85,6 +87,8 @@ extension KeyAction {
         case .sessionPrevious: "Previous Session"
         case .sessionGoto(let number): number == 9 ? "Last Session" : "Session \(number)"
         case .sidebarToggle: "Toggle Sidebar"
+        case .explorerToggle: "Toggle Explorer"
+        case .markdownPreview: "Preview Markdown"
         case .find: "Find"
         case .clear: "Clear"
         case .copy: "Copy"
@@ -107,7 +111,7 @@ extension KeyAction {
         case .tabNew, .tabClose, .tabNext, .tabPrevious, .tabGoto, .tabMove, .tabRename: .tabs
         case .splitRight, .splitDown, .paneClose, .paneZoom, .paneFocus, .paneEqualize: .panes
         case .sessionNew, .sessionNext, .sessionPrevious, .sessionGoto: .sessions
-        case .sidebarToggle, .find: .window
+        case .sidebarToggle, .explorerToggle, .markdownPreview, .find: .window
         case .clear, .copy, .paste, .promptPrevious, .promptNext, .text, .none: .edit
         case .fontIncrease, .fontDecrease, .fontReset: .font
         case .settingsOpen, .configOpen, .configReload: .config

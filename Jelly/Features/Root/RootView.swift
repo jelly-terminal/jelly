@@ -37,11 +37,25 @@ struct RootView: View {
                         .gesture(WindowDragGesture())
                 }
 
-                ZStack(alignment: .top) {
-                    PaneArea(model: model, theme: theme, settings: settings)
-                        .padding(.horizontal, Metrics.chromePadding)
-                        .padding(.bottom, settings.window.statusBar ? 0 : Metrics.chromePadding)
+                HStack(spacing: 0) {
+                    ZStack(alignment: .top) {
+                        PaneArea(model: model, theme: theme, settings: settings, isCovered: model.viewer != nil)
+                        if let viewer = model.viewer {
+                            ViewerCard(viewer: viewer, theme: theme, onClose: model.closeViewer)
+                                .transition(.opacity.combined(with: .scale(scale: 0.98)))
+                        }
+                    }
+                    .padding(.horizontal, Metrics.chromePadding)
+                    .animation(.smooth(duration: 0.2), value: model.viewer == nil)
 
+                    if model.isExplorerVisible {
+                        ExplorerPanel(model: model, explorer: model.explorer, theme: theme, backgroundOpacity: settings.window.backgroundOpacity)
+                            .padding(.trailing, Metrics.chromePadding)
+                            .transition(.move(edge: .trailing).combined(with: .opacity))
+                    }
+                }
+                .padding(.bottom, settings.window.statusBar ? 0 : Metrics.chromePadding)
+                .overlay(alignment: .top) {
                     if workspace.tabs.isEmpty {
                         EmptySessionView(theme: theme) {
                             withAnimation(TabBar.animation) { _ = workspace.newTab() }

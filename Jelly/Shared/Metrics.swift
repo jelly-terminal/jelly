@@ -49,4 +49,21 @@ enum Metrics {
     static let sidebarRowHeight: CGFloat = 30
     static let sidebarRowPadding: CGFloat = 8
     static let sidebarRowCornerRadius: CGFloat = 8
+
+    static let explorerWidth: CGFloat = 250
+    static let explorerPadding: CGFloat = 6
+    static let explorerRowHeight: CGFloat = 24
+    static let explorerIndent: CGFloat = 14
+    static let explorerIconSize: CGFloat = 12
+    static let explorerChevronWidth: CGFloat = 10
+
+    static let viewerPadding: CGFloat = 28
+    static let markdownMaxWidth: CGFloat = 760
+    static let markdownBodySize: CGFloat = 14
+    static let markdownCodeSize: CGFloat = 12.5
+    static let markdownBlockSpacing: CGFloat = 14
+    static let markdownLineSpacing: CGFloat = 4
+    static let markdownCornerRadius: CGFloat = 8
+    static let markdownCodePadding: CGFloat = 12
+    static let markdownListMarkerWidth: CGFloat = 16
 }

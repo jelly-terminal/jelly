@@ -12,9 +12,13 @@ final class WindowModel {
     var renamingSessionID: UUID?
     var pendingImport: PendingImport?
     var importError: String?
+    var isExplorerVisible = false
+    var explorerFocusRequest = 0
+    var viewer: ViewerModel?
 
     @ObservationIgnored let configStore: ConfigStore
     @ObservationIgnored let projects: ProjectStore
+    @ObservationIgnored let explorer = ExplorerModel()
     @ObservationIgnored weak var window: NSWindow?
 
     init(configStore: ConfigStore, projects: ProjectStore, snapshot: WorkspaceSnapshot?) {
@@ -121,6 +125,60 @@ final class WindowModel {
     func open(_ project: ProjectStore.Project) {
         withAnimation(TabBar.animation) { _ = workspace.newTab(directory: project.path) }
         focusTerminal()
+    }
+
+    func toggleExplorer() {
+        withAnimation(Sidebar.animation) { isExplorerVisible.toggle() }
+        if isExplorerVisible {
+            syncExplorer()
+            explorerFocusRequest += 1
+        } else if viewer == nil {
+            focusTerminal()
+        }
+    }
+
+    func syncExplorer() {
+        explorer.follow(workspace.selectedTab?.surface.workingDirectory)
+    }
+
+    func preview(_ url: URL) {
+        if let viewer {
+            viewer.open(url)
+        } else {
+            let codeFont = FontResolver.resolve(configStore.settings.font, size: Metrics.markdownCodeSize).font
+            viewer = ViewerModel(url: url, codeFont: codeFont)
+        }
+    }
+
+    func closeViewer() {
+        viewer = nil
+        if isExplorerVisible {
+            explorerFocusRequest += 1
+        } else {
+            focusTerminal()
+        }
+    }
+
+    func togglePreview() {
+        if viewer != nil {
+            closeViewer()
+            return
+        }
+        if isExplorerVisible, let entry = explorer.selectedEntry, !entry.isDirectory {
+            preview(entry.url)
+            return
+        }
+        guard let directory = workspace.selectedTab?.surface.workingDirectory else {
+            NSSound.beep()
+            return
+        }
+        Task {
+            guard let readme = await DirectoryLister.readme(in: URL(filePath: directory, directoryHint: .isDirectory)) else {
+                NSSound.beep()
+                return
+            }
+            preview(readme)
+        }
     }
 
     func terminateAll() {

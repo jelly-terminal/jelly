@@ -6,12 +6,13 @@ struct PaneArea: View {
     let model: WindowModel
     let theme: Theme
     let settings: JellyCore.Settings
+    let isCovered: Bool
 
     private static let space = "panes"
 
     var body: some View {
         let workspace = model.workspace
-        let tab = workspace.selectedTab
+        let tab = isCovered ? nil : workspace.selectedTab
         GeometryReader { proxy in
             let layout = tab.map { PaneLayout(tree: $0.layout, zoomed: $0.zoomedPaneID, size: proxy.size) }
             let visible = tab?.orderedPanes.filter { layout?.cards[$0.id] != nil } ?? []

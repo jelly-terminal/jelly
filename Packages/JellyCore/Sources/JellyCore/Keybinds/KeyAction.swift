@@ -21,6 +21,8 @@ public enum KeyAction: Hashable, Sendable {
     case sessionPrevious
     case sessionGoto(Int)
     case sidebarToggle
+    case explorerToggle
+    case markdownPreview
     case find
     case clear
     case copy
@@ -41,7 +43,8 @@ public enum KeyAction: Hashable, Sendable {
         "tab.rename": .tabRename, "split.right": .splitRight, "split.down": .splitDown,
         "pane.close": .paneClose, "pane.zoom": .paneZoom, "pane.equalize": .paneEqualize,
         "session.new": .sessionNew, "session.next": .sessionNext, "session.previous": .sessionPrevious,
-        "sidebar.toggle": .sidebarToggle, "find": .find, "clear": .clear, "copy": .copy, "paste": .paste,
+        "sidebar.toggle": .sidebarToggle, "explorer.toggle": .explorerToggle,
+        "markdown.preview": .markdownPreview, "find": .find, "clear": .clear, "copy": .copy, "paste": .paste,
         "font.increase": .fontIncrease, "font.decrease": .fontDecrease, "font.reset": .fontReset,
         "settings.open": .settingsOpen, "config.open": .configOpen, "config.reload": .configReload,
         "prompt.previous": .promptPrevious, "prompt.next": .promptNext, "none": .none,

@@ -104,6 +104,9 @@ enum MainMenu {
         menu.addItem(item("Smaller", .fontDecrease))
         menu.addItem(item("Actual Size", .fontReset))
         menu.addItem(.separator())
+        menu.addItem(item("Toggle Explorer", .explorerToggle))
+        menu.addItem(item("Preview Markdown", .markdownPreview))
+        menu.addItem(.separator())
         menu.addItem(withTitle: "Enter Full Screen", action: #selector(NSWindow.toggleFullScreen(_:)), keyEquivalent: "f")
             .keyEquivalentModifierMask = [.command, .control]
         return menu

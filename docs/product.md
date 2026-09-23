@@ -44,6 +44,8 @@ Jelly is a native macOS terminal built around **sessions**: named workspaces tha
 | **Panes** | Split right or down, as deep as you like. Panes are detached cards with rounded corners and a gap between them; the focused one gets an accent border. Each has a header with its title and split, zoom and close buttons. Resize by dragging the gap between panes, double-click it to equalize. Click a pane to focus it. |
 | **Status bar** | Session name · tab count · pane count when split · grid size of the focused pane (`112×28`). |
 | **Search** | Find in the focused pane's scrollback, with next/previous and match count. |
+| **Explorer** | A read-only file tree on the right (⌘E) rooted at the focused pane's current directory. It follows the pane as you `cd` or switch panes, and updates live when files change, so you can watch an agent working in the terminal. Arrows move, → and ← open and close folders, ↩ or Space previews, ⌘↑ goes to the enclosing folder, typing filters, Esc returns to the terminal. |
+| **Viewer** | ⌘⇧M, or ↩ in the explorer, opens a file over the panes. Markdown is rendered (headings, lists, task lists, tables, quotes, code, images) with a contents menu and working relative links; other text files show with line numbers. Code is syntax-highlighted in the theme's palette colours. It reloads when the file changes on disk. Esc closes it. Terminals behind it keep running. |
 
 ## Configuration and themes
 
@@ -80,6 +82,8 @@ Jelly updates itself. It checks once a day, offers the new version with release 
 | Next / previous session | ⌘⌃] / ⌘⌃[ |
 | Session 1–9 | ⌘⌃1 … ⌘⌃9 |
 | Toggle sidebar | ⌘0 |
+| Toggle explorer | ⌘E |
+| Preview Markdown (selected file, or the directory's README) | ⌘⇧M |
 | Find | ⌘F |
 | Reload config | ⌘⇧, |
 | Settings | ⌘, |

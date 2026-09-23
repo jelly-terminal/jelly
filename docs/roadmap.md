@@ -20,6 +20,7 @@ Everything before v1 is a preview. Config keys and behaviour can change between 
 - Split layout restore on relaunch and after updates
 - Search in scrollback
 - Status bar details (session, pane count, grid size)
+- Read-only file explorer following the focused pane, with a Markdown and text viewer and syntax highlighting
 
 ## v0.3: Connect
 

@@ -14,7 +14,7 @@ Installed Jelly ─▶ Sparkle ─▶ jelly-terminal/releases/releases/latest/do
 
 1. Commit with conventional prefixes (`feat:`, `fix:`, `perf:`, `refactor:`, `build:`, `docs:`). Commit subjects become the release notes, so write them as short user-readable sentences.
 2. Push `main`.
-3. `git tag v0.1.0 && git push origin v0.1.0`.
+3. `scripts/release.sh` — asks for a patch/minor/major/custom bump off the latest tag, then tags and pushes.
 
 Tags with a `-` (`v0.1.0-beta.1`) become pre-releases. The workflow refuses tags that aren't on `main`.
 

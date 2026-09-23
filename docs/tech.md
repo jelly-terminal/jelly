@@ -23,7 +23,7 @@ SwiftTerm ships a Metal renderer (glyph atlases, CoreText run shaping, built-in 
 
 - Deployment target **macOS 26.0**, Swift 6.
 - **No App Sandbox.** A terminal has to spawn the user's shell with full access to their files. Hardened runtime stays on for notarization.
-- Debug build: bundle ID `com.monawwar.Jelly.Debug`, display name "Jelly Debug", so it never collides with an installed release.
+- Debug build: bundle ID `com.monawwar.Jelly.Debug`, display name "Jelly (Debug)", so it never collides with an installed release.
 - SwiftTerm uses a build-tool plugin: Xcode asks to trust it once; command-line builds pass `-skipPackagePluginValidation`.
 - The Metal toolchain is a separate Xcode component: `xcodebuild -downloadComponent MetalToolchain`.
 
@@ -35,7 +35,8 @@ Jelly/                         App target (file-system synchronized group)
   Config/                      ConfigStore (loaded config, watcher, appearance, font zoom)
   Features/
     Root/                      RootView, WindowModel, WindowBackground
-    Workspace/                 WorkspaceModel (tabs), TabModel, ActionHandler (keybind actions)
+    Workspace/                 SessionModel, WorkspaceModel (tabs), TabModel, ProjectStore, ActionHandler
+    Sidebar/                   Sidebar (Sessions, Projects), SidebarToggle
     Tabs/                      TabBar
     Terminal/                  TerminalHost (NSViewRepresentable hosting surfaces)
     StatusBar/
@@ -51,7 +52,7 @@ Packages/
       Config/                  Settings, decoders, Loader, Importer, Watcher, Diagnostics
       Keybinds/                KeyChord, KeyAction, Keybinds
       Theme/                   Theme, ThemeColor, ThemeDecoder, BuiltinThemes
-      Workspace/               PaneTree
+      Workspace/               PaneTree, WorkspaceSnapshot, SnapshotStore
       Resources/Themes/        Built-in themes (*.toml)
     Tests/JellyCoreTests/
   JellyTerminal/               Everything that touches SwiftTerm
@@ -85,7 +86,7 @@ Dependency direction: **App → JellyTerminal → JellyCore**. Only `JellyTermin
         └─▶ callbacks: title, cwd (OSC 7), grid size ─▶ TabModel ─▶ SwiftUI chrome
 ```
 
-- **Workspace model.** `WorkspaceModel` → `[TabModel]`, each owning one `TerminalSurface`. All surfaces stay alive; `TerminalHost` shows the selected one. In v0.2 each tab gets a `PaneTree` (already in `JellyCore`).
+- **Workspace model.** `WindowModel` → `[SessionModel]` → `WorkspaceModel` → `[TabModel]`, each tab owning one `TerminalSurface`. All surfaces stay alive; `TerminalHost` shows the selected session's selected tab. A restored session starts its shells only when first opened. In v0.2 each tab gets a `PaneTree` (already in `JellyCore`).
 - **Chrome vs. content.** Terminal output never touches SwiftUI state. Only title, cwd and grid-size callbacks reach `TabModel`.
 - **Config.** `ConfigStore` loads and watches the config, tracks light/dark appearance, and notifies each window, which re-applies settings and theme to its surfaces.
 
@@ -159,7 +160,7 @@ See [config.md](config.md) for the format. Internals:
 
 ## Persistence
 
-v0.2: `SnapshotStore` writes `sessions.json` (sessions, tabs, pane trees, each pane's last cwd and title, window frame) 1s after changes and on quit. Running processes are not restored; each pane restarts its shell in its last cwd.
+`SnapshotStore` writes `workspace.json` in Application Support (per bundle ID, so Debug and release never share it): sessions with their tabs' working directories and custom titles, the selected session and tab, projects, and sidebar visibility. It's saved when the window closes and on quit, and the first window restores it. Running processes are not restored; each tab starts its shell in its last directory.
 
 ## Updates
 

@@ -11,38 +11,63 @@ struct RootView: View {
         let settings = configStore.settings
         let workspace = model.workspace
 
-        VStack(spacing: 0) {
-            TabBar(
-                workspace: workspace,
-                theme: theme,
-                onClose: { workspace.requestClose($0, in: model.window) },
-                onFind: { workspace.selectedTab?.surface.showFind() }
-            )
-            .background {
-                Color.clear
-                    .contentShape(.rect)
-                    .gesture(WindowDragGesture())
+        HStack(spacing: 0) {
+            if model.isSidebarVisible {
+                Sidebar(model: model, projects: model.projects, theme: theme)
+                    .transition(.move(edge: .leading).combined(with: .opacity))
             }
 
-            ZStack(alignment: .top) {
-                TerminalHost(surfaces: workspace.tabs.map(\.surface), selected: workspace.selectedTab?.surface)
-                    .padding(.horizontal, settings.window.paddingX)
-                    .padding(.vertical, settings.window.paddingY)
-
-                let diagnostics = configStore.visibleDiagnostics
-                if !diagnostics.isEmpty {
-                    DiagnosticsBanner(
-                        diagnostics: diagnostics,
-                        onOpenConfig: configStore.openConfigFile,
-                        onDismiss: { configStore.dismissedDiagnostics += diagnostics }
+            VStack(spacing: 0) {
+                HStack(spacing: 0) {
+                    if !model.isSidebarVisible {
+                        SidebarToggle(model: model, theme: theme)
+                            .padding(.leading, Metrics.trafficLightInset)
+                    }
+                    TabBar(
+                        workspace: workspace,
+                        theme: theme,
+                        leadingInset: model.isSidebarVisible ? Metrics.chromePadding / 2 : Metrics.tabSpacing,
+                        onClose: { workspace.requestClose($0, in: model.window) },
+                        onFind: { workspace.selectedTab?.surface.showFind() }
                     )
-                    .transition(.move(edge: .top).combined(with: .opacity))
                 }
-            }
-            .animation(.smooth, value: configStore.visibleDiagnostics.count)
+                .background {
+                    Color.clear
+                        .contentShape(.rect)
+                        .gesture(WindowDragGesture())
+                }
 
-            if settings.window.statusBar {
-                StatusBar(tab: workspace.selectedTab, tabCount: workspace.tabs.count, theme: theme)
+                ZStack(alignment: .top) {
+                    TerminalHost(surfaces: workspace.tabs.map(\.surface), selected: workspace.selectedTab?.surface)
+                        .padding(.horizontal, settings.window.paddingX)
+                        .padding(.vertical, settings.window.paddingY)
+
+                    if workspace.tabs.isEmpty {
+                        EmptySessionView(theme: theme) {
+                            withAnimation(TabBar.animation) { _ = workspace.newTab() }
+                        }
+                    }
+
+                    let diagnostics = configStore.visibleDiagnostics
+                    if !diagnostics.isEmpty {
+                        DiagnosticsBanner(
+                            diagnostics: diagnostics,
+                            onOpenConfig: configStore.openConfigFile,
+                            onDismiss: { configStore.dismissedDiagnostics += diagnostics }
+                        )
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                    }
+                }
+                .animation(.smooth, value: configStore.visibleDiagnostics.count)
+
+                if settings.window.statusBar {
+                    StatusBar(
+                        sessionName: model.selectedSession.name,
+                        tabCount: workspace.tabs.count,
+                        gridSize: workspace.selectedTab?.gridSize,
+                        theme: theme
+                    )
+                }
             }
         }
         .background {
@@ -69,5 +94,23 @@ struct RootView: View {
         } message: {
             Text(model.importError ?? "")
         }
+    }
+}
+
+private struct EmptySessionView: View {
+    let theme: Theme
+    let onNewTab: () -> Void
+
+    var body: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "terminal")
+                .font(.system(size: 28))
+                .foregroundStyle(Color(theme.foreground).opacity(0.3))
+            Text("No open tabs")
+                .foregroundStyle(Color(theme.foreground).opacity(0.5))
+            Button("New Tab", action: onNewTab)
+                .buttonStyle(.glass)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }

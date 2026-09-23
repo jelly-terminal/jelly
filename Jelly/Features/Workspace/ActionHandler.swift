@@ -1,27 +1,36 @@
 import AppKit
 import JellyCore
 import JellyTerminal
+import SwiftUI
 
 @MainActor
 struct ActionHandler {
-    let workspace: WorkspaceModel
-    let configStore: ConfigStore
-    let window: NSWindow?
+    let window: WindowModel
 
     func perform(_ action: KeyAction) -> Bool {
+        let workspace = window.workspace
+        let configStore = window.configStore
         let surface = workspace.selectedTab?.surface
         switch action {
         case .tabNew:
-            workspace.newTab()
+            withAnimation(TabBar.animation) { _ = workspace.newTab() }
         case .tabClose, .paneClose:
             guard let tab = workspace.selectedTab else { return false }
-            workspace.requestClose(tab, in: window)
+            withAnimation(TabBar.animation) { workspace.requestClose(tab, in: window.window) }
         case .tabNext:
             workspace.select(offset: 1)
         case .tabPrevious:
             workspace.select(offset: -1)
         case .tabGoto(let number):
             workspace.select(number: number)
+        case .sessionNew:
+            withAnimation(TabBar.animation) { window.newSession() }
+        case .sessionNext:
+            window.selectSession(offset: 1)
+        case .sessionPrevious:
+            window.selectSession(offset: -1)
+        case .sidebarToggle:
+            withAnimation(Sidebar.animation) { window.isSidebarVisible.toggle() }
         case .find:
             surface?.showFind()
         case .clear:
@@ -45,7 +54,7 @@ struct ActionHandler {
         case .text(let text):
             surface?.sendText(text)
         case .tabRename, .splitRight, .splitDown, .paneZoom, .paneFocus, .paneEqualize,
-             .sessionNew, .sessionNext, .sessionPrevious, .sidebarToggle, .promptPrevious, .promptNext, .none:
+             .promptPrevious, .promptNext, .none:
             return false
         }
         return true

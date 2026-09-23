@@ -5,12 +5,17 @@ import UniformTypeIdentifiers
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var configStore: ConfigStore!
     private var updater: UpdaterService!
+    private var projects: ProjectStore!
     private var windowControllers: [MainWindowController] = []
     private var pendingOpenURLs: [URL] = []
+    private let snapshotStore = SnapshotStore.standard()
+    private var lastSnapshot: WorkspaceSnapshot?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         configStore = ConfigStore()
         updater = UpdaterService()
+        lastSnapshot = snapshotStore.load()
+        projects = ProjectStore(lastSnapshot?.projects ?? [])
         _ = configStore.observe { [weak self] in self?.configChanged() }
         configChanged()
         newWindow()
@@ -30,7 +35,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
         guard configStore.settings.confirmQuit,
-              windowControllers.contains(where: { $0.model.workspace.hasForegroundProcesses })
+              windowControllers.contains(where: { $0.model.hasForegroundProcesses })
         else { return .terminateNow }
         let alert = NSAlert()
         alert.messageText = "Quit \(AppInfo.name)?"
@@ -38,6 +43,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         alert.addButton(withTitle: "Quit")
         alert.addButton(withTitle: "Cancel")
         return alert.runModal() == .alertFirstButtonReturn ? .terminateNow : .terminateCancel
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        saveSnapshot()
     }
 
     func application(_ application: NSApplication, open urls: [URL]) {
@@ -49,9 +58,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc func newWindow() {
-        let controller = MainWindowController(configStore: configStore)
-        controller.onClose = { [weak self, weak controller] in
-            self?.windowControllers.removeAll { $0 === controller }
+        let restore = windowControllers.isEmpty ? lastSnapshot : nil
+        let controller = MainWindowController(configStore: configStore, projects: projects, snapshot: restore)
+        controller.onClose = { [weak self, weak controller] snapshot in
+            guard let self else { return }
+            if self.windowControllers.first === controller { self.lastSnapshot = snapshot }
+            self.windowControllers.removeAll { $0 === controller }
+            self.saveSnapshot()
         }
         windowControllers.append(controller)
         controller.showWindow(nil)
@@ -92,6 +105,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if keyController == nil { newWindow() }
         keyController?.window?.makeKeyAndOrderFront(nil)
         keyController?.model.beginImport(url)
+    }
+
+    private func saveSnapshot() {
+        var snapshot = windowControllers.first?.model.snapshot ?? lastSnapshot
+        snapshot?.projects = projects.snapshot
+        if let snapshot { snapshotStore.save(snapshot) }
     }
 
     private func configChanged() {

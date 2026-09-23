@@ -2,8 +2,9 @@ import JellyCore
 import SwiftUI
 
 struct StatusBar: View {
-    let tab: TabModel?
+    let sessionName: String
     let tabCount: Int
+    let gridSize: (cols: Int, rows: Int)?
     let theme: Theme
 
     var body: some View {
@@ -13,12 +14,12 @@ struct StatusBar: View {
                 Circle()
                     .fill(Color(theme.palette[2]))
                     .frame(width: 6, height: 6)
-                Text(tab?.displayTitle ?? "")
+                Text(sessionName)
                 separator
                 Text(tabCount == 1 ? "1 tab" : "\(tabCount) tabs")
-                if let size = tab?.gridSize, size.cols > 0 {
+                if let gridSize, gridSize.cols > 0 {
                     separator
-                    Text("\(size.cols)×\(size.rows)")
+                    Text("\(gridSize.cols)×\(gridSize.rows)")
                         .monospacedDigit()
                 }
             }

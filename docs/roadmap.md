@@ -7,6 +7,7 @@ Everything before v1 is a preview. Config keys and behaviour can change between 
 - AppKit shell with a single window, SwiftUI chrome, Liquid Glass tab bar and status bar
 - `JellyTerminal`: SwiftTerm's Metal terminal view wrapped in `TerminalSurface`, shell launch, fonts with fallback, ligatures and OpenType features
 - Tabs
+- Sidebar with Sessions and Projects, restored on relaunch
 - `jelly.toml` with live reload, error banner, built-in themes, TOML import with preview
 - Sparkle updates and the release pipeline
 - Unit tests from [tech.md](tech.md#testing)
@@ -16,8 +17,7 @@ Everything before v1 is a preview. Config keys and behaviour can change between 
 ## v0.2: Workspace
 
 - Split panes with headers, zoom, keyboard focus
-- Sidebar: Sessions and Projects
-- Session and layout restore on relaunch and after updates
+- Split layout restore on relaunch and after updates
 - Search in scrollback
 - Status bar details (session, pane count, grid size)
 

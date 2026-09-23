@@ -42,7 +42,7 @@ Jelly is a native macOS terminal built around **sessions**: named workspaces tha
 | **Connect…** | Saved SSH hosts (v0.3). |
 | **Tab bar** | One tab per workspace view. Each has an icon and a title that follows the running process, or a name you set. `+` opens a tab, `⌕` opens search. |
 | **Panes** | Split right or down, as deep as you like. Each pane has a header with its title and split/zoom buttons. Resize by dragging the divider. |
-| **Status bar** | Active tab · pane count · grid size of the focused pane (`112×28`). |
+| **Status bar** | Session name · tab count · grid size of the focused tab (`112×28`). |
 | **Search** | Find in the focused pane's scrollback, with next/previous and match count. |
 
 ## Configuration and themes

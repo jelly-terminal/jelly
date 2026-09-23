@@ -2,23 +2,110 @@ import AppKit
 import JellyCore
 import JellyTerminal
 import Observation
+import SwiftUI
 
 @Observable
 final class WindowModel {
-    let workspace: WorkspaceModel
+    private(set) var sessions: [SessionModel]
+    var selectedSessionID: UUID
+    var isSidebarVisible: Bool
+    var renamingSessionID: UUID?
     var pendingImport: PendingImport?
     var importError: String?
 
     @ObservationIgnored let configStore: ConfigStore
+    @ObservationIgnored let projects: ProjectStore
     @ObservationIgnored weak var window: NSWindow?
 
-    init(configStore: ConfigStore) {
+    init(configStore: ConfigStore, projects: ProjectStore, snapshot: WorkspaceSnapshot?) {
         self.configStore = configStore
-        workspace = WorkspaceModel(configStore: configStore)
+        self.projects = projects
+        let restored = (snapshot?.sessions ?? []).map {
+            SessionModel(id: $0.id, name: $0.name, configStore: configStore, tabs: $0.tabs, selectedTab: $0.selectedTab)
+        }
+        let initial = restored.isEmpty ? [SessionModel(name: "Default", configStore: configStore)] : restored
+        let preferred = snapshot?.selectedSession
+        sessions = initial
+        selectedSessionID = initial.first { $0.id == preferred }?.id ?? initial[0].id
+        isSidebarVisible = snapshot?.sidebarVisible ?? configStore.settings.window.sidebar
+        selectedSession.activate()
+    }
+
+    var selectedSession: SessionModel {
+        sessions.first { $0.id == selectedSessionID } ?? sessions[0]
+    }
+
+    var workspace: WorkspaceModel {
+        selectedSession.workspace
     }
 
     var actions: ActionHandler {
-        ActionHandler(workspace: workspace, configStore: configStore, window: window)
+        ActionHandler(window: self)
+    }
+
+    var snapshot: WorkspaceSnapshot {
+        WorkspaceSnapshot(
+            sessions: sessions.map(\.snapshot),
+            selectedSession: selectedSessionID,
+            projects: projects.snapshot,
+            sidebarVisible: isSidebarVisible
+        )
+    }
+
+    var hasForegroundProcesses: Bool {
+        sessions.contains { $0.workspace.hasForegroundProcesses }
+    }
+
+    func select(_ session: SessionModel) {
+        session.activate()
+        selectedSessionID = session.id
+    }
+
+    func selectSession(offset: Int) {
+        guard let index = sessions.firstIndex(where: { $0.id == selectedSessionID }) else { return }
+        select(sessions[(index + offset + sessions.count) % sessions.count])
+    }
+
+    func newSession() {
+        let session = SessionModel(name: nextSessionName(), configStore: configStore)
+        sessions.append(session)
+        select(session)
+        renamingSessionID = session.id
+    }
+
+    func rename(_ session: SessionModel, to name: String) {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmed.isEmpty { session.name = trimmed }
+        renamingSessionID = nil
+    }
+
+    func requestDelete(_ session: SessionModel) {
+        guard sessions.count > 1 else { return }
+        guard session.workspace.hasForegroundProcesses, let window else {
+            delete(session)
+            return
+        }
+        let alert = NSAlert()
+        alert.messageText = "Delete “\(session.name)”?"
+        alert.informativeText = "Processes are still running in this session."
+        alert.addButton(withTitle: "Delete")
+        alert.addButton(withTitle: "Cancel")
+        alert.beginSheetModal(for: window) { [weak self, weak session] response in
+            guard response == .alertFirstButtonReturn, let session else { return }
+            self?.delete(session)
+        }
+    }
+
+    func moveSessions(from source: IndexSet, to destination: Int) {
+        sessions.move(fromOffsets: source, toOffset: destination)
+    }
+
+    func open(_ project: ProjectStore.Project) {
+        withAnimation(TabBar.animation) { _ = workspace.newTab(directory: project.path) }
+    }
+
+    func terminateAll() {
+        sessions.forEach { $0.workspace.terminateAll() }
     }
 
     func handleDrop(_ urls: [URL]) {
@@ -52,5 +139,21 @@ final class WindowModel {
         guard let pending = pendingImport else { return }
         pendingImport = nil
         workspace.selectedTab?.surface.insertPaths([pending.url])
+    }
+
+    private func delete(_ session: SessionModel) {
+        guard let index = sessions.firstIndex(where: { $0 === session }), sessions.count > 1 else { return }
+        session.workspace.terminateAll()
+        sessions.remove(at: index)
+        if selectedSessionID == session.id {
+            select(sessions[min(index, sessions.count - 1)])
+        }
+    }
+
+    private func nextSessionName() -> String {
+        let names = Set(sessions.map(\.name))
+        var number = sessions.count + 1
+        while names.contains("Session \(number)") { number += 1 }
+        return "Session \(number)"
     }
 }

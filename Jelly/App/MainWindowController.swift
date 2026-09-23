@@ -5,15 +5,15 @@ import SwiftUI
 
 final class MainWindowController: NSWindowController, NSWindowDelegate {
     let model: WindowModel
-    var onClose: (() -> Void)?
+    var onClose: ((WorkspaceSnapshot) -> Void)?
 
     private let configStore: ConfigStore
     private var keyMonitor: Any?
     private var observerID: UUID?
 
-    init(configStore: ConfigStore) {
+    init(configStore: ConfigStore, projects: ProjectStore, snapshot: WorkspaceSnapshot?) {
         self.configStore = configStore
-        model = WindowModel(configStore: configStore)
+        model = WindowModel(configStore: configStore, projects: projects, snapshot: snapshot)
 
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 1100, height: 720),
@@ -36,11 +36,9 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
 
         window.delegate = self
         model.window = window
-        model.workspace.onEmpty = { [weak window] in window?.close() }
         observerID = configStore.observe { [weak self] in self?.applyWindowSettings() }
         applyWindowSettings()
         installKeyMonitor()
-        model.workspace.newTab()
     }
 
     required init?(coder: NSCoder) { fatalError() }
@@ -71,7 +69,7 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
     }
 
     func windowShouldClose(_ sender: NSWindow) -> Bool {
-        guard configStore.settings.confirmQuit, model.workspace.hasForegroundProcesses else { return true }
+        guard configStore.settings.confirmQuit, model.hasForegroundProcesses else { return true }
         let alert = NSAlert()
         alert.messageText = "Close this window?"
         alert.informativeText = "Processes are still running in some tabs."
@@ -79,7 +77,6 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
         alert.addButton(withTitle: "Cancel")
         alert.beginSheetModal(for: sender) { response in
             guard response == .alertFirstButtonReturn else { return }
-            self.model.workspace.onEmpty = nil
             sender.close()
         }
         return false
@@ -88,8 +85,8 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
     func windowWillClose(_ notification: Notification) {
         if let keyMonitor { NSEvent.removeMonitor(keyMonitor) }
         if let observerID { configStore.removeObserver(observerID) }
-        model.workspace.onEmpty = nil
-        model.workspace.terminateAll()
-        onClose?()
+        let snapshot = model.snapshot
+        model.terminateAll()
+        onClose?(snapshot)
     }
 }

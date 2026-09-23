@@ -8,7 +8,6 @@ import SwiftUI
 final class WorkspaceModel {
     private(set) var tabs: [TabModel] = []
     var selectedID: UUID?
-    var onEmpty: (() -> Void)?
 
     @ObservationIgnored let configStore: ConfigStore
     @ObservationIgnored private var observerID: UUID?
@@ -27,8 +26,10 @@ final class WorkspaceModel {
     }
 
     @discardableResult
-    func newTab() -> TabModel {
+    func newTab(directory: String? = nil) -> TabModel {
         let settings = configStore.settings
+        var shell = settings.shell
+        if let directory { shell.workingDirectory = .path(directory) }
         let surface = TerminalSurface(appVersion: AppInfo.version, settings: settings, theme: configStore.theme)
         configStore.report(surface.apply(settings: settings, theme: configStore.theme))
         let tab = TabModel(surface: surface)
@@ -38,7 +39,7 @@ final class WorkspaceModel {
         }
         let index = selectedTab.flatMap { current in tabs.firstIndex { $0 === current } }.map { $0 + 1 } ?? tabs.count
         tabs.insert(tab, at: index)
-        surface.start(shell: settings.shell, inheritedDirectory: selectedTab?.surface.currentDirectory)
+        surface.start(shell: shell, inheritedDirectory: selectedTab?.surface.currentDirectory)
         selectedID = tab.id
         return tab
     }
@@ -50,7 +51,6 @@ final class WorkspaceModel {
         if selectedID == tab.id {
             selectedID = tabs.isEmpty ? nil : tabs[min(index, tabs.count - 1)].id
         }
-        if tabs.isEmpty { onEmpty?() }
     }
 
     func requestClose(_ tab: TabModel, in window: NSWindow?) {

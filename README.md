@@ -19,17 +19,50 @@
 
 ## What is Jelly
 
-Jelly is a SwiftUI + AppKit terminal for macOS 26 and later. It renders through SwiftTerm's Metal engine, wraps everything in Liquid Glass chrome, and organizes your shells into named **sessions** of tabs and split panes instead of a pile of unnamed windows. Config is plain TOML, updates ship through Sparkle, and there's no Electron or web view anywhere in the stack.
+Jelly is a terminal made for the Mac. It looks like it belongs on macOS 26, with glass-style windows and smooth, fast text, and it keeps your work tidy so you're never hunting through a pile of windows.
 
-See [`docs/product.md`](docs/product.md) for the full tour, including window anatomy, keyboard shortcuts, and configuration.
+- **Sessions.** Group your work into named spaces like *Work*, *Personal* or *Side project*. Switch between them in one click and every tab and split comes with you. Everything is restored the next time you open Jelly.
+- **Projects.** Save your favourite folders in the sidebar. Click one to open a new tab right there, or drag a folder in to add it.
+- **Tabs and splits.** Split any tab right or down as many times as you like. Drag tabs to reorder them, zoom into one pane, and search through everything a pane has printed.
+- **File explorer.** Press ⌘E to see a live file tree of the folder you're working in. It follows you as you move around and updates as files change, which is handy for watching what an AI agent is doing.
+- **Built-in previewer.** Press ⌘⇧M to read Markdown files nicely formatted, or any code file with syntax colours, without leaving the terminal. It refreshes when the file changes.
+- **Your shell, your way.** Works with the shell, prompt and fonts you already use, including Nerd Fonts, ligatures and emoji.
+- **Easy to customise.** Pick a theme, change fonts and rebind any shortcut from Settings (⌘,). Prefer text? Everything lives in one `jelly.toml` file. Drop a theme or config file onto the window to add it.
+- **Stays up to date.** Jelly updates itself and shows you what's new after each update.
+
+Full details on every setting are in the [configuration guide](docs/config.md).
+
+## Keyboard shortcuts
+
+| Action | Keys |
+|---|---|
+| New tab | ⌘T |
+| Close pane (or the tab, if it's the last pane) | ⌘W |
+| Close tab | ⌘⌥W |
+| Split right / down | ⌘D / ⌘⇧D |
+| Move between panes | ⌘⌥ arrows |
+| Zoom a pane | ⌘⇧↩ |
+| Equalize panes | ⌘⌃= |
+| Next / previous tab | ⌘⇧] / ⌘⇧[ |
+| Go to tab 1–9 | ⌘1 … ⌘9 |
+| New session | ⌘⇧N |
+| Next / previous session | ⌘⌃] / ⌘⌃[ |
+| Go to session 1–9 | ⌘⌃1 … ⌘⌃9 |
+| Show or hide the sidebar | ⌘0 |
+| Show or hide the file explorer | ⌘E |
+| Preview a Markdown file | ⌘⇧M |
+| Find | ⌘F |
+| Settings | ⌘, |
+
+Every shortcut can be changed in Settings → Keybinds.
 
 ## Goals
 
-- **Fast** — GPU-rendered, idle at 0% CPU, no dropped frames under heavy output.
-- **Compatible** — your shell, prompt, and font render exactly as they do in Ghostty or iTerm2.
-- **Organized** — sessions and projects replace unnamed windows.
-- **Configurable in plain text** — one `jelly.toml` for settings and themes.
-- **Native** — SwiftUI and AppKit, not a web view.
+- **Fast.** GPU-drawn, easy on your battery, smooth even under heavy output.
+- **Compatible.** Your shell, prompt and font look the same as in Ghostty or iTerm2.
+- **Organized.** Sessions and projects instead of a pile of unnamed windows.
+- **Simple to configure.** Settings in the app, or one plain text file.
+- **Truly native.** Built for the Mac, not a web page in disguise.
 
 ## Install
 

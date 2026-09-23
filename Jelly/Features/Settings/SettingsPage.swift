@@ -16,15 +16,6 @@ struct SettingsPage<Content: View>: View {
             }
             content
                 .formStyle(.grouped)
-            Divider()
-            HStack {
-                Text("Saved to jelly.toml as you change them.")
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
-                Spacer()
-                Button("Open jelly.toml", action: configStore.openConfigFile)
-            }
-            .padding(Metrics.settingsPadding)
         }
         .frame(width: Metrics.settingsWidth, height: Metrics.settingsHeight)
     }

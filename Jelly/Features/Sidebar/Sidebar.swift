@@ -6,6 +6,7 @@ struct Sidebar: View {
     @Bindable var model: WindowModel
     let projects: ProjectStore
     let theme: Theme
+    let backgroundOpacity: Double
 
     static let animation = Animation.smooth(duration: 0.25)
 
@@ -49,7 +50,12 @@ struct Sidebar: View {
         .padding(Metrics.sidebarPadding)
         .frame(width: Metrics.sidebarWidth)
         .frame(maxHeight: .infinity)
-        .glassEffect(.regular, in: .rect(cornerRadius: Metrics.sidebarCornerRadius))
+        .background {
+            let shape = RoundedRectangle(cornerRadius: Metrics.sidebarCornerRadius, style: .continuous)
+            shape
+                .fill(Color(theme.background, opacity: backgroundOpacity))
+                .overlay(shape.strokeBorder(Color(theme.foreground).opacity(0.1), lineWidth: 1))
+        }
         .padding(Metrics.sidebarInset)
     }
 

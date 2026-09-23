@@ -29,10 +29,8 @@ struct StatusBar: View {
                 }
             }
             .font(.system(size: Metrics.statusFontSize, weight: .medium))
-            .foregroundStyle(Color(theme.foreground).opacity(0.7))
-            .padding(.horizontal, 12)
-            .frame(height: Metrics.statusBarHeight - 6)
-            .glassEffect(.regular, in: .capsule)
+            .foregroundStyle(Color(theme.foreground).opacity(0.5))
+            .padding(.horizontal, Metrics.paneHeaderPadding)
         }
         .padding(.horizontal, Metrics.chromePadding)
         .frame(height: Metrics.statusBarHeight)

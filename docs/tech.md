@@ -146,8 +146,8 @@ Scrollback size is `settings.scrollback`. SwiftTerm's scrollbar is hidden: it is
 
 ## Liquid Glass
 
-- Glass is chrome only: the selected tab (morphing between tabs with `glassEffectID`), the find button, the status capsule, the config banner, and the import sheet. Tabs share one `GlassEffectContainer`.
-- Panes are plain cards, not glass: the theme background with a hairline border. The window background is shaded slightly darker so the cards stand apart.
+- Glass is chrome only: the selected tab (morphing between tabs with `glassEffectID`), the find button, the config banner, and the import sheet. Tabs share one `GlassEffectContainer`.
+- The sidebar and panes are plain cards, not glass: the theme background with a hairline border. The window background is shaded slightly darker so the cards stand apart.
 - No glass behind terminal text. The window draws the theme background with `window.background-opacity`, and `window.blur` adds a behind-window `NSVisualEffectView`.
 - Sizes and spacing come from one `Metrics` object, never hardcoded in views.
 - The tab bar sits in the transparent title bar next to the traffic lights and drags the window (`WindowDragGesture`).

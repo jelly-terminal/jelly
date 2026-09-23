@@ -135,7 +135,7 @@ private struct SessionRow: View {
                     .textFieldStyle(.plain)
                     .focused($isEditing)
                     .onSubmit { model.rename(session, to: draft) }
-                    .onExitCommand { model.renamingSessionID = nil }
+                    .onExitCommand { model.cancelRename() }
                     .onAppear {
                         draft = session.name
                         isEditing = true

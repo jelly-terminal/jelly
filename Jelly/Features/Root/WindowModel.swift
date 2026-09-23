@@ -59,6 +59,14 @@ final class WindowModel {
     func select(_ session: SessionModel) {
         session.activate()
         selectedSessionID = session.id
+        focusTerminal()
+    }
+
+    func focusTerminal() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self, let surface = self.workspace.selectedTab?.surface else { return }
+            self.window?.makeFirstResponder(surface)
+        }
     }
 
     func selectSession(offset: Int) {
@@ -70,13 +78,18 @@ final class WindowModel {
         let session = SessionModel(name: nextSessionName(), configStore: configStore)
         sessions.append(session)
         select(session)
-        renamingSessionID = session.id
     }
 
     func rename(_ session: SessionModel, to name: String) {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         if !trimmed.isEmpty { session.name = trimmed }
         renamingSessionID = nil
+        focusTerminal()
+    }
+
+    func cancelRename() {
+        renamingSessionID = nil
+        focusTerminal()
     }
 
     func requestDelete(_ session: SessionModel) {
@@ -102,6 +115,7 @@ final class WindowModel {
 
     func open(_ project: ProjectStore.Project) {
         withAnimation(TabBar.animation) { _ = workspace.newTab(directory: project.path) }
+        focusTerminal()
     }
 
     func terminateAll() {

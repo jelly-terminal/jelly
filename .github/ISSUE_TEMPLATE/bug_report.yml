@@ -1,0 +1,62 @@
+name: Bug report
+description: Something in Jelly isn't working as it should
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What did you see? Add a screenshot if it helps.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open a new tab
+        2. Split right
+        3. …
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Terminal
+        - Tabs and panes
+        - Explorer or viewer
+        - Settings and config
+        - Themes and fonts
+        - Updates
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: jelly-version
+    attributes:
+      label: Jelly version
+      description: Shown in Jelly → About Jelly
+      placeholder: 0.1.1
+    validations:
+      required: true
+  - type: input
+    id: macos-version
+    attributes:
+      label: macOS version
+      placeholder: macOS 26.0
+    validations:
+      required: true
+  - type: textarea
+    id: config
+    attributes:
+      label: Relevant config
+      description: The part of jelly.toml that matters, if any.
+      render: toml

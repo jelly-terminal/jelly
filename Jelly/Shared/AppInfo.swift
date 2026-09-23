@@ -8,7 +8,4 @@ enum AppInfo {
     static var name: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? "Jelly"
     }
-
-    static let gumroadProductPermalink = "jelly"
-    static let gumroadProductURL = URL(string: "https://monawwar.gumroad.com/l/jelly")!
 }

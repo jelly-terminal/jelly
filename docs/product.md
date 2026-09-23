@@ -40,7 +40,7 @@ Jelly is a native macOS terminal built around **sessions**: named workspaces tha
 | **Sessions** | Named workspaces (Work, Personal, Production…). Selecting one swaps every tab and pane. Create, rename, reorder, delete. Restored on relaunch. |
 | **Projects** | Saved folders. Click to open a new tab in that folder in the current session. Add by dragging a folder onto the list or with `+`. |
 | **Connect…** | Saved SSH hosts (v0.3). |
-| **Tab bar** | One tab per workspace view. Each has an icon and a title that follows the focused pane's process, or a name you set. Drag tabs to reorder them. `+` opens a tab, `⌕` opens search. During the trial a badge before `⌕` shows the days left and opens the license prompt. |
+| **Tab bar** | One tab per workspace view. Each has an icon and a title that follows the focused pane's process, or a name you set. Drag tabs to reorder them. `+` opens a tab, `⌕` opens search. |
 | **Panes** | Split right or down, as deep as you like. Panes are detached cards with rounded corners and a gap between them; the focused one gets an accent border. Each has a header with its title and split, zoom and close buttons. Resize by dragging the gap between panes, double-click it to equalize. Click a pane to focus it. |
 | **Status bar** | Session name · tab count · pane count when split · grid size of the focused pane (`112×28`). |
 | **Search** | Find in the focused pane's scrollback, with next/previous and match count. |
@@ -53,7 +53,7 @@ Everything is plain TOML. A file can hold settings, keybinds, themes, or any mix
 - **Drop a `.toml` file** onto the window (or **File → Import…**), and Jelly shows what it will change ("adds 2 themes, changes 3 settings"). On confirm, it merges the file into your config.
 - Bad config never breaks the app. Jelly keeps the last good values and shows a banner naming the line.
 
-- **Settings window** (⌘,): General, Appearance, Terminal, Keybinds and Updates tabs. General ends with the license: trial days left or who it's licensed to, with buttons to buy, enter or deactivate a key. Every change is written straight into `jelly.toml` (comments kept) and applies at once. The Appearance tab lists the theme library (built-in themes plus `~/.config/jelly/themes/`) with a preview swatch, and picks one theme or a light/dark pair. The Keybinds tab lists every action by group; click a shortcut and press new keys to rebind it, with reset per action or for all.
+- **Settings window** (⌘,): General, Appearance, Terminal, Keybinds and Updates tabs. Every change is written straight into `jelly.toml` (comments kept) and applies at once. The Appearance tab lists the theme library (built-in themes plus `~/.config/jelly/themes/`) with a preview swatch, and picks one theme or a light/dark pair. The Keybinds tab lists every action by group; click a shortcut and press new keys to rebind it, with reset per action or for all.
 
 Full reference: [config.md](config.md).
 

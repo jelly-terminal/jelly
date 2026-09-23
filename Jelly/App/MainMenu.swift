@@ -10,7 +10,7 @@ final class KeyActionBox {
 }
 
 enum MainMenu {
-    static func build(target: AppDelegate, keybinds: Keybinds, updatesAvailable: Bool, licenseStatus: LicenseStatus) -> NSMenu {
+    static func build(target: AppDelegate, keybinds: Keybinds, updatesAvailable: Bool) -> NSMenu {
         func item(_ title: String, _ action: KeyAction) -> NSMenuItem {
             let item = NSMenuItem(title: title, action: #selector(AppDelegate.performMenuAction(_:)), keyEquivalent: "")
             item.target = target
@@ -24,7 +24,7 @@ enum MainMenu {
         }
 
         let main = NSMenu()
-        main.addItem(submenu(appMenu(target: target, item: item, updatesAvailable: updatesAvailable, licenseStatus: licenseStatus)))
+        main.addItem(submenu(appMenu(target: target, item: item, updatesAvailable: updatesAvailable)))
         main.addItem(submenu(fileMenu(target: target, item: item)))
         main.addItem(submenu(editMenu(item: item)))
         main.addItem(submenu(viewMenu(item: item)))
@@ -34,31 +34,19 @@ enum MainMenu {
         return main
     }
 
-    private static func licenseMenuTitle(_ status: LicenseStatus) -> String {
-        switch status {
-        case .licensed: "Licensed"
-        case .trial(let daysRemaining): "Enter License Key… (\(daysRemaining)d trial left)"
-        case .trialExpired: "Enter License Key…"
-        }
-    }
-
     private static func submenu(_ menu: NSMenu) -> NSMenuItem {
         let item = NSMenuItem()
         item.submenu = menu
         return item
     }
 
-    private static func appMenu(target: AppDelegate, item: (String, KeyAction) -> NSMenuItem, updatesAvailable: Bool, licenseStatus: LicenseStatus) -> NSMenu {
+    private static func appMenu(target: AppDelegate, item: (String, KeyAction) -> NSMenuItem, updatesAvailable: Bool) -> NSMenu {
         let name = AppInfo.name
         let menu = NSMenu(title: name)
         menu.addItem(withTitle: "About \(name)", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
         let updates = menu.addItem(withTitle: "Check for Updates…", action: #selector(AppDelegate.checkForUpdates), keyEquivalent: "")
         updates.target = target
         updates.isEnabled = updatesAvailable
-        menu.addItem(.separator())
-        let license = menu.addItem(withTitle: licenseMenuTitle(licenseStatus), action: #selector(AppDelegate.showLicenseSheet), keyEquivalent: "")
-        license.target = target
-        license.isEnabled = !licenseStatus.isLicensed
         menu.addItem(.separator())
         menu.addItem(item("Settings…", .settingsOpen))
         menu.addItem(item("Open Config File…", .configOpen))

@@ -5,11 +5,6 @@ import SwiftUI
 struct RootView: View {
     @Bindable var model: WindowModel
     let configStore: ConfigStore
-    let license: LicenseService
-
-    private var trialDaysRemaining: Int? {
-        if case .trial(let daysRemaining) = license.status { daysRemaining } else { nil }
-    }
 
     var body: some View {
         let theme = configStore.theme
@@ -32,8 +27,6 @@ struct RootView: View {
                         workspace: workspace,
                         theme: theme,
                         leadingInset: model.isSidebarVisible ? Metrics.chromePadding / 2 : Metrics.tabSpacing,
-                        trialDaysRemaining: trialDaysRemaining,
-                        onTrial: { model.isLicenseSheetPresented = true },
                         onClose: { workspace.requestClose($0, in: model.window) },
                         onFind: { workspace.selectedTab?.surface.showFind() }
                     )
@@ -104,13 +97,6 @@ struct RootView: View {
             Button("OK", role: .cancel) {}
         } message: {
             Text(model.importError ?? "")
-        }
-        .sheet(isPresented: $model.isLicenseSheetPresented) {
-            LicenseSheet(
-                license: license,
-                onActivated: { model.isLicenseSheetPresented = false },
-                onDismiss: { model.isLicenseSheetPresented = false }
-            )
         }
     }
 }

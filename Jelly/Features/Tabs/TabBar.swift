@@ -5,8 +5,6 @@ struct TabBar: View {
     let workspace: WorkspaceModel
     let theme: Theme
     let leadingInset: CGFloat
-    let trialDaysRemaining: Int?
-    let onTrial: () -> Void
     let onClose: (TabModel) -> Void
     let onFind: () -> Void
 
@@ -51,19 +49,6 @@ struct TabBar: View {
             .help("New Tab")
 
             Spacer(minLength: 0)
-
-            if let trialDaysRemaining {
-                Button(action: onTrial) {
-                    Text(trialDaysRemaining == 1 ? "Trial · 1 day left" : "Trial · \(trialDaysRemaining) days left")
-                        .padding(.horizontal, Metrics.tabHorizontalPadding / 2)
-                        .frame(height: Metrics.controlSize)
-                }
-                .buttonStyle(.glass)
-                .buttonBorderShape(.capsule)
-                .tint(.clear)
-                .foregroundStyle(Color(theme.accent))
-                .help("Enter License Key")
-            }
 
             Button(action: onFind) {
                 Image(systemName: "magnifyingglass")

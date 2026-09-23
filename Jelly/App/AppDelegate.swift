@@ -5,10 +5,8 @@ import UniformTypeIdentifiers
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var configStore: ConfigStore!
     private var updater: UpdaterService!
-    private var license: LicenseService!
     private var projects: ProjectStore!
     private var windowControllers: [MainWindowController] = []
-    private var activationController: ActivationWindowController?
     private var settingsController: SettingsWindowController?
     private var pendingOpenURLs: [URL] = []
     private let snapshotStore = SnapshotStore.standard()
@@ -19,21 +17,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         configStore = ConfigStore()
         updater = UpdaterService()
-        license = LicenseService()
-        license.onChange = { [weak self] in self?.configChanged() }
         lastSnapshot = snapshotStore.load()
         projects = ProjectStore(lastSnapshot?.projects ?? [])
         _ = configStore.observe { [weak self] in self?.configChanged() }
         configChanged()
-        switch license.status {
-        case .licensed:
-            startSession()
-        case .trial:
-            startSession()
-            keyController?.model.isLicenseSheetPresented = true
-        case .trialExpired:
-            presentActivation()
-        }
+        startSession()
         autosave = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated { self?.saveSnapshot() }
         }
@@ -66,7 +54,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func application(_ application: NSApplication, open urls: [URL]) {
-        guard configStore != nil, activationController == nil else {
+        guard configStore != nil else {
             pendingOpenURLs += urls
             return
         }
@@ -74,12 +62,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc func newWindow() {
-        guard license.status.allowsUsage, activationController == nil else {
-            presentActivation()
-            return
-        }
         let restore = windowControllers.isEmpty ? lastSnapshot : nil
-        let controller = MainWindowController(configStore: configStore, projects: projects, license: license, snapshot: restore)
+        let controller = MainWindowController(configStore: configStore, projects: projects, snapshot: restore)
         controller.onClose = { [weak self, weak controller] snapshot in
             guard let self else { return }
             if self.windowControllers.first === controller { self.lastSnapshot = snapshot }
@@ -136,7 +120,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if settingsController == nil {
             settingsController = SettingsWindowController(
                 configStore: configStore,
-                license: license,
                 updatesAvailable: updater.isAvailable,
                 onCheckForUpdates: { [weak self] in self?.checkForUpdates() },
                 onImportTheme: { [weak self] in self?.importConfig() }
@@ -150,43 +133,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         updater.checkForUpdates()
     }
 
-    @objc func showLicenseSheet() {
-        if let controller = keyController {
-            controller.window?.makeKeyAndOrderFront(nil)
-            controller.model.isLicenseSheetPresented = true
-        } else {
-            presentActivation()
-        }
-    }
-
     private func startSession() {
         newWindow()
         pendingOpenURLs.forEach(importFile)
         pendingOpenURLs = []
-    }
-
-    private func presentActivation() {
-        if activationController == nil {
-            activationController = ActivationWindowController(
-                license: license,
-                onActivated: { [weak self] in
-                    self?.activationController = nil
-                    self?.startSession()
-                },
-                onDismiss: { [weak self] in
-                    guard let self, self.license.status.allowsUsage else {
-                        NSApp.terminate(nil)
-                        return
-                    }
-                    self.activationController?.close()
-                    self.activationController = nil
-                    self.startSession()
-                }
-            )
-        }
-        activationController?.showWindow(nil)
-        activationController?.window?.makeKeyAndOrderFront(nil)
-        NSApp.activate()
     }
 
     private var keyController: MainWindowController? {
@@ -211,8 +161,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.mainMenu = MainMenu.build(
             target: self,
             keybinds: configStore.config.keybinds,
-            updatesAvailable: updater.isAvailable,
-            licenseStatus: license.status
+            updatesAvailable: updater.isAvailable
         )
         updater.apply(configStore.settings.updates)
     }

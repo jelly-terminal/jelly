@@ -4,11 +4,8 @@ import SwiftUI
 
 struct GeneralSettingsView: View {
     let configStore: ConfigStore
-    let license: LicenseService
 
     @State private var program = ""
-    @State private var isLicenseSheetPresented = false
-    @State private var isConfirmingDeactivate = false
     @FocusState private var isEditingProgram: Bool
 
     private enum DirectoryMode: Hashable {
@@ -50,56 +47,9 @@ struct GeneralSettingsView: View {
                         .onSubmit(saveProgram)
                         .onChange(of: isEditingProgram) { _, editing in if !editing { saveProgram() } }
                 }
-
-                Section("License") {
-                    licenseSection
-                }
             }
         }
         .onAppear { program = settings.shell.program ?? "" }
-        .sheet(isPresented: $isLicenseSheetPresented) {
-            LicenseSheet(
-                license: license,
-                cancelTitle: "Cancel",
-                onActivated: { isLicenseSheetPresented = false },
-                onDismiss: { isLicenseSheetPresented = false }
-            )
-        }
-        .confirmationDialog("Deactivate this license on this Mac?", isPresented: $isConfirmingDeactivate) {
-            Button("Deactivate", role: .destructive, action: license.deactivate)
-        } message: {
-            Text("You can activate it again later with the same key.")
-        }
-    }
-
-    @ViewBuilder
-    private var licenseSection: some View {
-        switch license.status {
-        case .licensed(let active):
-            LabeledContent("Licensed to", value: active.email ?? "This Mac")
-            LabeledContent("Key") {
-                HStack {
-                    Text("•••• " + active.key.suffix(8))
-                        .monospaced()
-                        .foregroundStyle(.secondary)
-                    Button("Deactivate…") { isConfirmingDeactivate = true }
-                }
-            }
-        case .trial(let daysRemaining):
-            LabeledContent("Trial", value: daysRemaining == 1 ? "1 day left" : "\(daysRemaining) days left")
-            licenseButtons
-        case .trialExpired:
-            LabeledContent("Trial", value: "Ended")
-            licenseButtons
-        }
-    }
-
-    private var licenseButtons: some View {
-        HStack {
-            Spacer()
-            Button("Buy a License") { NSWorkspace.shared.open(AppInfo.gumroadProductURL) }
-            Button("Enter License Key…") { isLicenseSheetPresented = true }
-        }
     }
 
     private var directoryMode: Binding<DirectoryMode> {

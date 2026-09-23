@@ -4,7 +4,7 @@
 
 <h1 align="center">Jelly</h1>
 
-<p align="center">A native macOS terminal built on Liquid Glass.</p>
+<p align="center">Sweet terminal for the Mac.</p>
 
 <p align="center">
   <a href="https://github.com/jelly-terminal/jelly/actions"><img src="https://img.shields.io/github/actions/workflow/status/jelly-terminal/jelly/ci.yml?branch=main" alt="Build status"></a>

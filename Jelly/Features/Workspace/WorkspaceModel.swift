@@ -42,7 +42,7 @@ final class WorkspaceModel {
         }
         let index = selectedTab.flatMap { current in tabs.firstIndex { $0 === current } }.map { $0 + 1 } ?? tabs.count
         tabs.insert(tab, at: index)
-        surface.start(shell: shell, inheritedDirectory: selectedTab?.surface.currentDirectory)
+        surface.start(shell: shell, inheritedDirectory: selectedTab?.surface.workingDirectory)
         selectedID = tab.id
         return tab
     }

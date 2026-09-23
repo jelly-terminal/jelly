@@ -50,6 +50,11 @@ public final class TerminalSurface: LocalProcessTerminalView {
         return group > 0 && group != process.shellPid
     }
 
+    public var workingDirectory: String? {
+        if isRunning, let live = ProcessDirectory.current(of: process.shellPid) { return live }
+        return currentDirectory
+    }
+
     public var gridSize: (cols: Int, rows: Int) {
         (terminal.cols, terminal.rows)
     }

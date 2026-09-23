@@ -10,6 +10,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var pendingOpenURLs: [URL] = []
     private let snapshotStore = SnapshotStore.standard()
     private var lastSnapshot: WorkspaceSnapshot?
+    private var savedSnapshot: WorkspaceSnapshot?
+    private var autosave: Timer?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         configStore = ConfigStore()
@@ -21,6 +23,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         newWindow()
         pendingOpenURLs.forEach(importFile)
         pendingOpenURLs = []
+        autosave = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] _ in
+            MainActor.assumeIsolated { self?.saveSnapshot() }
+        }
         NSApp.activate()
     }
 
@@ -110,7 +115,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func saveSnapshot() {
         var snapshot = windowControllers.first?.model.snapshot ?? lastSnapshot
         snapshot?.projects = projects.snapshot
-        if let snapshot { snapshotStore.save(snapshot) }
+        guard let snapshot, snapshot != savedSnapshot else { return }
+        snapshotStore.save(snapshot)
+        savedSnapshot = snapshot
     }
 
     private func configChanged() {

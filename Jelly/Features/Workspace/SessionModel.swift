@@ -44,7 +44,7 @@ final class SessionModel: Identifiable {
         guard pendingTabs.isEmpty else {
             return WorkspaceSnapshot.Session(id: id, name: name, tabs: pendingTabs, selectedTab: pendingSelection)
         }
-        let tabs = workspace.tabs.map { WorkspaceSnapshot.Tab(directory: $0.surface.currentDirectory, customTitle: $0.customTitle) }
+        let tabs = workspace.tabs.map { WorkspaceSnapshot.Tab(directory: $0.surface.workingDirectory, customTitle: $0.customTitle) }
         let selected = workspace.tabs.firstIndex { $0.id == workspace.selectedID }
         return WorkspaceSnapshot.Session(id: id, name: name, tabs: tabs, selectedTab: selected)
     }

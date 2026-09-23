@@ -160,7 +160,7 @@ See [config.md](config.md) for the format. Internals:
 
 ## Persistence
 
-`SnapshotStore` writes `workspace.json` in Application Support (per bundle ID, so Debug and release never share it): sessions with their tabs' working directories and custom titles, the selected session and tab, projects, and sidebar visibility. It's saved when the window closes and on quit, and the first window restores it. Running processes are not restored; each tab starts its shell in its last directory.
+`SnapshotStore` writes `workspace.json` in Application Support (per bundle ID, so Debug and release never share it): sessions with their tabs' working directories and custom titles, the selected session and tab, projects, and sidebar visibility. It's saved every 5 seconds when something changed, when the window closes and on quit, so a crash or force-quit loses at most a few seconds. The first window restores it. A tab's directory is read from its shell process (`proc_pidinfo`), so it's right for any shell, with the OSC 7 value as a fallback. Running processes are not restored; each tab starts its shell in its last directory.
 
 ## Updates
 

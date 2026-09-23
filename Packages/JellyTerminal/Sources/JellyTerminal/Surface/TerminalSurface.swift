@@ -27,7 +27,19 @@ public final class TerminalSurface: LocalProcessTerminalView {
         processDelegate = events
         optionAsMetaKey = true
         try? setUseMetal(true)
+        hideScroller()
         _ = apply(settings: settings, theme: theme)
+    }
+
+    public override func didAddSubview(_ subview: NSView) {
+        super.didAddSubview(subview)
+        if subview is NSScroller { subview.isHidden = true }
+    }
+
+    private func hideScroller() {
+        for case let scroller as NSScroller in subviews {
+            scroller.isHidden = true
+        }
     }
 
     public required init?(coder: NSCoder) { fatalError() }

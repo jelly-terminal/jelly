@@ -151,7 +151,7 @@ Scrollback size is `settings.scrollback`. SwiftTerm's scrollbar is hidden: it is
 - The sidebar and panes are plain cards, not glass: the theme background with a hairline border. The window background is shaded slightly darker so the cards stand apart.
 - No glass behind terminal text. The window draws the theme background with `window.background-opacity`, and `window.blur` adds a behind-window `NSVisualEffectView`.
 - Sizes and spacing come from one `Metrics` object, never hardcoded in views.
-- The tab bar sits in the transparent title bar next to the traffic lights and drags the window (`WindowDragGesture`).
+- The tab bar sits in the transparent title bar next to the traffic lights. The window is not movable by default (`isMovable = false`), so the system never grabs drags in the title-bar strip; only the empty tab-bar area and the sidebar header move it (`WindowDragGesture`). Tabs reorder with their own `DragGesture`: during a drag only offsets change, and the tab list is moved once on drop.
 
 ## Configuration
 

@@ -1,6 +1,5 @@
 import JellyCore
 import SwiftUI
-import UniformTypeIdentifiers
 
 struct TabBar: View {
     let workspace: WorkspaceModel
@@ -12,7 +11,8 @@ struct TabBar: View {
     let onFind: () -> Void
 
     @Namespace private var selection
-    @State private var draggedTab: TabModel?
+    @State private var drag: TabDrag?
+    @State private var tabFrames: [TabModel.ID: CGRect] = [:]
 
     var body: some View {
         HStack(spacing: Metrics.tabSpacing) {
@@ -26,11 +26,10 @@ struct TabBar: View {
                             onSelect: { withAnimation(Self.animation) { workspace.selectedID = tab.id } },
                             onClose: { withAnimation(Self.animation) { onClose(tab) } }
                         )
-                        .onDrag {
-                            draggedTab = tab
-                            return NSItemProvider(object: tab.id.uuidString as NSString)
-                        }
-                        .onDrop(of: [.plainText], delegate: TabDropDelegate(target: tab, workspace: workspace, dragged: $draggedTab))
+                        .onGeometryChange(for: CGRect.self) { $0.frame(in: .named(Self.space)) } action: { tabFrames[tab.id] = $0 }
+                        .offset(x: dragOffset(for: tab))
+                        .zIndex(drag?.tabID == tab.id ? 1 : 0)
+                        .highPriorityGesture(reorderGesture(for: tab))
                         .transition(.asymmetric(
                             insertion: .opacity.combined(with: .scale(scale: 0.9, anchor: .leading)),
                             removal: .opacity.combined(with: .scale(scale: 0.85))
@@ -79,29 +78,99 @@ struct TabBar: View {
         .padding(.leading, leadingInset)
         .padding(.trailing, Metrics.chromePadding)
         .frame(height: Metrics.tabBarHeight)
+        .coordinateSpace(.named(Self.space))
     }
 
     static let animation = Animation.smooth(duration: 0.22)
+    private static let space = "TabBar"
+
+    private func dragOffset(for tab: TabModel) -> CGFloat {
+        guard let drag, let index = workspace.tabs.firstIndex(where: { $0 === tab }) else { return 0 }
+        if tab.id == drag.tabID { return draggedMinX(in: drag) - slotMinX(at: drag.from, in: workspace.tabs.map(\.id), drag: drag) }
+        let shift = (drag.widths[drag.tabID] ?? 0) + Metrics.tabSpacing
+        if index > drag.from, index <= drag.index { return -shift }
+        if index < drag.from, index >= drag.index { return shift }
+        return 0
+    }
+
+    private func slotMinX(at index: Int, in order: [TabModel.ID], drag: TabDrag) -> CGFloat {
+        order.prefix(index).reduce(drag.origin) { x, id in x + (drag.widths[id] ?? 0) + Metrics.tabSpacing }
+    }
+
+    private func displayOrder(for drag: TabDrag) -> [TabModel.ID] {
+        var order = workspace.tabs.map(\.id).filter { $0 != drag.tabID }
+        order.insert(drag.tabID, at: drag.index)
+        return order
+    }
+
+    private func draggedMinX(in drag: TabDrag) -> CGFloat {
+        let ids = workspace.tabs.map(\.id)
+        let maxX = slotMinX(at: ids.count, in: ids, drag: drag) - Metrics.tabSpacing - (drag.widths[drag.tabID] ?? 0)
+        return min(max(drag.location - drag.grabOffset, drag.origin), maxX)
+    }
+
+    private func reorderGesture(for tab: TabModel) -> some Gesture {
+        DragGesture(minimumDistance: 4, coordinateSpace: .named(Self.space))
+            .onChanged { value in
+                if drag == nil {
+                    guard let origin = workspace.tabs.first.flatMap({ tabFrames[$0.id]?.minX }),
+                          let frame = tabFrames[tab.id],
+                          let from = workspace.tabs.firstIndex(where: { $0 === tab })
+                    else { return }
+                    drag = TabDrag(
+                        tabID: tab.id,
+                        from: from,
+                        index: from,
+                        grabOffset: value.startLocation.x - frame.minX,
+                        location: value.location.x,
+                        origin: origin,
+                        widths: tabFrames.mapValues(\.width)
+                    )
+                    workspace.selectedID = tab.id
+                }
+                drag?.location = value.location.x
+                updateDropIndex()
+            }
+            .onEnded { _ in
+                guard let drag else { return }
+                withAnimation(Self.animation) {
+                    if drag.index != drag.from { workspace.move(tab, before: workspace.tabs[drag.index]) }
+                    self.drag = nil
+                }
+            }
+    }
+
+    private func updateDropIndex() {
+        guard var drag, let width = drag.widths[drag.tabID] else { return }
+        let minX = draggedMinX(in: drag)
+        let maxX = minX + width
+        while true {
+            let order = displayOrder(for: drag)
+            let midX = { (index: Int) in slotMinX(at: index, in: order, drag: drag) + (drag.widths[order[index]] ?? 0) / 2 }
+            if drag.index + 1 < order.count, maxX > midX(drag.index + 1) {
+                drag.index += 1
+            } else if drag.index > 0, minX < midX(drag.index - 1) {
+                drag.index -= 1
+            } else {
+                break
+            }
+        }
+        if drag.index != self.drag?.index {
+            withAnimation(Self.animation) { self.drag = drag }
+        } else {
+            self.drag = drag
+        }
+    }
 }
 
-private struct TabDropDelegate: DropDelegate {
-    let target: TabModel
-    let workspace: WorkspaceModel
-    @Binding var dragged: TabModel?
-
-    func dropEntered(info: DropInfo) {
-        guard let dragged, dragged !== target else { return }
-        withAnimation(TabBar.animation) { workspace.move(dragged, before: target) }
-    }
-
-    func dropUpdated(info: DropInfo) -> DropProposal? {
-        DropProposal(operation: .move)
-    }
-
-    func performDrop(info: DropInfo) -> Bool {
-        dragged = nil
-        return true
-    }
+private struct TabDrag {
+    let tabID: TabModel.ID
+    let from: Int
+    var index: Int
+    let grabOffset: CGFloat
+    var location: CGFloat
+    let origin: CGFloat
+    let widths: [TabModel.ID: CGFloat]
 }
 
 private struct TabItem: View {

@@ -165,7 +165,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             let canContinue = license.status.allowsUsage
             activationController = ActivationWindowController(
                 license: license,
-                reason: activationReason,
+                title: activationTitle,
+                message: activationMessage,
                 dismissTitle: canContinue ? "Continue Trial" : "Quit",
                 onActivated: { [weak self] in
                     self?.activationController = nil
@@ -187,16 +188,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.activate()
     }
 
-    private var activationReason: String {
+    private var activationTitle: String {
         switch license.status {
-        case .trial(let daysRemaining):
-            daysRemaining == 1
-                ? "1 day left in your trial. Enter a license key or keep trying \(AppInfo.name)."
-                : "\(daysRemaining) days left in your trial. Enter a license key or keep trying \(AppInfo.name)."
-        case .trialExpired:
-            "Your trial has ended. Buy a license to keep using \(AppInfo.name)."
-        case .licensed:
-            "Enter a license key to use \(AppInfo.name)."
+        case .trial(let daysRemaining): daysRemaining == 1 ? "1 day left in your trial" : "\(daysRemaining) days left in your trial"
+        case .trialExpired: "Your trial has ended"
+        case .licensed: "Activate \(AppInfo.name)"
+        }
+    }
+
+    private var activationMessage: String {
+        switch license.status {
+        case .trialExpired: "Buy a license to keep using \(AppInfo.name), then enter the key from your purchase email."
+        default: "Enter the license key from your purchase email, or buy one to support \(AppInfo.name)."
         }
     }
 

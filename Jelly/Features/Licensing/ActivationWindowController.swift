@@ -4,28 +4,36 @@ import SwiftUI
 final class ActivationWindowController: NSWindowController {
     private var onActivated: (() -> Void)?
 
-    init(license: LicenseService, reason: String, dismissTitle: String, onActivated: @escaping () -> Void, onDismiss: @escaping () -> Void) {
+    init(license: LicenseService, title: String, message: String, dismissTitle: String, onActivated: @escaping () -> Void, onDismiss: @escaping () -> Void) {
         self.onActivated = onActivated
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 380, height: 260),
-            styleMask: [.titled],
+            contentRect: .zero,
+            styleMask: [.titled, .fullSizeContentView],
             backing: .buffered,
             defer: false
         )
         window.title = "Activate \(AppInfo.name)"
+        window.titleVisibility = .hidden
+        window.titlebarAppearsTransparent = true
+        window.isMovableByWindowBackground = true
         window.isReleasedWhenClosed = false
-        window.center()
+        [.closeButton, .miniaturizeButton, .zoomButton].forEach { window.standardWindowButton($0)?.isHidden = true }
         super.init(window: window)
 
-        window.contentViewController = NSHostingController(
+        let hosting = NSHostingController(
             rootView: LicenseSheet(
                 license: license,
-                reason: reason,
+                title: title,
+                message: message,
                 dismissTitle: dismissTitle,
                 onActivated: { [weak self] in self?.finish() },
                 onDismiss: onDismiss
             )
         )
+        hosting.sizingOptions = .preferredContentSize
+        window.contentViewController = hosting
+        window.setContentSize(hosting.view.fittingSize)
+        window.center()
     }
 
     required init?(coder: NSCoder) { fatalError() }

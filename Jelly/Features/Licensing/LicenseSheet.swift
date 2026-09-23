@@ -3,7 +3,8 @@ import SwiftUI
 
 struct LicenseSheet: View {
     let license: LicenseService
-    var reason: String?
+    let title: String
+    var message: String?
     let dismissTitle: String
     let onActivated: () -> Void
     let onDismiss: () -> Void
@@ -13,51 +14,71 @@ struct LicenseSheet: View {
     @State private var isVerifying = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack(spacing: 10) {
-                Image(systemName: "key.fill")
-                    .font(.title2)
-                    .foregroundStyle(.tint)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Activate \(AppInfo.name)")
-                        .font(.headline)
-                    if let reason {
-                        Text(reason)
-                            .foregroundStyle(.secondary)
-                    }
+        VStack(spacing: Metrics.dialogSpacing) {
+            Image(nsImage: NSApp.applicationIconImage)
+                .resizable()
+                .frame(width: Metrics.dialogIconSize, height: Metrics.dialogIconSize)
+
+            VStack(spacing: 4) {
+                Text(title)
+                    .font(.headline)
+                if let message {
+                    Text(message)
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .multilineTextAlignment(.center)
+            .fixedSize(horizontal: false, vertical: true)
+
+            VStack(spacing: 6) {
+                TextField("License key", text: $key)
+                    .textFieldStyle(.roundedBorder)
+                    .controlSize(.large)
+                    .disableAutocorrection(true)
+                    .onSubmit(activate)
+
+                if let error {
+                    Text(error)
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
 
-            TextField("License key", text: $key)
-                .textFieldStyle(.roundedBorder)
-                .disableAutocorrection(true)
-                .onSubmit(activate)
-
-            if let error {
-                Text(error)
-                    .foregroundStyle(.red)
-                    .font(.callout)
-            }
-
-            HStack {
-                Button("Buy a License") { NSWorkspace.shared.open(AppInfo.gumroadProductURL) }
-                Spacer()
-                Button(dismissTitle, role: .cancel, action: onDismiss)
-                    .keyboardShortcut(.cancelAction)
+            VStack(spacing: Metrics.dialogButtonSpacing) {
                 Button(action: activate) {
-                    if isVerifying {
-                        ProgressView().controlSize(.small)
-                    } else {
-                        Text("Activate")
+                    ZStack {
+                        Text("Activate").opacity(isVerifying ? 0 : 1)
+                        if isVerifying {
+                            ProgressView().controlSize(.small)
+                        }
                     }
+                    .frame(maxWidth: .infinity)
                 }
                 .keyboardShortcut(.defaultAction)
                 .buttonStyle(.glassProminent)
                 .disabled(isVerifying || key.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+
+                Button {
+                    NSWorkspace.shared.open(AppInfo.gumroadProductURL)
+                } label: {
+                    Text("Buy a License").frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.glass)
+
+                Button(role: .cancel, action: onDismiss) {
+                    Text(dismissTitle).frame(maxWidth: .infinity)
+                }
+                .keyboardShortcut(.cancelAction)
+                .buttonStyle(.glass)
             }
+            .controlSize(.large)
+            .padding(.top, 4)
         }
-        .padding(20)
-        .frame(width: 380)
+        .padding(Metrics.dialogPadding)
+        .frame(width: Metrics.dialogWidth)
     }
 
     private func activate() {

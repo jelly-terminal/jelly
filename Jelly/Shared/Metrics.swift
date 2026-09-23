@@ -33,6 +33,12 @@ enum Metrics {
     static let themeSwatchDot: CGFloat = 10
     static let shortcutFieldWidth: CGFloat = 120
 
+    static let dialogWidth: CGFloat = 300
+    static let dialogPadding: CGFloat = 20
+    static let dialogSpacing: CGFloat = 12
+    static let dialogIconSize: CGFloat = 64
+    static let dialogButtonSpacing: CGFloat = 8
+
     static let sidebarWidth: CGFloat = 220
     static let sidebarInset: CGFloat = 8
     static let sidebarPadding: CGFloat = 8

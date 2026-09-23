@@ -7,7 +7,7 @@
 <p align="center">Sweet terminal for the Mac.</p>
 
 <p align="center">
-  <a href="https://github.com/jelly-terminal/jelly/actions"><img src="https://img.shields.io/github/actions/workflow/status/jelly-terminal/jelly/ci.yml?branch=main" alt="Build status"></a>
+  <a href="https://github.com/jelly-terminal/jelly/actions/workflows/release.yml"><img src="https://img.shields.io/github/actions/workflow/status/jelly-terminal/jelly/release.yml?label=release" alt="Release status"></a>
   <img src="https://img.shields.io/badge/platform-macOS%2026%2B-blue" alt="Platform">
   <img src="https://img.shields.io/badge/swift-6-orange" alt="Swift 6">
 </p>

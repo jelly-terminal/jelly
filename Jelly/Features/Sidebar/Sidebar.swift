@@ -161,8 +161,8 @@ private struct SessionRow: View {
         .frame(height: Metrics.sidebarRowHeight)
         .background(rowBackground(isSelected: isSelected), in: .rect(cornerRadius: Metrics.sidebarRowCornerRadius))
         .contentShape(.rect)
-        .onTapGesture(count: 2) { model.renamingSessionID = session.id }
         .onTapGesture { model.select(session) }
+        .simultaneousGesture(TapGesture(count: 2).onEnded { model.renamingSessionID = session.id })
         .onHover { isHovered = $0 }
         .contextMenu {
             Button("Rename") { model.renamingSessionID = session.id }

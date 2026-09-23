@@ -38,9 +38,12 @@ struct RootView: View {
                 }
 
                 ZStack(alignment: .top) {
-                    TerminalHost(surfaces: workspace.tabs.map(\.surface), selected: workspace.selectedTab?.surface)
-                        .padding(.horizontal, settings.window.paddingX)
-                        .padding(.vertical, settings.window.paddingY)
+                    TerminalHost(
+                        surfaces: model.sessions.flatMap { $0.workspace.tabs.map(\.surface) },
+                        selected: workspace.selectedTab?.surface
+                    )
+                    .padding(.horizontal, settings.window.paddingX)
+                    .padding(.vertical, settings.window.paddingY)
 
                     if workspace.tabs.isEmpty {
                         EmptySessionView(theme: theme) {

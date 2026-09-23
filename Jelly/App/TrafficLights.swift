@@ -25,6 +25,11 @@ final class TrafficLights {
 
     private func observe() {
         guard let window, let close = window.standardWindowButton(.closeButton), let container = close.superview?.superview else { return }
+        for name in [NSWindow.didResizeNotification, NSWindow.didEndLiveResizeNotification] {
+            observers.append(NotificationCenter.default.addObserver(forName: name, object: window, queue: .main) { [weak self] _ in
+                MainActor.assumeIsolated { self?.applySoon() }
+            })
+        }
         let views = Self.buttonTypes.compactMap { window.standardWindowButton($0) } + [container]
         for view in views {
             view.postsFrameChangedNotifications = true
@@ -36,6 +41,11 @@ final class TrafficLights {
                 MainActor.assumeIsolated { self?.apply() }
             })
         }
+    }
+
+    private func applySoon() {
+        apply()
+        DispatchQueue.main.async { [weak self] in self?.apply() }
     }
 
     func apply() {

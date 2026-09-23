@@ -28,6 +28,7 @@ enum MainMenu {
         main.addItem(submenu(fileMenu(target: target, item: item)))
         main.addItem(submenu(editMenu(item: item)))
         main.addItem(submenu(viewMenu(item: item)))
+        main.addItem(submenu(paneMenu(item: item)))
         let window = windowMenu(item: item)
         main.addItem(submenu(window))
         NSApp.windowsMenu = window
@@ -50,8 +51,6 @@ enum MainMenu {
         menu.addItem(withTitle: "What’s New…", action: #selector(AppDelegate.showWhatsNew), keyEquivalent: "").target = target
         menu.addItem(.separator())
         menu.addItem(item("Settings…", .settingsOpen))
-        menu.addItem(item("Open Config File…", .configOpen))
-        menu.addItem(item("Reload Config", .configReload))
         menu.addItem(.separator())
         let services = NSMenu(title: "Services")
         menu.addItem(withTitle: "Services", action: nil, keyEquivalent: "").submenu = services
@@ -60,7 +59,6 @@ enum MainMenu {
         menu.addItem(withTitle: "Hide \(name)", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
         menu.addItem(withTitle: "Hide Others", action: #selector(NSApplication.hideOtherApplications(_:)), keyEquivalent: "h")
             .keyEquivalentModifierMask = [.command, .option]
-        menu.addItem(withTitle: "Show All", action: #selector(NSApplication.unhideAllApplications(_:)), keyEquivalent: "")
         menu.addItem(.separator())
         menu.addItem(withTitle: "Quit \(name)", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         return menu
@@ -71,16 +69,15 @@ enum MainMenu {
         menu.addItem(item("New Tab", .tabNew))
         menu.addItem(withTitle: "New Window", action: #selector(AppDelegate.newWindow), keyEquivalent: "n").target = target
         menu.addItem(.separator())
-        let importItem = menu.addItem(withTitle: "Import…", action: #selector(AppDelegate.importConfig), keyEquivalent: "i")
-        importItem.keyEquivalentModifierMask = [.command, .shift]
-        importItem.target = target
-        menu.addItem(.separator())
-        menu.addItem(item("Split Right", .splitRight))
-        menu.addItem(item("Split Down", .splitDown))
-        menu.addItem(.separator())
         menu.addItem(item("Close Pane", .paneClose))
         menu.addItem(item("Close Tab", .tabClose))
         menu.addItem(withTitle: "Close Window", action: #selector(NSWindow.performClose(_:)), keyEquivalent: "W")
+        menu.addItem(.separator())
+        let importItem = menu.addItem(withTitle: "Import…", action: #selector(AppDelegate.importConfig), keyEquivalent: "i")
+        importItem.keyEquivalentModifierMask = [.command, .shift]
+        importItem.target = target
+        menu.addItem(item("Open Config File…", .configOpen))
+        menu.addItem(item("Reload Config", .configReload))
         return menu
     }
 
@@ -113,6 +110,21 @@ enum MainMenu {
         return menu
     }
 
+    private static func paneMenu(item: (String, KeyAction) -> NSMenuItem) -> NSMenu {
+        let menu = NSMenu(title: "Pane")
+        menu.addItem(item("Split Right", .splitRight))
+        menu.addItem(item("Split Down", .splitDown))
+        menu.addItem(.separator())
+        menu.addItem(item("Select Pane Left", .paneFocus(.left)))
+        menu.addItem(item("Select Pane Right", .paneFocus(.right)))
+        menu.addItem(item("Select Pane Above", .paneFocus(.up)))
+        menu.addItem(item("Select Pane Below", .paneFocus(.down)))
+        menu.addItem(.separator())
+        menu.addItem(item("Zoom Pane", .paneZoom))
+        menu.addItem(item("Equalize Panes", .paneEqualize))
+        return menu
+    }
+
     private static func windowMenu(item: (String, KeyAction) -> NSMenuItem) -> NSMenu {
         let menu = NSMenu(title: "Window")
         menu.addItem(withTitle: "Minimize", action: #selector(NSWindow.performMiniaturize(_:)), keyEquivalent: "m")
@@ -125,13 +137,6 @@ enum MainMenu {
         menu.addItem(.separator())
         menu.addItem(item("Show Next Session", .sessionNext))
         menu.addItem(item("Show Previous Session", .sessionPrevious))
-        menu.addItem(.separator())
-        menu.addItem(item("Select Pane Left", .paneFocus(.left)))
-        menu.addItem(item("Select Pane Right", .paneFocus(.right)))
-        menu.addItem(item("Select Pane Above", .paneFocus(.up)))
-        menu.addItem(item("Select Pane Below", .paneFocus(.down)))
-        menu.addItem(item("Zoom Pane", .paneZoom))
-        menu.addItem(item("Equalize Panes", .paneEqualize))
         menu.addItem(.separator())
         menu.addItem(withTitle: "Bring All to Front", action: #selector(NSApplication.arrangeInFront(_:)), keyEquivalent: "")
         return menu

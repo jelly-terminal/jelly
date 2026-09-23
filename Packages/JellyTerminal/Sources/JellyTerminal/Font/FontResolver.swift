@@ -18,6 +18,13 @@ public enum FontResolver {
         return families.first { $0 == requested } ?? families.first { normalize($0) == key }
     }
 
+    public static func nerdFontFallback(for primary: String, in families: [String]) -> String? {
+        guard !primary.localizedCaseInsensitiveContains("nerd") else { return nil }
+        let preferred = ["Symbols Nerd Font Mono", "Symbols Nerd Font"]
+        if let symbols = preferred.first(where: families.contains) { return symbols }
+        return families.first { $0.hasSuffix("Nerd Font Mono") } ?? families.first { $0.hasSuffix("Nerd Font") }
+    }
+
     public static func installedFamilies() -> [String] {
         NSFontManager.shared.availableFontFamilies
     }
@@ -50,7 +57,11 @@ public enum FontResolver {
 
         var cascade: [NSFontDescriptor] = []
         let families = installedFamilies()
-        for name in settings.fallback {
+        var fallback = settings.fallback
+        if fallback.isEmpty, let nerd = nerdFontFallback(for: base.familyName ?? settings.family, in: families) {
+            fallback = [nerd]
+        }
+        for name in fallback {
             guard let family = matchFamily(name, in: families) else {
                 diagnostics.append(Diagnostic(message: "settings.font.fallback: '\(name)' is not installed"))
                 continue

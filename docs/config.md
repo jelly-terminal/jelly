@@ -102,7 +102,7 @@ palette = [
 | `confirm-quit` | bool | `true` | Ask before quitting with running processes. |
 | `font.family` | string | `"SF Mono"` | Any installed family. Matched ignoring case, spaces and hyphens. |
 | `font.size` | number | `13` | Points. |
-| `font.fallback` | [string] | `[]` | Tried before the system fallback list. |
+| `font.fallback` | [string] | `[]` | Tried before the system fallback list. When empty and the main font has no Nerd Font icons, an installed Nerd Font is added automatically. |
 | `font.ligatures` | bool | `true` | |
 | `font.features` | [string] | `[]` | OpenType feature tags. Prefix with `-` to disable, e.g. `"-liga"`. |
 | `font.thicken` | bool | `false` | Heavier strokes on low-DPI displays. |

@@ -9,6 +9,13 @@ struct FontTests {
         #expect(FontResolver.matchFamily("Iosevka", in: installed) == nil)
     }
 
+    @Test func nerdFontFallbackPrefersSymbolsThenMonoAndSkipsNerdPrimaries() {
+        #expect(FontResolver.nerdFontFallback(for: "SF Mono", in: ["0xProto Nerd Font", "0xProto Nerd Font Mono"]) == "0xProto Nerd Font Mono")
+        #expect(FontResolver.nerdFontFallback(for: "SF Mono", in: ["Hack Nerd Font Mono", "Symbols Nerd Font Mono"]) == "Symbols Nerd Font Mono")
+        #expect(FontResolver.nerdFontFallback(for: "FiraCode Nerd Font", in: ["Symbols Nerd Font Mono"]) == nil)
+        #expect(FontResolver.nerdFontFallback(for: "Menlo", in: ["Menlo"]) == nil)
+    }
+
     @Test func featuresParseAndLigaturesOffCanBeOverridden() {
         #expect(FontFeature("ss02") == FontFeature(tag: "ss02", value: 1))
         #expect(FontFeature("-liga") == FontFeature(tag: "liga", value: 0))

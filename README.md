@@ -12,8 +12,9 @@
   <img src="https://img.shields.io/badge/swift-6-orange" alt="Swift 6">
 </p>
 
+
 <p align="center">
-  <img src="docs/screenshot.png" width="820" alt="Jelly window">
+  <img src="https://github.com/user-attachments/assets/9caa0397-f89c-482a-99d0-71bcef202c49" width="820" alt="Jelly window">
 </p>
 
 ## What is Jelly

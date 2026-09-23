@@ -30,7 +30,7 @@ Tags with a `-` (`v0.1.0-beta.1`) become pre-releases. The workflow refuses tags
 
 | Key | Value |
 |---|---|
-| `SUFeedURL` | `https://github.com/OWNER/Jelly/releases/latest/download/appcast.xml` |
+| `SUFeedURL` | `https://github.com/mxvsh/Jelly/releases/latest/download/appcast.xml` |
 | `SUPublicEDKey` | printed by `generate_keys` |
 | `SUEnableAutomaticChecks` | `true` |
 
@@ -43,7 +43,7 @@ Tags with a `-` (`v0.1.0-beta.1`) become pre-releases. The workflow refuses tags
 set GK build/SourcePackages/artifacts/sparkle/Sparkle/bin/generate_keys
 $GK --account jelly
 $GK --account jelly -x ~/Documents/jelly.key
-gh secret set SPARKLE_PRIVATE_KEY -R OWNER/Jelly < ~/Documents/jelly.key
+gh secret set SPARKLE_PRIVATE_KEY -R mxvsh/Jelly < ~/Documents/jelly.key
 rm ~/Documents/jelly.key
 ```
 
@@ -62,12 +62,12 @@ Put the printed public key in `SUPublicEDKey`. **Back up the private key.** If i
 | `SPARKLE_PRIVATE_KEY` | From `generate_keys -x` |
 
 ```fish
-base64 -i ~/Documents/Certificates.p12 | gh secret set BUILD_CERTIFICATE_BASE64 -R OWNER/Jelly
-gh secret set P12_PASSWORD -R OWNER/Jelly
-gh secret set APPLE_TEAM_ID --body TEAMID -R OWNER/Jelly
-openssl rand -hex 16 | gh secret set KEYCHAIN_PASSWORD -R OWNER/Jelly
-gh secret set APPLE_ID -R OWNER/Jelly
-gh secret set APPLE_APP_SPECIFIC_PASSWORD -R OWNER/Jelly
+base64 -i ~/Documents/Certificates.p12 | gh secret set BUILD_CERTIFICATE_BASE64 -R mxvsh/Jelly
+gh secret set P12_PASSWORD -R mxvsh/Jelly
+gh secret set APPLE_TEAM_ID --body TEAMID -R mxvsh/Jelly
+openssl rand -hex 16 | gh secret set KEYCHAIN_PASSWORD -R mxvsh/Jelly
+gh secret set APPLE_ID -R mxvsh/Jelly
+gh secret set APPLE_APP_SPECIFIC_PASSWORD -R mxvsh/Jelly
 rm ~/Documents/Certificates.p12
 ```
 
@@ -77,8 +77,11 @@ The certificate must be **Developer ID Application** (`security find-identity -v
 
 | Symptom | Fix |
 |---|---|
-| `future Xcode project file format` on CI | The project is `objectVersion = 110` (Xcode 27). Use a runner with Xcode 27, or downgrade the format in CI. |
+| `future Xcode project file format` on CI | The project is `objectVersion = 110` (Xcode 27); the workflow downgrades it to 77 before building. |
 | Build fails for the runner's SDK | Keep `MACOSX_DEPLOYMENT_TARGET = 26.0`. |
+| `Validate plug-in "SwiftTermBuildInfoPlugin"` fails | Pass `-skipPackagePluginValidation` to `xcodebuild` (the Makefile and workflow do). |
+| `missing Metal Toolchain` | `xcodebuild -downloadComponent MetalToolchain` (the workflow does this). |
+| Update check does nothing | `SUPublicEDKey` is empty; the updater only starts once the key is set. |
 | Update feed 404s | `releases/latest` skips pre-releases. Publish a full release first. |
 | No update offered | `CURRENT_PROJECT_VERSION` didn't increase. |
 | Tag run never starts | The workflow was invalid at that commit. Fix, push `main`, recreate the tag. |

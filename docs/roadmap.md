@@ -5,8 +5,7 @@ Everything before v1 is a preview. Config keys and behaviour can change between 
 ## v0.1: Core terminal
 
 - AppKit shell with a single window, SwiftUI chrome, Liquid Glass tab bar and status bar
-- `JellyTerminal`: PTY, SwiftTerm engine, query responder, key and mouse encoding
-- Metal renderer: glyph atlases, fallback fonts, ligatures, emoji, built-in box drawing and powerline
+- `JellyTerminal`: SwiftTerm's Metal terminal view wrapped in `TerminalSurface`, shell launch, fonts with fallback, ligatures and OpenType features
 - Tabs
 - `jelly.toml` with live reload, error banner, built-in themes, TOML import with preview
 - Sparkle updates and the release pipeline
@@ -45,4 +44,4 @@ Everything before v1 is a preview. Config keys and behaviour can change between 
 | **Triggers** | Regex on output → highlight, notify, or run an action. |
 | **Native notifications** | OSC 9 / OSC 777 and "long command finished" notifications. |
 | **tmux control mode** | tmux windows and panes shown as native tabs and splits. |
-| **libghostty-vt engine** | Swap in behind `TerminalEngine` if profiling shows the parser is the bottleneck. |
+| **Own renderer** | Replace SwiftTerm's view behind `TerminalSurface` if profiling shows it's the bottleneck (libghostty is an option). |

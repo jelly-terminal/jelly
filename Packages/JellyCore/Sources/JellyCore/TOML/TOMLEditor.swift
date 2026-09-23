@@ -39,6 +39,36 @@ public struct TOMLEditor {
         }
     }
 
+    public mutating func remove(at path: [String]) throws(TOMLError) {
+        precondition(!path.isEmpty)
+        let document = try TOMLParser.parse(source)
+        let scalars = Array(source.unicodeScalars)
+        var table = document
+        for (depth, key) in path.enumerated() {
+            guard let entry = table.entry(key) else { return }
+            let isLeaf = depth == path.count - 1
+            if let range = entry.valueRange {
+                if isLeaf {
+                    removeLine(containing: range, scalars: scalars)
+                } else if depth == path.count - 2, case .table(let inline) = entry.value {
+                    replace(range, with: TOMLWriter.literal(.table(inline.removing(path[depth + 1]))), scalars: scalars)
+                }
+                return
+            }
+            guard !isLeaf, case .table(let child) = entry.value else { return }
+            table = child
+        }
+    }
+
+    private mutating func removeLine(containing range: Range<Int>, scalars: [Unicode.Scalar]) {
+        var start = range.lowerBound
+        while start > 0, scalars[start - 1] != "\n" { start -= 1 }
+        var end = range.upperBound
+        while end < scalars.count, scalars[end] != "\n" { end += 1 }
+        if end < scalars.count { end += 1 }
+        replace(start..<end, with: "", scalars: scalars)
+    }
+
     private static func merging(_ value: TOMLValue, at path: ArraySlice<String>, into table: TOMLTable) -> TOMLTable {
         var table = table
         let key = path[path.startIndex]

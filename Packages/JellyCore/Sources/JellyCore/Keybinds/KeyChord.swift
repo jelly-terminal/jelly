@@ -54,10 +54,10 @@ public struct KeyChord: Hashable, Sendable, CustomStringConvertible {
 
     public var description: String {
         var parts: [String] = []
+        if modifiers.contains(.command) { parts.append("cmd") }
         if modifiers.contains(.control) { parts.append("ctrl") }
         if modifiers.contains(.option) { parts.append("alt") }
         if modifiers.contains(.shift) { parts.append("shift") }
-        if modifiers.contains(.command) { parts.append("cmd") }
         return (parts + [key]).joined(separator: "+")
     }
 }

@@ -13,6 +13,12 @@ public struct Keybinds: Equatable, Sendable {
         bindings.filter { $0.value == action }.keys.min { $0.description < $1.description }
     }
 
+    public func chords(for action: KeyAction) -> [KeyChord] {
+        bindings.filter { $0.value == action }.keys.sorted { $0.description < $1.description }
+    }
+
+    public static let defaults = Keybinds()
+
     public static let defaultBindings: [KeyChord: KeyAction] = {
         var map: [String: KeyAction] = [
             "cmd+t": .tabNew,
@@ -39,7 +45,7 @@ public struct Keybinds: Equatable, Sendable {
             "cmd+=": .fontIncrease,
             "cmd+-": .fontDecrease,
             "cmd+shift+0": .fontReset,
-            "cmd+,": .configOpen,
+            "cmd+,": .settingsOpen,
             "cmd+shift+,": .configReload,
             "cmd+up": .promptPrevious,
             "cmd+down": .promptNext,

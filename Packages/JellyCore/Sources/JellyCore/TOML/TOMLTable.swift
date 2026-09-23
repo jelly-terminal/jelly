@@ -32,6 +32,14 @@ public struct TOMLTable: Equatable, Sendable {
         entries[key] = Entry(value: value, line: line, valueRange: valueRange)
     }
 
+    public func removing(_ key: String) -> TOMLTable {
+        var table = TOMLTable()
+        for other in keys where other != key {
+            if let entry = entries[other] { table.set(other, entry.value, line: entry.line, valueRange: entry.valueRange) }
+        }
+        return table
+    }
+
     mutating func modifyEntry(_ key: String, _ body: (inout Entry) -> Void) {
         guard var entry = entries[key] else { return }
         body(&entry)

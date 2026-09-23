@@ -27,6 +27,7 @@ public enum KeyAction: Hashable, Sendable {
     case fontIncrease
     case fontDecrease
     case fontReset
+    case settingsOpen
     case configOpen
     case configReload
     case promptPrevious
@@ -41,7 +42,7 @@ public enum KeyAction: Hashable, Sendable {
         "session.new": .sessionNew, "session.next": .sessionNext, "session.previous": .sessionPrevious,
         "sidebar.toggle": .sidebarToggle, "find": .find, "clear": .clear, "copy": .copy, "paste": .paste,
         "font.increase": .fontIncrease, "font.decrease": .fontDecrease, "font.reset": .fontReset,
-        "config.open": .configOpen, "config.reload": .configReload,
+        "settings.open": .settingsOpen, "config.open": .configOpen, "config.reload": .configReload,
         "prompt.previous": .promptPrevious, "prompt.next": .promptNext, "none": .none,
     ]
 

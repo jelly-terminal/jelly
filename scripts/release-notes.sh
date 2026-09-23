@@ -6,12 +6,10 @@ PREV="${2:-$(git describe --tags --abbrev=0 --match 'v*' "${TAG}^" 2>/dev/null |
 RANGE="${PREV:+$PREV..}$TAG"
 REPO="${GITHUB_REPOSITORY:-$(git config --get remote.origin.url 2>/dev/null | sed -E 's#.*github.com[:/]([^/]+/[^/.]+)(\.git)?#\1#' || true)}"
 
-SECTIONS="feat|Features
-fix|Fixes
-perf|Performance
-refactor|Refactoring
-build|Build
-docs|Documentation"
+SECTIONS=(
+  "feat|Features"
+  "fix|Fixes"
+)
 
 format() {
   sed -E 's/^[a-z]+(\(([^)]+)\))?!?: (.)/\2\t\3/' \
@@ -33,11 +31,12 @@ if [ -n "$breaking" ]; then
   out+=$'### Breaking changes\n\n'"$(printf '%s\n' "$breaking" | format)"$'\n\n'
 fi
 
-while IFS='|' read -r type title; do
+for section in "${SECTIONS[@]}"; do
+  IFS='|' read -r type title <<< "$section"
   list=$(subjects "$type")
   [ -z "$list" ] && continue
   out+="### $title"$'\n\n'"$(printf '%s\n' "$list" | format)"$'\n\n'
-done <<< "$SECTIONS"
+done
 
 [ -z "$out" ] && out=$'No user-facing changes.\n\n'
 

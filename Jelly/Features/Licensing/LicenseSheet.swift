@@ -1,11 +1,9 @@
 import AppKit
+import JellyCore
 import SwiftUI
 
 struct LicenseSheet: View {
     let license: LicenseService
-    let title: String
-    var message: String?
-    let dismissTitle: String
     let onActivated: () -> Void
     let onDismiss: () -> Void
 
@@ -22,11 +20,9 @@ struct LicenseSheet: View {
             VStack(spacing: 4) {
                 Text(title)
                     .font(.headline)
-                if let message {
-                    Text(message)
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
-                }
+                Text(message)
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
             }
             .multilineTextAlignment(.center)
             .fixedSize(horizontal: false, vertical: true)
@@ -79,6 +75,25 @@ struct LicenseSheet: View {
         }
         .padding(Metrics.dialogPadding)
         .frame(width: Metrics.dialogWidth)
+    }
+
+    private var title: String {
+        license.status == .trialExpired ? "Your trial has ended" : "Activate \(AppInfo.name)"
+    }
+
+    private var message: String {
+        switch license.status {
+        case .trialExpired: "Buy a license to keep using \(AppInfo.name), then enter the key from your purchase email."
+        default: "Enter the license key from your purchase email, or buy one to keep using \(AppInfo.name) after the trial."
+        }
+    }
+
+    private var dismissTitle: String {
+        switch license.status {
+        case .trial(let daysRemaining): daysRemaining == 1 ? "Continue Trial (1 day)" : "Continue Trial (\(daysRemaining) days)"
+        case .trialExpired: "Quit"
+        case .licensed: "Cancel"
+        }
     }
 
     private func activate() {

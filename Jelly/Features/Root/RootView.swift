@@ -102,9 +102,6 @@ struct RootView: View {
         .sheet(isPresented: $model.isLicenseSheetPresented) {
             LicenseSheet(
                 license: license,
-                title: "Activate \(AppInfo.name)",
-                message: "Enter the license key from your purchase email.",
-                dismissTitle: "Cancel",
                 onActivated: { model.isLicenseSheetPresented = false },
                 onDismiss: { model.isLicenseSheetPresented = false }
             )

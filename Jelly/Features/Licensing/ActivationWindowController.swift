@@ -4,7 +4,7 @@ import SwiftUI
 final class ActivationWindowController: NSWindowController {
     private var onActivated: (() -> Void)?
 
-    init(license: LicenseService, title: String, message: String, dismissTitle: String, onActivated: @escaping () -> Void, onDismiss: @escaping () -> Void) {
+    init(license: LicenseService, onActivated: @escaping () -> Void, onDismiss: @escaping () -> Void) {
         self.onActivated = onActivated
         let window = NSWindow(
             contentRect: .zero,
@@ -23,9 +23,6 @@ final class ActivationWindowController: NSWindowController {
         let hosting = NSHostingController(
             rootView: LicenseSheet(
                 license: license,
-                title: title,
-                message: message,
-                dismissTitle: dismissTitle,
                 onActivated: { [weak self] in self?.finish() },
                 onDismiss: onDismiss
             )

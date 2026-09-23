@@ -25,9 +25,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         projects = ProjectStore(lastSnapshot?.projects ?? [])
         _ = configStore.observe { [weak self] in self?.configChanged() }
         configChanged()
-        if license.status.isLicensed {
+        switch license.status {
+        case .licensed:
             startSession()
-        } else {
+        case .trial:
+            startSession()
+            keyController?.model.isLicenseSheetPresented = true
+        case .trialExpired:
             presentActivation()
         }
         autosave = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] _ in
@@ -162,12 +166,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func presentActivation() {
         if activationController == nil {
-            let canContinue = license.status.allowsUsage
             activationController = ActivationWindowController(
                 license: license,
-                title: activationTitle,
-                message: activationMessage,
-                dismissTitle: canContinue ? "Continue Trial" : "Quit",
                 onActivated: { [weak self] in
                     self?.activationController = nil
                     self?.startSession()
@@ -186,21 +186,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         activationController?.showWindow(nil)
         activationController?.window?.makeKeyAndOrderFront(nil)
         NSApp.activate()
-    }
-
-    private var activationTitle: String {
-        switch license.status {
-        case .trial(let daysRemaining): daysRemaining == 1 ? "1 day left in your trial" : "\(daysRemaining) days left in your trial"
-        case .trialExpired: "Your trial has ended"
-        case .licensed: "Activate \(AppInfo.name)"
-        }
-    }
-
-    private var activationMessage: String {
-        switch license.status {
-        case .trialExpired: "Buy a license to keep using \(AppInfo.name), then enter the key from your purchase email."
-        default: "Enter the license key from your purchase email, or buy one to support \(AppInfo.name)."
-        }
     }
 
     private var keyController: MainWindowController? {

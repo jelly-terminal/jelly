@@ -19,7 +19,7 @@ test:
 
 kill:
 	-pkill -x Jelly
-	-pkill -f "Jelly (Debug).app/Contents/MacOS"
+	-pkill -f "Jelly \\(Debug\\)\\.app/Contents/MacOS"
 
 clean:
 	rm -rf $(DERIVED)

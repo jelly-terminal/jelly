@@ -10,6 +10,7 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
     private let configStore: ConfigStore
     private var keyMonitor: Any?
     private var observerID: UUID?
+    private var trafficLights: TrafficLights?
 
     init(configStore: ConfigStore, projects: ProjectStore, snapshot: WorkspaceSnapshot?) {
         self.configStore = configStore
@@ -26,8 +27,10 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
         window.isReleasedWhenClosed = false
         window.minSize = NSSize(width: 520, height: 320)
         window.tabbingMode = .disallowed
+        window.titlebarSeparatorStyle = .none
         let hosting = NSHostingController(rootView: RootView(model: model, configStore: configStore))
         hosting.sizingOptions = []
+        hosting.sceneBridgingOptions = []
         window.contentViewController = hosting
         window.setContentSize(NSSize(width: 1100, height: 720))
         if !window.setFrameUsingName(Self.frameName) { window.center() }
@@ -39,6 +42,16 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
         observerID = configStore.observe { [weak self] in self?.applyWindowSettings() }
         applyWindowSettings()
         installKeyMonitor()
+        trafficLights = TrafficLights(
+            window: window,
+            height: Metrics.tabBarHeight,
+            leading: Metrics.sidebarInset + Metrics.trafficLightLeading,
+            spacing: Metrics.trafficLightSpacing
+        )
+    }
+
+    func windowDidExitFullScreen(_ notification: Notification) {
+        trafficLights?.apply()
     }
 
     required init?(coder: NSCoder) { fatalError() }

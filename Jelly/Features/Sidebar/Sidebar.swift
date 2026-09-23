@@ -15,7 +15,7 @@ struct Sidebar: View {
                 Spacer()
                 SidebarToggle(model: model, theme: theme)
             }
-            .frame(height: Metrics.tabBarHeight - Metrics.sidebarInset)
+            .frame(height: Metrics.tabBarHeight - Metrics.sidebarInset - Metrics.sidebarPadding)
 
             SidebarSection(title: "Sessions", theme: theme, addHelp: "New Session") {
                 withAnimation(Self.animation) { model.newSession() }

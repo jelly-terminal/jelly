@@ -1,13 +1,15 @@
 import CoreGraphics
 
 enum Metrics {
-    static let tabBarHeight: CGFloat = 40
+    static let tabBarHeight: CGFloat = 52
     static let statusBarHeight: CGFloat = 28
-    static let trafficLightInset: CGFloat = 80
+    static let trafficLightInset: CGFloat = 92
+    static let trafficLightLeading: CGFloat = 14
+    static let trafficLightSpacing: CGFloat = 8
     static let chromePadding: CGFloat = 8
     static let tabSpacing: CGFloat = 4
     static let tabHorizontalPadding: CGFloat = 12
-    static let tabHeight: CGFloat = 28
+    static let tabHeight: CGFloat = 30
     static let tabMaxWidth: CGFloat = 200
     static let controlSize: CGFloat = 28
     static let bannerCornerRadius: CGFloat = 12

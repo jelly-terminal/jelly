@@ -141,6 +141,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         whatsNew.present()
     }
 
+    @objc func reportBug() {
+        NSWorkspace.shared.open(SupportLinks.reportBug)
+    }
+
+    @objc func openDocumentation() {
+        NSWorkspace.shared.open(SupportLinks.documentation)
+    }
+
+    @objc func openRepository() {
+        NSWorkspace.shared.open(SupportLinks.repository)
+    }
+
     @objc func checkForUpdates() {
         updater.checkForUpdates()
     }

@@ -32,6 +32,9 @@ enum MainMenu {
         let window = windowMenu(item: item)
         main.addItem(submenu(window))
         NSApp.windowsMenu = window
+        let help = helpMenu(target: target)
+        main.addItem(submenu(help))
+        NSApp.helpMenu = help
         return main
     }
 
@@ -122,6 +125,15 @@ enum MainMenu {
         menu.addItem(.separator())
         menu.addItem(item("Zoom Pane", .paneZoom))
         menu.addItem(item("Equalize Panes", .paneEqualize))
+        return menu
+    }
+
+    private static func helpMenu(target: AppDelegate) -> NSMenu {
+        let menu = NSMenu(title: "Help")
+        menu.addItem(withTitle: "Report a Bug…", action: #selector(AppDelegate.reportBug), keyEquivalent: "").target = target
+        menu.addItem(.separator())
+        menu.addItem(withTitle: "Documentation", action: #selector(AppDelegate.openDocumentation), keyEquivalent: "").target = target
+        menu.addItem(withTitle: "Jelly on GitHub", action: #selector(AppDelegate.openRepository), keyEquivalent: "").target = target
         return menu
     }
 

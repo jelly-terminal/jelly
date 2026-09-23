@@ -9,6 +9,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var projects: ProjectStore!
     private var windowControllers: [MainWindowController] = []
     private var activationController: ActivationWindowController?
+    private var settingsController: SettingsWindowController?
     private var pendingOpenURLs: [URL] = []
     private let snapshotStore = SnapshotStore.standard()
     private var lastSnapshot: WorkspaceSnapshot?
@@ -85,6 +86,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc func performMenuAction(_ sender: NSMenuItem) {
         guard let action = (sender.representedObject as? KeyActionBox)?.action else { return }
+        if action == .settingsOpen {
+            showSettings()
+            return
+        }
+        if let settingsWindow = settingsController?.window, settingsWindow.isKeyWindow {
+            switch action {
+            case .copy:
+                NSApp.sendAction(#selector(NSText.copy(_:)), to: nil, from: sender)
+                return
+            case .paste:
+                NSApp.sendAction(#selector(NSText.paste(_:)), to: nil, from: sender)
+                return
+            case .paneClose, .tabClose:
+                settingsWindow.performClose(sender)
+                return
+            default:
+                break
+            }
+        }
         if let controller = keyController {
             _ = controller.perform(action)
             return
@@ -104,6 +124,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         panel.message = "Choose a TOML file with settings, keybinds or themes"
         guard panel.runModal() == .OK, let url = panel.url else { return }
         importFile(url)
+    }
+
+    @objc func showSettings() {
+        if settingsController == nil {
+            settingsController = SettingsWindowController(
+                configStore: configStore,
+                updatesAvailable: updater.isAvailable,
+                onCheckForUpdates: { [weak self] in self?.checkForUpdates() },
+                onImportTheme: { [weak self] in self?.importConfig() }
+            )
+        }
+        settingsController?.showWindow(nil)
+        settingsController?.window?.makeKeyAndOrderFront(nil)
     }
 
     @objc func checkForUpdates() {

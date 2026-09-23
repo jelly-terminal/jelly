@@ -12,7 +12,11 @@ All configuration is plain TOML. A file can contain any mix of `[settings]`, `[k
 
 `$XDG_CONFIG_HOME` is used instead of `~/.config` when set.
 
-Changes apply live as soon as the file is saved. **⌘⇧,** forces a reload, **⌘,** opens `jelly.toml` in your default editor.
+Changes apply live as soon as the file is saved. **⌘,** opens the Settings window, which edits this same file in place: it only writes the keys you change and keeps your comments. **Jelly → Open Config File…** opens `jelly.toml` in your default editor, and **⌘⇧,** forces a reload.
+
+Font fallback, OpenType features, cell size, shell arguments and shell environment are only set in the file.
+
+When the Keybinds tab takes a default shortcut away from an action, it writes that shortcut as `"none"`. Resetting an action removes its lines from `[keybinds]`.
 
 ## Importing a TOML file
 
@@ -127,7 +131,7 @@ palette = [
 
 Keys are written as `modifiers+key`, with modifiers `cmd`, `shift`, `alt` (or `opt`), `ctrl`. Set an action to `"none"` to unbind a default.
 
-`tab.new`, `tab.close`, `tab.next`, `tab.previous`, `tab.goto:<n>`, `tab.move:left|right`, `tab.rename`, `split.right`, `split.down`, `pane.close`, `pane.zoom`, `pane.focus:left|right|up|down`, `pane.equalize`, `session.new`, `session.next`, `session.previous`, `sidebar.toggle`, `find`, `clear`, `copy`, `paste`, `font.increase`, `font.decrease`, `font.reset`, `config.open`, `config.reload`, `prompt.previous`, `prompt.next`, `text:<string>` (sends literal text; supports `\n`, `\x1b`).
+`tab.new`, `tab.close`, `tab.next`, `tab.previous`, `tab.goto:<n>`, `tab.move:left|right`, `tab.rename`, `split.right`, `split.down`, `pane.close`, `pane.zoom`, `pane.focus:left|right|up|down`, `pane.equalize`, `session.new`, `session.next`, `session.previous`, `sidebar.toggle`, `find`, `clear`, `copy`, `paste`, `font.increase`, `font.decrease`, `font.reset`, `settings.open`, `config.open`, `config.reload`, `prompt.previous`, `prompt.next`, `text:<string>` (sends literal text; supports `\n`, `\x1b`).
 
 ## Theme reference
 

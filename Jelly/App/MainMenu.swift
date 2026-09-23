@@ -60,7 +60,8 @@ enum MainMenu {
         license.target = target
         license.isEnabled = !licenseStatus.isLicensed
         menu.addItem(.separator())
-        menu.addItem(item("Settings…", .configOpen))
+        menu.addItem(item("Settings…", .settingsOpen))
+        menu.addItem(item("Open Config File…", .configOpen))
         menu.addItem(item("Reload Config", .configReload))
         menu.addItem(.separator())
         let services = NSMenu(title: "Services")
@@ -96,6 +97,10 @@ enum MainMenu {
 
     private static func editMenu(item: (String, KeyAction) -> NSMenuItem) -> NSMenu {
         let menu = NSMenu(title: "Edit")
+        menu.addItem(withTitle: "Undo", action: Selector(("undo:")), keyEquivalent: "z")
+        menu.addItem(withTitle: "Redo", action: Selector(("redo:")), keyEquivalent: "Z")
+        menu.addItem(.separator())
+        menu.addItem(withTitle: "Cut", action: #selector(NSText.cut(_:)), keyEquivalent: "x")
         menu.addItem(item("Copy", .copy))
         menu.addItem(item("Paste", .paste))
         menu.addItem(withTitle: "Select All", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")

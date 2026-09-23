@@ -26,6 +26,13 @@ enum Metrics {
     static let paneButtonSize: CGFloat = 20
     static let paneButtonCornerRadius: CGFloat = 5
 
+    static let settingsWidth: CGFloat = 600
+    static let settingsHeight: CGFloat = 560
+    static let settingsPadding: CGFloat = 16
+    static let themeSwatchHeight: CGFloat = 44
+    static let themeSwatchDot: CGFloat = 10
+    static let shortcutFieldWidth: CGFloat = 120
+
     static let sidebarWidth: CGFloat = 220
     static let sidebarInset: CGFloat = 8
     static let sidebarPadding: CGFloat = 8

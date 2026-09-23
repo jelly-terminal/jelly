@@ -44,6 +44,7 @@ Jelly/                         App target (file-system synchronized group)
     Diagnostics/               Config problem banner
     Import/                    PendingImport, ImportSheet, ConfigImportService
     Updates/                   UpdaterService (Sparkle)
+    Settings/                  SettingsWindowController (toolbar tabs), one view per tab, ShortcutRecorder
   Shared/                      Metrics, AppInfo, KeyChord+Event, ThemeColor+SwiftUI
   Resources/                   Assets.xcassets
 Packages/
@@ -51,7 +52,7 @@ Packages/
     Sources/JellyCore/
       TOML/                    Parser, Writer, Editor (in-place, comment-preserving)
       Config/                  Settings, decoders, Loader, Importer, Watcher, Diagnostics
-      Keybinds/                KeyChord, KeyAction, Keybinds
+      Keybinds/                KeyChord, KeyAction, KeyActionCatalog (names, titles, groups), Keybinds, KeybindEditor
       Theme/                   Theme, ThemeColor, ThemeDecoder, BuiltinThemes
       Workspace/               PaneTree, WorkspaceSnapshot, SnapshotStore
       Resources/Themes/        Built-in themes (*.toml)
@@ -159,6 +160,7 @@ See [config.md](config.md) for the format. Internals:
 - `ConfigLoader` reads `~/.config/jelly/jelly.toml`, then decodes into `Settings` (typed, with defaults for every key). Unknown or invalid keys produce `Diagnostic`s with a line number instead of errors.
 - `ConfigWatcher` uses a `DispatchSource` file-system watch on the file and its directory, so editors that write atomically are still caught. It debounces by 100ms.
 - `ConfigImporter` builds an `ImportPlan` (what changes, which themes are new or replaced) for the preview, then applies it with `TOMLEditor`, which edits the source text in place so the user's comments and ordering survive.
+- The Settings window never keeps its own copy of settings. Controls read `ConfigStore.config` and write through `TOMLEditor.set` / `remove` (`ConfigStore+Editing`), then reload. Keybind changes go through `KeybindEditor`, which releases a default chord by writing `"none"` and reuses the spelling of keys already in the file. If `jelly.toml` has a syntax error the window shows it and writes nothing.
 - `ConfigLoader` loads built-in themes from the `JellyCore` bundle, then `~/.config/jelly/themes/*.toml`. A user theme with the same `id` replaces the built-in one.
 
 ## Persistence
@@ -195,6 +197,7 @@ Unit tests live in the packages (`swift test`) and only cover logic where a bug 
 
 **JellyCore**
 - `TOMLParser`: the shapes config files use, and the line number of each kind of error.
+- `KeybindEditor` / `TOMLEditor.remove`: removing a line keeps comments, keys inside inline tables, binding releases old chords and reuses written keys, reset restores defaults, catalog names parse back.
 - `ConfigImporter`: values replaced in place with comments kept, missing keys added to the right table, inline tables merged, unchanged values skipped, replaced themes flagged, broken configs refused.
 - `ConfigDocument`: invalid values fall back and report their line; syntax errors keep defaults; `none` unbinds; themes need 16 valid colors; hex parsing; built-in themes load.
 - `PaneTree`: split, close (the sibling takes the parent's place), focus by direction, ratio bounds, equalize.

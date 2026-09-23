@@ -68,7 +68,7 @@ struct ActionHandler {
             configStore.reload()
         case .text(let text):
             surface?.sendText(text)
-        case .tabRename, .promptPrevious, .promptNext, .none:
+        case .tabRename, .settingsOpen, .promptPrevious, .promptNext, .none:
             return false
         }
         return true

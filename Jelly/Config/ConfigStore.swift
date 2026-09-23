@@ -9,6 +9,7 @@ final class ConfigStore {
     private(set) var isDark = true
     private(set) var runtimeDiagnostics: [Diagnostic] = []
     var dismissedDiagnostics: [Diagnostic] = []
+    var editError: String?
     var fontSizeDelta = 0.0 {
         didSet { notify() }
     }

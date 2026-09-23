@@ -136,6 +136,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if settingsController == nil {
             settingsController = SettingsWindowController(
                 configStore: configStore,
+                license: license,
                 updatesAvailable: updater.isAvailable,
                 onCheckForUpdates: { [weak self] in self?.checkForUpdates() },
                 onImportTheme: { [weak self] in self?.importConfig() }

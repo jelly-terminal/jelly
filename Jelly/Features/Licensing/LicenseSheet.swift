@@ -4,6 +4,7 @@ import SwiftUI
 
 struct LicenseSheet: View {
     let license: LicenseService
+    var cancelTitle: String?
     let onActivated: () -> Void
     let onDismiss: () -> Void
 
@@ -65,7 +66,7 @@ struct LicenseSheet: View {
                 .buttonStyle(.glass)
 
                 Button(role: .cancel, action: onDismiss) {
-                    Text(dismissTitle).frame(maxWidth: .infinity)
+                    Text(cancelTitle ?? dismissTitle).frame(maxWidth: .infinity)
                 }
                 .keyboardShortcut(.cancelAction)
                 .buttonStyle(.glass)

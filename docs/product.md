@@ -53,7 +53,7 @@ Everything is plain TOML. A file can hold settings, keybinds, themes, or any mix
 - **Drop a `.toml` file** onto the window (or **File → Import…**), and Jelly shows what it will change ("adds 2 themes, changes 3 settings"). On confirm, it merges the file into your config.
 - Bad config never breaks the app. Jelly keeps the last good values and shows a banner naming the line.
 
-- **Settings window** (⌘,): General, Appearance, Terminal, Keybinds and Updates tabs. Every change is written straight into `jelly.toml` (comments kept) and applies at once. The Appearance tab lists the theme library (built-in themes plus `~/.config/jelly/themes/`) with a preview swatch, and picks one theme or a light/dark pair. The Keybinds tab lists every action by group; click a shortcut and press new keys to rebind it, with reset per action or for all.
+- **Settings window** (⌘,): General, Appearance, Terminal, Keybinds and Updates tabs. General ends with the license: trial days left or who it's licensed to, with buttons to buy, enter or deactivate a key. Every change is written straight into `jelly.toml` (comments kept) and applies at once. The Appearance tab lists the theme library (built-in themes plus `~/.config/jelly/themes/`) with a preview swatch, and picks one theme or a light/dark pair. The Keybinds tab lists every action by group; click a shortcut and press new keys to rebind it, with reset per action or for all.
 
 Full reference: [config.md](config.md).
 

@@ -2,7 +2,7 @@ import AppKit
 import SwiftUI
 
 final class SettingsWindowController: NSWindowController {
-    init(configStore: ConfigStore, updatesAvailable: Bool, onCheckForUpdates: @escaping () -> Void, onImportTheme: @escaping () -> Void) {
+    init(configStore: ConfigStore, license: LicenseService, updatesAvailable: Bool, onCheckForUpdates: @escaping () -> Void, onImportTheme: @escaping () -> Void) {
         let size = NSSize(width: Metrics.settingsWidth, height: Metrics.settingsHeight)
         let tabs = NSTabViewController()
         tabs.tabStyle = .toolbar
@@ -20,7 +20,7 @@ final class SettingsWindowController: NSWindowController {
             tabs.addTabViewItem(item)
         }
 
-        add("General", symbol: "gearshape", GeneralSettingsView(configStore: configStore))
+        add("General", symbol: "gearshape", GeneralSettingsView(configStore: configStore, license: license))
         add("Appearance", symbol: "paintpalette", AppearanceSettingsView(configStore: configStore, onImportTheme: onImportTheme))
         add("Terminal", symbol: "apple.terminal", TerminalSettingsView(configStore: configStore))
         add("Keybinds", symbol: "keyboard", KeybindSettingsView(configStore: configStore))

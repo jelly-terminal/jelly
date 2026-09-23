@@ -1,0 +1,60 @@
+# AGENTS.md
+
+Jelly is a native macOS 26+ terminal: SwiftUI + AppKit chrome with Liquid Glass, a Metal-rendered terminal surface, TOML config, Sparkle updates. Read `docs/` before changing anything non-trivial:
+
+- `docs/product.md`: what Jelly does and how it looks
+- `docs/tech.md`: architecture, layout, engine, fonts, renderer, testing scope
+- `docs/config.md`: `jelly.toml` format and every key
+- `docs/release.md`: signing, notarization, Sparkle, CI
+- `docs/roadmap.md`: what's in which version
+
+Keep the docs in step with the code. A change to behaviour, a config key or the layout updates the matching doc in the same commit.
+
+## Layout
+
+```
+Jelly/                 App target: App/, Features/<Feature>/, Resources/
+Packages/JellyCore/    Config, themes, workspace model, persistence. No UI.
+Packages/JellyTerminal/ Engine, PTY, input, fonts, Metal renderer, TerminalView
+Config/                Info.plist extras (Sparkle), entitlements
+docs/
+```
+
+- Dependency direction: App → JellyTerminal → JellyCore. Never the reverse.
+- One type per file, grouped in folders by concern. No catch-all `Utils` or `Helpers` files.
+- The app folder is a file-system synchronized group: new files are picked up automatically, don't add them to `project.pbxproj`.
+
+## Rules
+
+- **macOS 26+ only.** No iOS or cross-platform code, no `#available` checks below 26.
+- **Swift 6 strict concurrency.** The app target and `JellyCore` are MainActor by default. PTY I/O and parsing in `JellyTerminal` run on their own thread per pane; never block the main thread on them.
+- **Terminal output never drives SwiftUI directly.** Only throttled `PaneModel` updates (title, cwd, size) reach the chrome.
+- **Glass is chrome only.** Never put `.glassEffect` behind terminal text. Sizes and spacing come from `Metrics`, not literals in views.
+- **Not sandboxed.** Hardened runtime stays on.
+- **Config never crashes the app.** Invalid values become diagnostics and fall back to defaults.
+- **No code comments.** Names should carry the meaning.
+- **No new dependencies** beyond SwiftTerm, TOMLKit and Sparkle without asking.
+- Nothing is called "stable" before v1.
+
+## Build and test
+
+```sh
+make debug      # build Debug and open "Jelly Debug"
+make prod       # build Release and open
+make test       # swift test in both packages
+make kill
+make clean
+```
+
+Build from a shell with a scratch `-derivedDataPath`. Launch with `open`, then ask the user to check the UI; don't drive the mouse or menus.
+
+## Tests
+
+Only test logic that is likely to break and hard to notice by using the app: config merging and diagnostics, colour parsing, the pane split tree, key encoding, query responses, Unicode width, shell resolution, font name matching. Don't test SwiftUI views, rendering, Codable round-trips, defaults, or thin wrappers over Apple APIs. Keep the suite small and fast.
+
+## Commits
+
+- Commit after each completed step.
+- One line, conventional prefix: `feat:`, `fix:`, `perf:`, `refactor:`, `build:`, `docs:`, `test:`, `chore:`.
+- Write the subject as a user-readable sentence; it becomes the release note.
+- No body, no footer, no co-author or tool attribution lines.

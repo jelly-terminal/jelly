@@ -7,6 +7,8 @@ struct TextFileView: View {
     let truncated: Bool
     let style: MarkdownStyle
 
+    @State private var viewportWidth: CGFloat = 0
+
     var body: some View {
         let digits = max(String(lines.count).count, 2)
         ScrollView([.vertical, .horizontal]) {
@@ -32,7 +34,9 @@ struct TextFileView: View {
             }
             .textSelection(.enabled)
             .padding(Metrics.viewerPadding)
+            .frame(minWidth: viewportWidth, alignment: .leading)
         }
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { viewportWidth = $0 }
     }
 
     private func attributed(_ line: String, at index: Int) -> AttributedString {

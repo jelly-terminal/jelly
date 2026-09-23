@@ -7,9 +7,6 @@ on:
 permissions:
   contents: write
 
-env:
-  RELEASE_REPO: jelly-terminal/releases
-
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -155,7 +152,7 @@ jobs:
           mkdir appcast && cp "Jelly-${TAG}.dmg" appcast/
           printf '%s' "$SPARKLE_PRIVATE_KEY" | "$BIN" \
             --ed-key-file - \
-            --download-url-prefix "https://github.com/${{ env.RELEASE_REPO }}/releases/download/${TAG}/" \
+            --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/${TAG}/" \
             appcast
 
       - uses: actions/upload-artifact@v4
@@ -184,12 +181,11 @@ jobs:
 
       - name: Create GitHub Release
         env:
-          GH_TOKEN: ${{ secrets.RELEASE_REPO_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           flags=()
           [[ "$GITHUB_REF_NAME" == *-* ]] && flags+=(--prerelease)
           gh release create "$GITHUB_REF_NAME" \
-            --repo "$RELEASE_REPO" \
             --title "$GITHUB_REF_NAME" \
             --notes-file release-notes.md \
             "${flags[@]}" \

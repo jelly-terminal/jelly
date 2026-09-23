@@ -62,4 +62,4 @@ fi
 git tag "$next"
 git push origin "$next"
 
-echo "Pushed $next. Follow the release: gh run watch -R mxvsh/jelly"
+echo "Pushed $next. Follow the release: gh run watch -R jelly-terminal/jelly"

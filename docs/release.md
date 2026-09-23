@@ -30,7 +30,7 @@ Tags with a `-` (`v0.1.0-beta.1`) become pre-releases. The workflow refuses tags
 
 | Key | Value |
 |---|---|
-| `SUFeedURL` | `https://github.com/mxvsh/Jelly/releases/latest/download/appcast.xml` |
+| `SUFeedURL` | `https://github.com/jelly-terminal/jelly/releases/latest/download/appcast.xml` |
 | `SUPublicEDKey` | printed by `generate_keys` |
 | `SUEnableAutomaticChecks` | `true` |
 
@@ -43,7 +43,7 @@ Tags with a `-` (`v0.1.0-beta.1`) become pre-releases. The workflow refuses tags
 set GK build/SourcePackages/artifacts/sparkle/Sparkle/bin/generate_keys
 $GK --account jelly
 $GK --account jelly -x ~/Documents/jelly.key
-gh secret set SPARKLE_PRIVATE_KEY -R mxvsh/Jelly < ~/Documents/jelly.key
+gh secret set SPARKLE_PRIVATE_KEY -R jelly-terminal/jelly < ~/Documents/jelly.key
 rm ~/Documents/jelly.key
 ```
 
@@ -62,12 +62,12 @@ Put the printed public key in `SUPublicEDKey`. **Back up the private key.** If i
 | `SPARKLE_PRIVATE_KEY` | From `generate_keys -x` |
 
 ```fish
-base64 -i ~/Documents/Certificates.p12 | gh secret set BUILD_CERTIFICATE_BASE64 -R mxvsh/Jelly
-gh secret set P12_PASSWORD -R mxvsh/Jelly
-gh secret set APPLE_TEAM_ID --body TEAMID -R mxvsh/Jelly
-openssl rand -hex 16 | gh secret set KEYCHAIN_PASSWORD -R mxvsh/Jelly
-gh secret set APPLE_ID -R mxvsh/Jelly
-gh secret set APPLE_APP_SPECIFIC_PASSWORD -R mxvsh/Jelly
+base64 -i ~/Documents/Certificates.p12 | gh secret set BUILD_CERTIFICATE_BASE64 -R jelly-terminal/jelly
+gh secret set P12_PASSWORD -R jelly-terminal/jelly
+gh secret set APPLE_TEAM_ID --body TEAMID -R jelly-terminal/jelly
+openssl rand -hex 16 | gh secret set KEYCHAIN_PASSWORD -R jelly-terminal/jelly
+gh secret set APPLE_ID -R jelly-terminal/jelly
+gh secret set APPLE_APP_SPECIFIC_PASSWORD -R jelly-terminal/jelly
 rm ~/Documents/Certificates.p12
 ```
 

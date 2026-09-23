@@ -19,6 +19,7 @@ public enum KeyAction: Hashable, Sendable {
     case sessionNew
     case sessionNext
     case sessionPrevious
+    case sessionGoto(Int)
     case sidebarToggle
     case find
     case clear
@@ -58,6 +59,9 @@ public enum KeyAction: Hashable, Sendable {
         case "tab.goto":
             guard let index = Int(argument), (1...9).contains(index) else { return nil }
             self = .tabGoto(index)
+        case "session.goto":
+            guard let index = Int(argument), (1...9).contains(index) else { return nil }
+            self = .sessionGoto(index)
         case "tab.move":
             guard let direction = Direction(rawValue: argument), direction == .left || direction == .right else { return nil }
             self = .tabMove(direction)

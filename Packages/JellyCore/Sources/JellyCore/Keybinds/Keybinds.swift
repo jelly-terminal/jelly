@@ -37,6 +37,8 @@ public struct Keybinds: Equatable, Sendable {
             "cmd+shift+]": .tabNext,
             "cmd+shift+[": .tabPrevious,
             "cmd+shift+n": .sessionNew,
+            "cmd+ctrl+]": .sessionNext,
+            "cmd+ctrl+[": .sessionPrevious,
             "cmd+0": .sidebarToggle,
             "cmd+f": .find,
             "cmd+k": .clear,
@@ -50,7 +52,10 @@ public struct Keybinds: Equatable, Sendable {
             "cmd+up": .promptPrevious,
             "cmd+down": .promptNext,
         ]
-        for index in 1...9 { map["cmd+\(index)"] = .tabGoto(index) }
+        for index in 1...9 {
+            map["cmd+\(index)"] = .tabGoto(index)
+            map["cmd+ctrl+\(index)"] = .sessionGoto(index)
+        }
         return Dictionary(uniqueKeysWithValues: map.map { (KeyChord($0.key)!, $0.value) })
     }()
 

@@ -74,6 +74,11 @@ final class WindowModel {
         select(sessions[(index + offset + sessions.count) % sessions.count])
     }
 
+    func selectSession(number: Int) {
+        guard !sessions.isEmpty else { return }
+        select(number >= 9 ? sessions[sessions.count - 1] : sessions[min(number - 1, sessions.count - 1)])
+    }
+
     func newSession() {
         let session = SessionModel(name: nextSessionName(), configStore: configStore)
         sessions.append(session)

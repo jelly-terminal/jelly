@@ -44,6 +44,8 @@ struct ActionHandler {
             window.selectSession(offset: 1)
         case .sessionPrevious:
             window.selectSession(offset: -1)
+        case .sessionGoto(let number):
+            window.selectSession(number: number)
         case .sidebarToggle:
             withAnimation(Sidebar.animation) { window.isSidebarVisible.toggle() }
         case .find:

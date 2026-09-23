@@ -15,6 +15,7 @@ extension KeyAction {
         .splitRight, .splitDown, .paneClose, .paneZoom, .paneEqualize,
         .paneFocus(.left), .paneFocus(.right), .paneFocus(.up), .paneFocus(.down),
         .sessionNew, .sessionNext, .sessionPrevious,
+    ] + (1...9).map { .sessionGoto($0) } + [
         .sidebarToggle, .find,
         .copy, .paste, .clear, .promptPrevious, .promptNext,
         .fontIncrease, .fontDecrease, .fontReset,
@@ -39,6 +40,7 @@ extension KeyAction {
         case .sessionNew: "session.new"
         case .sessionNext: "session.next"
         case .sessionPrevious: "session.previous"
+        case .sessionGoto(let number): "session.goto:\(number)"
         case .sidebarToggle: "sidebar.toggle"
         case .find: "find"
         case .clear: "clear"
@@ -81,6 +83,7 @@ extension KeyAction {
         case .sessionNew: "New Session"
         case .sessionNext: "Next Session"
         case .sessionPrevious: "Previous Session"
+        case .sessionGoto(let number): number == 9 ? "Last Session" : "Session \(number)"
         case .sidebarToggle: "Toggle Sidebar"
         case .find: "Find"
         case .clear: "Clear"
@@ -103,7 +106,7 @@ extension KeyAction {
         switch self {
         case .tabNew, .tabClose, .tabNext, .tabPrevious, .tabGoto, .tabMove, .tabRename: .tabs
         case .splitRight, .splitDown, .paneClose, .paneZoom, .paneFocus, .paneEqualize: .panes
-        case .sessionNew, .sessionNext, .sessionPrevious: .sessions
+        case .sessionNew, .sessionNext, .sessionPrevious, .sessionGoto: .sessions
         case .sidebarToggle, .find: .window
         case .clear, .copy, .paste, .promptPrevious, .promptNext, .text, .none: .edit
         case .fontIncrease, .fontDecrease, .fontReset: .font

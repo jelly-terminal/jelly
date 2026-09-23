@@ -77,6 +77,8 @@ Jelly updates itself. It checks once a day, offers the new version with release 
 | Move tab left / right | ⌘⇧← / ⌘⇧→ |
 | Tab 1–9 | ⌘1 … ⌘9 |
 | New session | ⌘⇧N |
+| Next / previous session | ⌘⌃] / ⌘⌃[ |
+| Session 1–9 | ⌘⌃1 … ⌘⌃9 |
 | Toggle sidebar | ⌘0 |
 | Find | ⌘F |
 | Reload config | ⌘⇧, |

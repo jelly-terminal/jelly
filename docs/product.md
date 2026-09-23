@@ -7,7 +7,7 @@ Jelly is a native macOS terminal built around **sessions**: named workspaces tha
 - **Fast.** GPU-rendered, idle at 0% CPU, no dropped frames under heavy output.
 - **Compatible.** Your shell, prompt, and font render exactly as they do in Ghostty or iTerm2: fish, zsh, bash, nu, starship, powerlevel10k, Nerd Fonts, ligatures, emoji.
 - **Organized.** Sessions and projects replace a pile of unnamed windows.
-- **Configurable in plain text.** One TOML format (`.jelly`) for settings and themes. Drop a file on the app to install it.
+- **Configurable in plain text.** One `jelly.toml` for settings and themes. Drop any TOML file on the window to merge it in.
 - **Native.** SwiftUI and AppKit, not a web view.
 
 ## Non-goals (for now)
@@ -47,10 +47,10 @@ Jelly is a native macOS terminal built around **sessions**: named workspaces tha
 
 ## Configuration and themes
 
-Everything is a `.jelly` file (TOML). A file can hold settings, keybinds, themes, or any mix.
+Everything is plain TOML. A file can hold settings, keybinds, themes, or any mix.
 
-- Your config lives at `~/.config/jelly/config.jelly` and reloads live when saved.
-- **Drop a `.jelly` file** onto the window, double-click it, or `open` it, and Jelly shows what it will change ("adds 2 themes, changes 3 settings"). On confirm, it merges the file into your config.
+- Your config lives at `~/.config/jelly/jelly.toml` and reloads live when saved.
+- **Drop a `.toml` file** onto the window (or **File → Import…**), and Jelly shows what it will change ("adds 2 themes, changes 3 settings"). On confirm, it merges the file into your config.
 - Bad config never breaks the app. Jelly keeps the last good values and shows a banner naming the line.
 
 Full reference: [config.md](config.md).

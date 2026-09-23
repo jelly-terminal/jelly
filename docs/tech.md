@@ -10,7 +10,7 @@
 | Terminal surface | AppKit `NSView` backed by `CAMetalLayer`, our own Metal renderer |
 | VT parsing and screen state | SwiftTerm's headless `Terminal`, behind a `TerminalEngine` protocol |
 | PTY | `forkpty` + non-blocking read loop, one I/O thread per pane |
-| Config | TOML via TOMLKit, file format `.jelly` |
+| Config | TOML via TOMLKit, `~/.config/jelly/jelly.toml` |
 | Persistence | JSON in `~/Library/Application Support/<bundle id>/` |
 | Updates | Sparkle 2 (SPM), EdDSA-signed appcast on GitHub Releases |
 | Release | GitHub Actions, Developer ID, notarized DMG ([release.md](release.md)) |
@@ -35,9 +35,9 @@ Jelly/                         App target (file-system synchronized group)
     Panes/                     SplitView, PaneHeader, TerminalPaneView (NSViewRepresentable)
     StatusBar/
     Search/
-    Import/                    .jelly drop / open → preview sheet → merge
+    Import/                    .toml drop / File → Import → preview sheet → merge
     Updates/                   UpdaterService
-  Resources/                   Assets.xcassets, Themes/*.jelly
+  Resources/                   Assets.xcassets, Themes/*.toml
 Packages/
   JellyCore/                   No UI. Config, themes, models, persistence, split tree
     Sources/JellyCore/
@@ -56,7 +56,7 @@ Packages/
       View/                    TerminalView (NSView), SelectionController
     Tests/JellyTerminalTests/
 Config/
-  Jelly-Info.plist             Sparkle keys, .jelly document type
+  Jelly-Info.plist             Sparkle keys
   Jelly.entitlements
 docs/
 scripts/release-notes.sh
@@ -192,10 +192,10 @@ Ring buffer of packed rows (cell = codepoint/grapheme index, fg, bg, attrs), lim
 
 See [config.md](config.md) for the format. Internals:
 
-- `ConfigLoader` reads `~/.config/jelly/config.jelly`, then decodes into `Settings` (typed, with defaults for every key). Unknown or invalid keys produce `Diagnostic`s with a line number instead of errors.
+- `ConfigLoader` reads `~/.config/jelly/jelly.toml`, then decodes into `Settings` (typed, with defaults for every key). Unknown or invalid keys produce `Diagnostic`s with a line number instead of errors.
 - `ConfigWatcher` uses a `DispatchSource` file-system watch on the file and its directory, so editors that write atomically are still caught. It debounces by 100ms.
-- `ConfigMerger` applies a dropped `.jelly` file to the user's config. It edits the TOML document itself rather than re-serializing, so the user's comments and ordering survive.
-- `ThemeStore` loads built-in themes from the bundle, then `~/.config/jelly/themes/*.jelly`. A user theme with the same `id` replaces the built-in one.
+- `ConfigMerger` applies a dropped `.toml` file to the user's config. It edits the TOML document itself rather than re-serializing, so the user's comments and ordering survive.
+- `ThemeStore` loads built-in themes from the bundle, then `~/.config/jelly/themes/*.toml`. A user theme with the same `id` replaces the built-in one.
 
 ## Persistence
 

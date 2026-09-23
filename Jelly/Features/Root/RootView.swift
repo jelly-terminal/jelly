@@ -38,12 +38,9 @@ struct RootView: View {
                 }
 
                 ZStack(alignment: .top) {
-                    TerminalHost(
-                        surfaces: model.sessions.flatMap { $0.workspace.tabs.map(\.surface) },
-                        selected: workspace.selectedTab?.surface
-                    )
-                    .padding(.horizontal, settings.window.paddingX)
-                    .padding(.vertical, settings.window.paddingY)
+                    PaneArea(model: model, theme: theme, settings: settings)
+                        .padding(.horizontal, Metrics.chromePadding)
+                        .padding(.bottom, settings.window.statusBar ? 0 : Metrics.chromePadding)
 
                     if workspace.tabs.isEmpty {
                         EmptySessionView(theme: theme) {
@@ -67,6 +64,7 @@ struct RootView: View {
                     StatusBar(
                         sessionName: model.selectedSession.name,
                         tabCount: workspace.tabs.count,
+                        paneCount: workspace.selectedTab?.panes.count ?? 0,
                         gridSize: workspace.selectedTab?.gridSize,
                         theme: theme
                     )
@@ -77,7 +75,8 @@ struct RootView: View {
             WindowBackground(
                 color: theme.background,
                 opacity: settings.window.backgroundOpacity,
-                blur: settings.window.blur
+                blur: settings.window.blur,
+                shade: theme.appearance == .dark ? 0.3 : 0.05
             )
         }
         .ignoresSafeArea()

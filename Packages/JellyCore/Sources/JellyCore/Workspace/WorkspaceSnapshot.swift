@@ -1,13 +1,36 @@
 import Foundation
 
 public struct WorkspaceSnapshot: Codable, Equatable, Sendable {
+    public struct Pane: Codable, Equatable, Sendable {
+        public var id: PaneID
+        public var directory: String?
+
+        public init(id: PaneID, directory: String?) {
+            self.id = id
+            self.directory = directory
+        }
+    }
+
     public struct Tab: Codable, Equatable, Sendable {
         public var directory: String?
         public var customTitle: String?
+        public var layout: PaneTree?
+        public var panes: [Pane]?
+        public var focusedPane: PaneID?
 
-        public init(directory: String?, customTitle: String?) {
+        public init(directory: String?, customTitle: String?, layout: PaneTree? = nil, panes: [Pane]? = nil, focusedPane: PaneID? = nil) {
             self.directory = directory
             self.customTitle = customTitle
+            self.layout = layout
+            self.panes = panes
+            self.focusedPane = focusedPane
+        }
+
+        public var restorableLayout: PaneTree? {
+            guard let layout, let panes else { return nil }
+            let ids = layout.panes
+            guard Set(ids).count == ids.count, Set(ids) == Set(panes.map(\.id)) else { return nil }
+            return layout
         }
     }
 

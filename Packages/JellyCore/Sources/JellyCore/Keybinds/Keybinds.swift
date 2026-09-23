@@ -17,6 +17,10 @@ public struct Keybinds: Equatable, Sendable {
         var map: [String: KeyAction] = [
             "cmd+t": .tabNew,
             "cmd+w": .paneClose,
+            "cmd+alt+w": .tabClose,
+            "cmd+shift+left": .tabMove(.left),
+            "cmd+shift+right": .tabMove(.right),
+            "cmd+ctrl+=": .paneEqualize,
             "cmd+d": .splitRight,
             "cmd+shift+d": .splitDown,
             "cmd+alt+left": .paneFocus(.left),

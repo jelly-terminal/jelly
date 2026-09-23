@@ -35,10 +35,11 @@ Jelly/                         App target (file-system synchronized group)
   Config/                      ConfigStore (loaded config, watcher, appearance, font zoom)
   Features/
     Root/                      RootView, WindowModel, WindowBackground
-    Workspace/                 SessionModel, WorkspaceModel (tabs), TabModel, ProjectStore, ActionHandler
+    Workspace/                 SessionModel, WorkspaceModel (tabs), TabModel (pane tree), PaneModel, ProjectStore, ActionHandler
+    Panes/                     PaneArea (cards, headers, dividers), PaneLayout, PaneHeader
     Sidebar/                   Sidebar (Sessions, Projects), SidebarToggle
     Tabs/                      TabBar
-    Terminal/                  TerminalHost (NSViewRepresentable hosting surfaces)
+    Terminal/                  TerminalHost (NSViewRepresentable positioning surfaces)
     StatusBar/
     Diagnostics/               Config problem banner
     Import/                    PendingImport, ImportSheet, ConfigImportService
@@ -86,7 +87,8 @@ Dependency direction: **App → JellyTerminal → JellyCore**. Only `JellyTermin
         └─▶ callbacks: title, cwd (OSC 7), grid size ─▶ TabModel ─▶ SwiftUI chrome
 ```
 
-- **Workspace model.** `WindowModel` → `[SessionModel]` → `WorkspaceModel` → `[TabModel]`, each tab owning one `TerminalSurface`. All surfaces stay alive; `TerminalHost` shows the selected session's selected tab. A restored session starts its shells only when first opened. In v0.2 each tab gets a `PaneTree` (already in `JellyCore`).
+- **Workspace model.** `WindowModel` → `[SessionModel]` → `WorkspaceModel` → `[TabModel]` → `[PaneModel]`. A tab holds a `PaneTree` layout, its panes (each owning one `TerminalSurface`), the focused pane and an optional zoomed pane. All surfaces stay alive; a restored session starts its shells only when first opened. A pane whose shell exits closes itself; the last pane closes the tab.
+- **Pane layout.** `PaneLayout` turns the tree into card frames (with `Metrics.paneGap` between them) and divider handles. `PaneArea` draws it in three layers from the same layout: card fills, then `TerminalHost` (one AppKit container holding every surface, placing the selected tab's surfaces inside their cards and hiding the rest), then headers, borders and divider handles. The container only takes hits inside card bodies, so SwiftUI handles headers and dividers. It watches the window's first responder to report which pane was clicked.
 - **Chrome vs. content.** Terminal output never touches SwiftUI state. Only title, cwd and grid-size callbacks reach `TabModel`.
 - **Config.** `ConfigStore` loads and watches the config, tracks light/dark appearance, and notifies each window, which re-applies settings and theme to its surfaces.
 
@@ -145,6 +147,7 @@ Scrollback size is `settings.scrollback`. SwiftTerm's scrollbar is hidden: it is
 ## Liquid Glass
 
 - Glass is chrome only: the selected tab (morphing between tabs with `glassEffectID`), the find button, the status capsule, the config banner, and the import sheet. Tabs share one `GlassEffectContainer`.
+- Panes are plain cards, not glass: the theme background with a hairline border. The window background is shaded slightly darker so the cards stand apart.
 - No glass behind terminal text. The window draws the theme background with `window.background-opacity`, and `window.blur` adds a behind-window `NSVisualEffectView`.
 - Sizes and spacing come from one `Metrics` object, never hardcoded in views.
 - The tab bar sits in the transparent title bar next to the traffic lights and drags the window (`WindowDragGesture`).
@@ -160,7 +163,7 @@ See [config.md](config.md) for the format. Internals:
 
 ## Persistence
 
-`SnapshotStore` writes `workspace.json` in Application Support (per bundle ID, so Debug and release never share it): sessions with their tabs' working directories and custom titles, the selected session and tab, projects, and sidebar visibility. It's saved every 5 seconds when something changed, when the window closes and on quit, so a crash or force-quit loses at most a few seconds. The first window restores it. A tab's directory is read from its shell process (`proc_pidinfo`), so it's right for any shell, with the OSC 7 value as a fallback. Running processes are not restored; each tab starts its shell in its last directory.
+`SnapshotStore` writes `workspace.json` in Application Support (per bundle ID, so Debug and release never share it): sessions with their tabs' split layouts, each pane's working directory, the focused pane and custom titles, the selected session and tab, projects, and sidebar visibility. It's saved every 5 seconds when something changed, when the window closes and on quit, so a crash or force-quit loses at most a few seconds. The first window restores it. A tab's directory is read from its shell process (`proc_pidinfo`), so it's right for any shell, with the OSC 7 value as a fallback. Pane IDs (and so `JELLY_PANE`) survive a relaunch. Running processes are not restored; each pane starts its shell in its last directory.
 
 ## Updates
 

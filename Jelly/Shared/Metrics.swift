@@ -16,6 +16,16 @@ enum Metrics {
     static let chromeFontSize: CGFloat = 12.5
     static let statusFontSize: CGFloat = 11.5
 
+    static let paneGap: CGFloat = 6
+    static let paneDividerHitWidth: CGFloat = 10
+    static let paneCornerRadius: CGFloat = 10
+    static let paneHeaderHeight: CGFloat = 28
+    static let paneHeaderPadding: CGFloat = 10
+    static let paneHeaderFontSize: CGFloat = 11.5
+    static let paneHeaderIconSize: CGFloat = 10
+    static let paneButtonSize: CGFloat = 20
+    static let paneButtonCornerRadius: CGFloat = 5
+
     static let sidebarWidth: CGFloat = 220
     static let sidebarInset: CGFloat = 8
     static let sidebarPadding: CGFloat = 8

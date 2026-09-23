@@ -6,6 +6,7 @@ struct WindowBackground: View {
     let color: ThemeColor
     let opacity: Double
     let blur: Int
+    let shade: Double
 
     var body: some View {
         ZStack {
@@ -13,6 +14,7 @@ struct WindowBackground: View {
                 BehindWindowBlur(radius: blur)
             }
             Color(color, opacity: opacity)
+            Color.black.opacity(shade * opacity)
         }
     }
 }

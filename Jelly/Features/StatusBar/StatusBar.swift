@@ -4,6 +4,7 @@ import SwiftUI
 struct StatusBar: View {
     let sessionName: String
     let tabCount: Int
+    let paneCount: Int
     let gridSize: (cols: Int, rows: Int)?
     let theme: Theme
 
@@ -17,6 +18,10 @@ struct StatusBar: View {
                 Text(sessionName)
                 separator
                 Text(tabCount == 1 ? "1 tab" : "\(tabCount) tabs")
+                if paneCount > 1 {
+                    separator
+                    Text("\(paneCount) panes")
+                }
                 if let gridSize, gridSize.cols > 0 {
                     separator
                     Text("\(gridSize.cols)×\(gridSize.rows)")

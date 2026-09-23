@@ -32,9 +32,7 @@ final class SessionModel: Identifiable {
             workspace.newTab()
             return
         }
-        for tab in restored {
-            workspace.newTab(directory: tab.directory).customTitle = tab.customTitle
-        }
+        restored.forEach(workspace.restoreTab)
         if let index = pendingSelection, workspace.tabs.indices.contains(index) {
             workspace.selectedID = workspace.tabs[index].id
         }
@@ -44,7 +42,7 @@ final class SessionModel: Identifiable {
         guard pendingTabs.isEmpty else {
             return WorkspaceSnapshot.Session(id: id, name: name, tabs: pendingTabs, selectedTab: pendingSelection)
         }
-        let tabs = workspace.tabs.map { WorkspaceSnapshot.Tab(directory: $0.surface.workingDirectory, customTitle: $0.customTitle) }
+        let tabs = workspace.tabs.map(\.snapshot)
         let selected = workspace.tabs.firstIndex { $0.id == workspace.selectedID }
         return WorkspaceSnapshot.Session(id: id, name: name, tabs: tabs, selectedTab: selected)
     }

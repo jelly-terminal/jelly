@@ -113,7 +113,7 @@ public indirect enum PaneTree: Equatable, Sendable, Codable {
         }
     }
 
-    static func divide(_ rect: CGRect, axis: Axis, ratio: Double) -> (CGRect, CGRect) {
+    public static func divide(_ rect: CGRect, axis: Axis, ratio: Double) -> (CGRect, CGRect) {
         switch axis {
         case .horizontal:
             let width = rect.width * ratio

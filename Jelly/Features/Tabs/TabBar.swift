@@ -1,5 +1,6 @@
 import JellyCore
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct TabBar: View {
     let workspace: WorkspaceModel
@@ -9,6 +10,7 @@ struct TabBar: View {
     let onFind: () -> Void
 
     @Namespace private var selection
+    @State private var draggedTab: TabModel?
 
     var body: some View {
         HStack(spacing: Metrics.tabSpacing) {
@@ -22,6 +24,11 @@ struct TabBar: View {
                             onSelect: { withAnimation(Self.animation) { workspace.selectedID = tab.id } },
                             onClose: { withAnimation(Self.animation) { onClose(tab) } }
                         )
+                        .onDrag {
+                            draggedTab = tab
+                            return NSItemProvider(object: tab.id.uuidString as NSString)
+                        }
+                        .onDrop(of: [.plainText], delegate: TabDropDelegate(target: tab, workspace: workspace, dragged: $draggedTab))
                         .transition(.asymmetric(
                             insertion: .opacity.combined(with: .scale(scale: 0.9, anchor: .leading)),
                             removal: .opacity.combined(with: .scale(scale: 0.85))
@@ -60,6 +67,26 @@ struct TabBar: View {
     }
 
     static let animation = Animation.smooth(duration: 0.22)
+}
+
+private struct TabDropDelegate: DropDelegate {
+    let target: TabModel
+    let workspace: WorkspaceModel
+    @Binding var dragged: TabModel?
+
+    func dropEntered(info: DropInfo) {
+        guard let dragged, dragged !== target else { return }
+        withAnimation(TabBar.animation) { workspace.move(dragged, before: target) }
+    }
+
+    func dropUpdated(info: DropInfo) -> DropProposal? {
+        DropProposal(operation: .move)
+    }
+
+    func performDrop(info: DropInfo) -> Bool {
+        dragged = nil
+        return true
+    }
 }
 
 private struct TabItem: View {

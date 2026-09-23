@@ -14,9 +14,24 @@ struct ActionHandler {
         switch action {
         case .tabNew:
             withAnimation(TabBar.animation) { _ = workspace.newTab() }
-        case .tabClose, .paneClose:
+        case .tabClose:
             guard let tab = workspace.selectedTab else { return false }
             withAnimation(TabBar.animation) { workspace.requestClose(tab, in: window.window) }
+        case .paneClose:
+            guard let tab = workspace.selectedTab else { return false }
+            withAnimation(TabBar.animation) { workspace.requestClose(tab.focusedPane, in: tab, window: window.window) }
+        case .splitRight:
+            workspace.split(.horizontal)
+        case .splitDown:
+            workspace.split(.vertical)
+        case .paneZoom:
+            workspace.selectedTab?.toggleZoom()
+        case .paneFocus(let direction):
+            workspace.selectedTab?.focus(toward: direction)
+        case .paneEqualize:
+            workspace.selectedTab?.equalize()
+        case .tabMove(let direction):
+            withAnimation(TabBar.animation) { workspace.moveSelected(by: direction == .left ? -1 : 1) }
         case .tabNext:
             workspace.select(offset: 1)
         case .tabPrevious:
@@ -53,8 +68,7 @@ struct ActionHandler {
             configStore.reload()
         case .text(let text):
             surface?.sendText(text)
-        case .tabRename, .splitRight, .splitDown, .paneZoom, .paneFocus, .paneEqualize,
-             .promptPrevious, .promptNext, .none:
+        case .tabRename, .promptPrevious, .promptNext, .none:
             return false
         }
         return true

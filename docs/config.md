@@ -109,7 +109,7 @@ palette = [
 | `font.cell-width` / `cell-height` | string | `"100%"` | Percentage or pixels (`"+2"`, `"-1"`). |
 | `window.background-opacity` | number | `1.0` | `0.0`–`1.0`. |
 | `window.blur` | int | `0` | Blur radius behind a transparent background. |
-| `window.padding` | table | `{ x = 10, y = 8 }` | Points around the grid. |
+| `window.padding` | table | `{ x = 10, y = 8 }` | Points between each pane's edge and its grid (`y` is the bottom; the header sits on top). |
 | `window.sidebar` | bool | `true` | Show the sidebar on launch. |
 | `window.status-bar` | bool | `true` | |
 | `cursor.style` | string | `"block"` | `block`, `bar`, `underline`. |
@@ -127,7 +127,7 @@ palette = [
 
 Keys are written as `modifiers+key`, with modifiers `cmd`, `shift`, `alt` (or `opt`), `ctrl`. Set an action to `"none"` to unbind a default.
 
-`tab.new`, `tab.close`, `tab.next`, `tab.previous`, `tab.goto:<n>`, `tab.rename`, `split.right`, `split.down`, `pane.close`, `pane.zoom`, `pane.focus:left|right|up|down`, `pane.equalize`, `session.new`, `session.next`, `session.previous`, `sidebar.toggle`, `find`, `clear`, `copy`, `paste`, `font.increase`, `font.decrease`, `font.reset`, `config.open`, `config.reload`, `prompt.previous`, `prompt.next`, `text:<string>` (sends literal text; supports `\n`, `\x1b`).
+`tab.new`, `tab.close`, `tab.next`, `tab.previous`, `tab.goto:<n>`, `tab.move:left|right`, `tab.rename`, `split.right`, `split.down`, `pane.close`, `pane.zoom`, `pane.focus:left|right|up|down`, `pane.equalize`, `session.new`, `session.next`, `session.previous`, `sidebar.toggle`, `find`, `clear`, `copy`, `paste`, `font.increase`, `font.decrease`, `font.reset`, `config.open`, `config.reload`, `prompt.previous`, `prompt.next`, `text:<string>` (sends literal text; supports `\n`, `\x1b`).
 
 ## Theme reference
 

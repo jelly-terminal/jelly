@@ -73,7 +73,11 @@ enum MainMenu {
         importItem.keyEquivalentModifierMask = [.command, .shift]
         importItem.target = target
         menu.addItem(.separator())
-        menu.addItem(item("Close Tab", .paneClose))
+        menu.addItem(item("Split Right", .splitRight))
+        menu.addItem(item("Split Down", .splitDown))
+        menu.addItem(.separator())
+        menu.addItem(item("Close Pane", .paneClose))
+        menu.addItem(item("Close Tab", .tabClose))
         menu.addItem(withTitle: "Close Window", action: #selector(NSWindow.performClose(_:)), keyEquivalent: "W")
         return menu
     }
@@ -107,6 +111,15 @@ enum MainMenu {
         menu.addItem(.separator())
         menu.addItem(item("Show Next Tab", .tabNext))
         menu.addItem(item("Show Previous Tab", .tabPrevious))
+        menu.addItem(item("Move Tab Left", .tabMove(.left)))
+        menu.addItem(item("Move Tab Right", .tabMove(.right)))
+        menu.addItem(.separator())
+        menu.addItem(item("Select Pane Left", .paneFocus(.left)))
+        menu.addItem(item("Select Pane Right", .paneFocus(.right)))
+        menu.addItem(item("Select Pane Above", .paneFocus(.up)))
+        menu.addItem(item("Select Pane Below", .paneFocus(.down)))
+        menu.addItem(item("Zoom Pane", .paneZoom))
+        menu.addItem(item("Equalize Panes", .paneEqualize))
         menu.addItem(.separator())
         menu.addItem(withTitle: "Bring All to Front", action: #selector(NSApplication.arrangeInFront(_:)), keyEquivalent: "")
         return menu

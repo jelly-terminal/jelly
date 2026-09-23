@@ -8,6 +8,7 @@ public enum KeyAction: Hashable, Sendable {
     case tabNext
     case tabPrevious
     case tabGoto(Int)
+    case tabMove(Direction)
     case tabRename
     case splitRight
     case splitDown
@@ -56,6 +57,9 @@ public enum KeyAction: Hashable, Sendable {
         case "tab.goto":
             guard let index = Int(argument), (1...9).contains(index) else { return nil }
             self = .tabGoto(index)
+        case "tab.move":
+            guard let direction = Direction(rawValue: argument), direction == .left || direction == .right else { return nil }
+            self = .tabMove(direction)
         case "pane.focus":
             guard let direction = Direction(rawValue: argument) else { return nil }
             self = .paneFocus(direction)

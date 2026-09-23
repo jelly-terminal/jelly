@@ -58,6 +58,8 @@ public struct FontSettings: Equatable, Sendable {
     public var thicken = false
     public var cellWidth = CellAdjustment.percent(100)
     public var cellHeight = CellAdjustment.percent(100)
+
+    public init() {}
 }
 
 public struct WindowSettings: Equatable, Sendable {
@@ -67,6 +69,8 @@ public struct WindowSettings: Equatable, Sendable {
     public var paddingY = 8.0
     public var sidebar = true
     public var statusBar = true
+
+    public init() {}
 }
 
 public struct CursorSettings: Equatable, Sendable {
@@ -78,6 +82,8 @@ public struct CursorSettings: Equatable, Sendable {
 
     public var style = Style.block
     public var blink = true
+
+    public init() {}
 }
 
 public struct ShellSettings: Equatable, Sendable {
@@ -91,14 +97,20 @@ public struct ShellSettings: Equatable, Sendable {
     public var args: [String] = []
     public var workingDirectory = WorkingDirectory.inherit
     public var env: [String: String] = [:]
+
+    public init() {}
 }
 
 public struct ClipboardSettings: Equatable, Sendable {
     public var copyOnSelect = false
     public var osc52Read = false
+
+    public init() {}
 }
 
 public struct UpdateSettings: Equatable, Sendable {
     public var check = true
     public var autoInstall = false
+
+    public init() {}
 }

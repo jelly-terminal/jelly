@@ -18,6 +18,11 @@ struct Sidebar: View {
                     .offset(y: -(Metrics.sidebarInset + Metrics.sidebarPadding) / 2)
             }
             .frame(height: Metrics.tabBarHeight - Metrics.sidebarInset - Metrics.sidebarPadding)
+            .background {
+                Color.clear
+                    .contentShape(.rect)
+                    .gesture(WindowDragGesture())
+            }
 
             SidebarSection(title: "Sessions", theme: theme, addHelp: "New Session") {
                 withAnimation(Self.animation) { model.newSession() }

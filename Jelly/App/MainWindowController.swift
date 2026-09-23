@@ -30,10 +30,10 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
         window.minSize = NSSize(width: 520, height: 320)
         window.tabbingMode = .disallowed
         window.titlebarSeparatorStyle = .none
-        let hosting = NSHostingController(rootView: RootView(model: model, configStore: configStore, license: license))
+        let hosting = ChromeHostingView(rootView: RootView(model: model, configStore: configStore, license: license))
         hosting.sizingOptions = []
         hosting.sceneBridgingOptions = []
-        window.contentViewController = hosting
+        window.contentView = hosting
         window.setContentSize(NSSize(width: 1100, height: 720))
         if !window.setFrameUsingName(Self.frameName) { window.center() }
         window.setFrameAutosaveName(Self.frameName)

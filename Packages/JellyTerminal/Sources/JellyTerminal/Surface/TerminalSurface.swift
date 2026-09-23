@@ -44,6 +44,16 @@ public final class TerminalSurface: LocalProcessTerminalView {
 
     public required init?(coder: NSCoder) { fatalError() }
 
+    public override func mouseDown(with event: NSEvent) {
+        if window?.firstResponder !== self { window?.makeFirstResponder(self) }
+        super.mouseDown(with: event)
+    }
+
+    public override func rightMouseDown(with event: NSEvent) {
+        if window?.firstResponder !== self { window?.makeFirstResponder(self) }
+        super.rightMouseDown(with: event)
+    }
+
     public var hasForegroundProcess: Bool {
         guard isRunning, process.childfd >= 0 else { return false }
         let group = tcgetpgrp(process.childfd)

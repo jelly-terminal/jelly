@@ -46,7 +46,7 @@ Jelly/                         App target (file-system synchronized group)
     StatusBar/
     Diagnostics/               Config problem banner
     Import/                    PendingImport, ImportSheet, ConfigImportService
-    Updates/                   UpdaterService (Sparkle)
+    Updates/                   UpdaterService (Sparkle), What's New window
     Settings/                  SettingsWindowController (toolbar tabs), one view per tab, ShortcutRecorder
   Shared/                      Metrics, AppInfo, KeyChord+Event, ThemeColor+SwiftUI, FileWatcher
   Resources/                   Assets.xcassets
@@ -181,6 +181,7 @@ Sparkle 2 via SPM, wrapped by `UpdaterService` and owned by `AppDelegate`.
 - Standard Sparkle UI in v0.1; a custom glass update sheet (`SPUUserDriver`) later.
 - **Jelly → Check for Updates…** menu item; automatic check every 24h.
 - Debug builds, and builds without `SUPublicEDKey`, never start the updater.
+- `WhatsNewPresenter` remembers the last launched version in `UserDefaults`. When it differs from the running version it fetches the GitHub release body for `v<version>` (`ReleaseNotesLoader`) and shows it with `MarkdownView` in a window. The first ever launch records the version without showing anything, and a failed fetch retries on the next launch.
 - `updates.check` and `updates.auto-install` map to Sparkle's automatic check and automatic download.
 - Because Jelly isn't sandboxed, Sparkle's sandbox extras (installer launcher service, mach-lookup exceptions) are not needed.
 

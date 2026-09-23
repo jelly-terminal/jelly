@@ -66,4 +66,8 @@ enum Metrics {
     static let markdownCornerRadius: CGFloat = 8
     static let markdownCodePadding: CGFloat = 12
     static let markdownListMarkerWidth: CGFloat = 16
+    static let whatsNewWidth: CGFloat = 560
+    static let whatsNewHeight: CGFloat = 520
+    static let whatsNewTitleSize: CGFloat = 22
+    static let whatsNewHeaderPadding: CGFloat = 16
 }

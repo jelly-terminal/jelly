@@ -61,7 +61,7 @@ Full reference: [config.md](config.md).
 
 ## Updates
 
-Jelly updates itself. It checks once a day, offers the new version with release notes, and relaunches into your restored sessions. **Jelly → Check for Updates…** checks right away.
+Jelly updates itself. It checks once a day, offers the new version with release notes, and relaunches into your restored sessions. **Jelly → Check for Updates…** checks right away. The first launch after an update opens a What’s New window with that version’s release notes; **Jelly → What’s New…** reopens it.
 
 ## Key shortcuts (defaults)
 

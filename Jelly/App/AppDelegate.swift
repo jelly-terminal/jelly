@@ -5,6 +5,7 @@ import UniformTypeIdentifiers
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var configStore: ConfigStore!
     private var updater: UpdaterService!
+    private var whatsNew: WhatsNewPresenter!
     private var projects: ProjectStore!
     private var windowControllers: [MainWindowController] = []
     private var settingsController: SettingsWindowController?
@@ -17,11 +18,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         configStore = ConfigStore()
         updater = UpdaterService()
+        whatsNew = WhatsNewPresenter(configStore: configStore)
         lastSnapshot = snapshotStore.load()
         projects = ProjectStore(lastSnapshot?.projects ?? [])
         _ = configStore.observe { [weak self] in self?.configChanged() }
         configChanged()
         startSession()
+        whatsNew.presentIfUpdated()
         autosave = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated { self?.saveSnapshot() }
         }
@@ -132,6 +135,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         settingsController?.showWindow(nil)
         settingsController?.window?.makeKeyAndOrderFront(nil)
+    }
+
+    @objc func showWhatsNew() {
+        whatsNew.present()
     }
 
     @objc func checkForUpdates() {

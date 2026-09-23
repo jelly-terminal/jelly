@@ -47,6 +47,7 @@ enum MainMenu {
         let updates = menu.addItem(withTitle: "Check for Updates…", action: #selector(AppDelegate.checkForUpdates), keyEquivalent: "")
         updates.target = target
         updates.isEnabled = updatesAvailable
+        menu.addItem(withTitle: "What’s New…", action: #selector(AppDelegate.showWhatsNew), keyEquivalent: "").target = target
         menu.addItem(.separator())
         menu.addItem(item("Settings…", .settingsOpen))
         menu.addItem(item("Open Config File…", .configOpen))

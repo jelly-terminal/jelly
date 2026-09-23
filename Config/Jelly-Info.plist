@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>SUFeedURL</key>
-	<string>https://github.com/jelly-terminal/jelly/releases/latest/download/appcast.xml</string>
+	<string>https://github.com/jelly-terminal/releases/releases/latest/download/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>3VKhZhJoIIVcT+gY2yAFeIN63qUsvCq1p+x1S9AdmqA=</string>
 	<key>SUEnableAutomaticChecks</key>

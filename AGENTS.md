@@ -40,7 +40,7 @@ docs/
 
 ```sh
 make build      # build Debug
-make debug      # build Debug and open "Jelly Debug"
+make debug      # build Debug and open "Jelly (Debug)"
 make prod       # build Release and open
 make test       # swift test in both packages
 make kill

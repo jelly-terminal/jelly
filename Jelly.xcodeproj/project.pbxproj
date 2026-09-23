@@ -275,9 +275,10 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 0.1.0;
-				INFOPLIST_KEY_CFBundleDisplayName = "Jelly Debug";
+				INFOPLIST_KEY_CFBundleDisplayName = "Jelly (Debug)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.monawwar.Jelly.Debug;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_MODULE_NAME = Jelly;
+				PRODUCT_NAME = "Jelly (Debug)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;

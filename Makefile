@@ -7,7 +7,7 @@ build:
 	$(XCB) -configuration Debug build
 
 debug: build
-	open "$(DERIVED)/Build/Products/Debug/Jelly.app"
+	open "$(DERIVED)/Build/Products/Debug/Jelly (Debug).app"
 
 prod:
 	$(XCB) -configuration Release build
@@ -19,6 +19,7 @@ test:
 
 kill:
 	-pkill -x Jelly
+	-pkill -f "Jelly (Debug).app/Contents/MacOS"
 
 clean:
 	rm -rf $(DERIVED)

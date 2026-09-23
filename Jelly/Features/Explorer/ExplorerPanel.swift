@@ -28,7 +28,7 @@ struct ExplorerPanel: View {
                                     explorer.selection = row.entry.url
                                     isFocused = true
                                 }
-                                .simultaneousGesture(TapGesture(count: 2).onEnded { activate(row.entry) })
+                                .simultaneousGesture(TapGesture(count: 2).onEnded { open(row.entry) })
                         }
                     }
                     .padding(Metrics.explorerPadding)
@@ -109,6 +109,15 @@ struct ExplorerPanel: View {
         .buttonStyle(.plain)
         .foregroundStyle(Color(theme.foreground).opacity(0.6))
         .help(help)
+    }
+
+    private func open(_ entry: ExplorerEntry) {
+        if entry.isDirectory {
+            explorer.setRoot(entry.url)
+        } else {
+            explorer.selection = entry.url
+            model.preview(entry.url)
+        }
     }
 
     private func activate(_ entry: ExplorerEntry) {

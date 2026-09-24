@@ -1,9 +1,5 @@
 DERIVED := build
-TEAM := 996Y4MJA7D
-HAS_TEAM_IDENTITY := $(shell security find-identity -v -p codesigning 2>/dev/null | grep -q "($(TEAM))" && echo yes)
-ADHOC_SIGNING := CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM= PROVISIONING_PROFILE_SPECIFIER=
-SIGNING := $(if $(HAS_TEAM_IDENTITY),,$(ADHOC_SIGNING))
-XCB := xcodebuild -project Jelly.xcodeproj -scheme Jelly -derivedDataPath $(DERIVED) -skipPackagePluginValidation $(SIGNING)
+XCB := xcodebuild -project Jelly.xcodeproj -scheme Jelly -derivedDataPath $(DERIVED) -skipPackagePluginValidation
 
 .PHONY: debug prod build test kill clean
 

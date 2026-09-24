@@ -16,7 +16,11 @@ If a change affects behaviour, a config key, or the layout, update the matching 
 
 ## Setup
 
-Requires Xcode 26+ on macOS 26+. Without a signing certificate for the Jelly team, `make` signs the app ad-hoc so it runs on your Mac. In Xcode, pick your own team under Signing & Capabilities instead, and don't commit that change.
+Requires Xcode 26+ on macOS 26+. If `xcode-select -p` points at the Command Line Tools, switch it to Xcode first:
+
+```sh
+sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+```
 
 ```sh
 git clone git@github.com:jelly-terminal/jelly.git
@@ -25,6 +29,19 @@ make debug
 ```
 
 Other targets: `make build`, `make prod`, `make test`, `make kill`, `make clean`.
+
+### Signing
+
+No Apple developer account is needed. `Config/Signing.xcconfig` signs builds ad-hoc ("Sign to Run Locally"), which is enough to run Jelly on your own Mac, from `make` or from Xcode. Ad-hoc signatures change on every build, so macOS may ask again for permissions such as notifications.
+
+To sign with your own team, create `Config/Local.xcconfig`. It is gitignored, so it stays on your machine:
+
+```
+DEVELOPMENT_TEAM = YOURTEAMID
+CODE_SIGN_IDENTITY = Apple Development
+```
+
+Don't set a team under Signing & Capabilities in Xcode: that writes it into `project.pbxproj`. If Xcode raises `objectVersion` in the project file, set Project Format back to Xcode 16.0 in the File inspector so Xcode 26 can still open it.
 
 ## Ground rules
 

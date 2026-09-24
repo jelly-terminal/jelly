@@ -28,7 +28,7 @@ SwiftTerm ships a Metal renderer (glyph atlases, CoreText run shaping, built-in 
 - SwiftTerm uses a build-tool plugin: Xcode asks to trust it once; command-line builds pass `-skipPackagePluginValidation`.
 - The Metal toolchain is a separate Xcode component: `xcodebuild -downloadComponent MetalToolchain`.
 - The project file stays at object version 77 so Xcode 26 can open it. If Xcode 27 raises it, set Project Format back to Xcode 16.0 in the File inspector.
-- `make` signs with team `996Y4MJA7D` when a certificate for it is in the keychain, and ad-hoc otherwise, so contributors can build without the team's certificates.
+- Signing comes from `Config/Signing.xcconfig`, the target's base configuration: ad-hoc by default, and `DEVELOPMENT_TEAM` plus identity from the gitignored `Config/Local.xcconfig` when present. `project.pbxproj` carries no team. Release CI passes its Developer ID team and identity on the `xcodebuild` command line.
 
 ## Project layout
 

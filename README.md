@@ -17,6 +17,8 @@
   <img src="https://github.com/user-attachments/assets/9caa0397-f89c-482a-99d0-71bcef202c49" width="820" alt="Jelly window">
 </p>
 
+> **Early development.** Jelly is a preview. Expect rough edges, and expect config keys and behaviour to change between versions until the stable launch at v1.0.0.
+
 ## What is Jelly
 
 Jelly is a terminal made for the Mac. It looks like it belongs on macOS 26, with glass-style windows and smooth, fast text, and it keeps your work tidy so you're never hunting through a pile of windows.
@@ -91,3 +93,9 @@ make clean   # remove the derived data directory
 ## Contributing
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
+## Roadmap
+
+Jelly is in early development. Saved SSH hosts are next, and the stable launch is v1.0.0.
+
+See [docs/roadmap.md](docs/roadmap.md) for everything planned.

@@ -1,29 +1,8 @@
 # Jelly: Roadmap
 
-Everything before v1 is a preview. Config keys and behaviour can change between versions.
+Jelly is in early development. Config keys and behaviour can change until the stable launch at v1.0.0.
 
-## v0.1: Core terminal
-
-- AppKit shell with a single window, SwiftUI chrome, Liquid Glass tab bar and status bar
-- `JellyTerminal`: SwiftTerm's Metal terminal view wrapped in `TerminalSurface`, shell launch, fonts with fallback, ligatures and OpenType features
-- Tabs
-- Sidebar with Sessions and Projects, restored on relaunch
-- `jelly.toml` with live reload, error banner, built-in themes, TOML import with preview
-- Sparkle updates and the release pipeline
-- Unit tests from [tech.md](tech.md#testing)
-
-**Done when:** fish + starship with FiraCode Nerd Font looks identical to Ghostty, nvim and tmux work, and a release updates to the next one.
-
-## v0.2: Workspace
-
-- Split panes with headers, zoom, keyboard focus
-- Split layout restore on relaunch and after updates
-- Search in scrollback
-- Status bar details (session, pane count, grid size)
-- Read-only file explorer following the focused pane, with a Markdown and text viewer and syntax highlighting
-- Command palette (⌘K): actions, tabs, sessions, projects and themes in one searchable list
-
-## v0.3: Connect
+## Next
 
 - Saved SSH hosts under **Connect…**, opened as a tab or a session
 - Per-host theme override (e.g. a red tint for Production)
@@ -46,3 +25,7 @@ Everything before v1 is a preview. Config keys and behaviour can change between 
 | **Native notifications** | OSC 9 / OSC 777 and "long command finished" notifications. |
 | **tmux control mode** | tmux windows and panes shown as native tabs and splits. |
 | **Own renderer** | Replace SwiftTerm's view behind `TerminalSurface` if profiling shows it's the bottleneck (libghostty is an option). |
+
+## Stable launch
+
+v1.0.0 is the first stable release. Config keys and behaviour are settled from there.

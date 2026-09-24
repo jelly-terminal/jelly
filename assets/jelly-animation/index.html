@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Jelly · Floating</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main aria-label="Floating Jelly logo">
+    <svg id="jelly" viewBox="0 0 1254 1254" role="img" aria-labelledby="title description" xmlns="http://www.w3.org/2000/svg">
+      <title id="title">Floating Jelly</title>
+      <desc id="description">A luminous jellyfish with a blue and violet glass bell, peach and gold illuminated folds, and flowing pink ribbons, floating against midnight blue.</desc>
+      <defs>
+        <radialGradient id="background" cx="53%" cy="5%" r="95%">
+          <stop stop-color="#152459"/>
+          <stop offset=".35" stop-color="#0c1237"/>
+          <stop offset=".7" stop-color="#070920"/>
+          <stop offset="1" stop-color="#020311"/>
+        </radialGradient>
+        <radialGradient id="aura">
+          <stop stop-color="#71315c" stop-opacity=".32"/>
+          <stop offset=".55" stop-color="#352752" stop-opacity=".16"/>
+          <stop offset="1" stop-color="#151638" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="tailBase" x1="0" y1="0" x2="1" y2=".6">
+          <stop stop-color="#eb81cd"/>
+          <stop offset=".2" stop-color="#783f8b"/>
+          <stop offset=".46" stop-color="#b64e81"/>
+          <stop offset=".68" stop-color="#ef7891"/>
+          <stop offset=".8" stop-color="#67409b"/>
+          <stop offset="1" stop-color="#9954bb"/>
+        </linearGradient>
+        <linearGradient id="tailLight" x1="0" y1="0" x2="1" y2="0">
+          <stop stop-color="#ffc0e3" stop-opacity=".7"/>
+          <stop offset=".34" stop-color="#f27291" stop-opacity="0"/>
+          <stop offset=".65" stop-color="#ff896d"/>
+          <stop offset="1" stop-color="#d083ff" stop-opacity=".1"/>
+        </linearGradient>
+        <linearGradient id="underside" x1=".2" y1="0" x2=".55" y2="1">
+          <stop stop-color="#261964"/>
+          <stop offset=".42" stop-color="#574185"/>
+          <stop offset=".75" stop-color="#b761ad"/>
+          <stop offset=".94" stop-color="#f28fc8"/>
+          <stop offset="1" stop-color="#ffd5b5"/>
+        </linearGradient>
+        <linearGradient id="lowerBase" x1=".1" y1=".2" x2=".9" y2=".8">
+          <stop stop-color="#b88eff"/>
+          <stop offset=".19" stop-color="#e889c9"/>
+          <stop offset=".35" stop-color="#f7818b"/>
+          <stop offset=".58" stop-color="#a3447a"/>
+          <stop offset=".8" stop-color="#6a3fc4"/>
+          <stop offset="1" stop-color="#c074f3"/>
+        </linearGradient>
+        <radialGradient id="lowerWarm" cx="27%" cy="66%" r="70%">
+          <stop stop-color="#ffdcc2"/>
+          <stop offset=".17" stop-color="#ffb8a4"/>
+          <stop offset=".38" stop-color="#ff8999" stop-opacity=".9"/>
+          <stop offset=".76" stop-color="#c3487b" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="middleBase" x1=".1" y1=".55" x2=".95" y2=".3">
+          <stop stop-color="#d791f8"/>
+          <stop offset=".18" stop-color="#ffacb5"/>
+          <stop offset=".32" stop-color="#ef796d"/>
+          <stop offset=".55" stop-color="#bb3947"/>
+          <stop offset=".74" stop-color="#a04471"/>
+          <stop offset=".87" stop-color="#5744ab"/>
+          <stop offset="1" stop-color="#a891ff"/>
+        </linearGradient>
+        <radialGradient id="middleWarm" cx="35%" cy="62%" r="65%">
+          <stop stop-color="#ffe6ad"/>
+          <stop offset=".22" stop-color="#ffa577"/>
+          <stop offset=".5" stop-color="#ff7670" stop-opacity=".6"/>
+          <stop offset=".85" stop-color="#d33f62" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="silk" x1="0" y1="0" x2="1" y2=".3">
+          <stop stop-color="#ffe5f0" stop-opacity=".67"/>
+          <stop offset=".3" stop-color="#ffbdc7" stop-opacity=".22"/>
+          <stop offset=".6" stop-color="#ffc4d7" stop-opacity="0"/>
+          <stop offset="1" stop-color="#c9a9ff" stop-opacity=".28"/>
+        </linearGradient>
+        <linearGradient id="blueSilk" x1="0" y1=".2" x2="1" y2=".6">
+          <stop stop-color="#5865ff" stop-opacity="0"/>
+          <stop offset=".6" stop-color="#9aaaff" stop-opacity=".3"/>
+          <stop offset=".87" stop-color="#90beff" stop-opacity=".65"/>
+          <stop offset="1" stop-color="#f8b4ff" stop-opacity=".25"/>
+        </linearGradient>
+        <linearGradient id="bellBase" x1=".6" y1="0" x2=".4" y2="1">
+          <stop stop-color="#78ddff"/>
+          <stop offset=".075" stop-color="#628cff"/>
+          <stop offset=".23" stop-color="#535be5"/>
+          <stop offset=".48" stop-color="#6b45ba"/>
+          <stop offset=".73" stop-color="#b563c5"/>
+          <stop offset=".9" stop-color="#e894e8"/>
+          <stop offset="1" stop-color="#ffb6d1"/>
+        </linearGradient>
+        <radialGradient id="bellWarm" cx="32%" cy="74%" r="67%" gradientTransform="translate(0 -.2) scale(1 1.25)">
+          <stop stop-color="#fff9c7"/>
+          <stop offset=".16" stop-color="#ffdda5"/>
+          <stop offset=".35" stop-color="#ff987a"/>
+          <stop offset=".52" stop-color="#ee7597" stop-opacity=".9"/>
+          <stop offset=".74" stop-color="#a360c6" stop-opacity=".22"/>
+          <stop offset="1" stop-color="#6751d8" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="bellPeach" cx="67%" cy="95%" r="60%">
+          <stop stop-color="#fff3c3"/>
+          <stop offset=".3" stop-color="#ffb49b" stop-opacity=".95"/>
+          <stop offset=".68" stop-color="#fe7da6" stop-opacity=".3"/>
+          <stop offset="1" stop-color="#aa65df" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="outerRim" x1=".3" y1=".1" x2=".6" y2="1">
+          <stop stop-color="#fff0f3"/>
+          <stop offset=".17" stop-color="#b0f5ff"/>
+          <stop offset=".36" stop-color="#80c5ff"/>
+          <stop offset=".68" stop-color="#dda2ff"/>
+          <stop offset=".86" stop-color="#ffbbeb"/>
+          <stop offset="1" stop-color="#ffe3b0"/>
+        </linearGradient>
+        <linearGradient id="warmRim" x1="0" y1="0" x2="1" y2=".15">
+          <stop stop-color="#f3baff"/>
+          <stop offset=".22" stop-color="#ffe5b8"/>
+          <stop offset=".43" stop-color="#fffbd6"/>
+          <stop offset=".73" stop-color="#fff4c7"/>
+          <stop offset="1" stop-color="#f7b9fa"/>
+        </linearGradient>
+        <linearGradient id="crown" x1="0" y1="0" x2=".1" y2="1">
+          <stop stop-color="#cbffff" stop-opacity=".9"/>
+          <stop offset=".25" stop-color="#8cdbff" stop-opacity=".42"/>
+          <stop offset="1" stop-color="#5975ff" stop-opacity="0"/>
+        </linearGradient>
+        <filter id="halo" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="22"/>
+        </filter>
+        <filter id="edgeGlow" x="-15%" y="-15%" width="130%" height="130%">
+          <feGaussianBlur stdDeviation="3"/>
+        </filter>
+        <filter id="softSilk" x="-15%" y="-15%" width="130%" height="130%">
+          <feGaussianBlur stdDeviation="9"/>
+        </filter>
+        <path id="bellShape" d="M 302,474 C 313,442 357,422 391,381 C 453,305 552,254 628,252 C 741,242 821,295 878,380 C 923,446 940,507 960,569 C 969,593 970,608 957,625 C 943,644 914,645 889,615 C 861,582 846,572 814,579 C 775,587 751,607 714,601 C 668,599 641,569 606,542 C 567,511 526,501 484,499 C 438,494 413,511 383,515 C 350,520 323,504 309,492 C 302,486 300,480 302,474 Z"/>
+        <path id="middleShape" d="M 482,486 C 468,539 422,569 377,600 C 342,622 316,639 308,653 C 323,637 343,656 363,652 C 387,650 395,639 410,646 C 435,676 476,670 508,665 C 556,658 585,677 622,711 C 658,743 686,746 721,733 C 757,719 777,721 800,737 C 826,760 839,765 867,755 C 884,749 895,751 903,761 C 902,735 876,706 852,674 C 807,618 804,569 799,526 C 714,504 582,478 482,486 Z"/>
+        <path id="lowerShape" d="M 490,637 C 471,691 428,727 394,766 C 381,781 377,792 381,801 C 395,785 416,806 442,805 C 478,805 494,796 526,803 C 570,809 593,830 623,854 C 669,891 700,905 748,891 C 775,886 787,875 780,855 C 772,830 748,806 737,779 C 712,726 718,692 712,661 Z"/>
+        <clipPath id="bellClip"><use href="#bellShape"/></clipPath>
+        <clipPath id="frontClip"><path d="M 398,475 C 427,421 483,359 534,322 C 590,282 645,270 694,283 C 752,288 791,325 817,374 C 850,438 844,479 860,530 C 872,568 890,603 914,613 C 889,615 872,577 840,576 C 798,573 759,607 714,601 C 668,599 641,569 606,542 C 567,511 526,501 484,499 C 450,497 393,506 398,475 Z"/></clipPath>
+        <clipPath id="middleClip"><use href="#middleShape"/></clipPath>
+        <clipPath id="lowerClip"><use href="#lowerShape"/></clipPath>
+      </defs>
+      <path fill="url(#background)" d="M0 0H1254V1254H0Z"/>
+      <ellipse fill="url(#aura)" cx="626" cy="619" rx="570" ry="573"/>
+      <g class="float">
+        <g opacity=".2" filter="url(#halo)" fill="#c575ea" aria-hidden="true">
+          <use href="#bellShape"/>
+          <use href="#middleShape"/>
+          <use href="#lowerShape"/>
+        </g>
+        <g class="tail">
+          <path fill="url(#tailBase)" stroke="#bb70b7" stroke-width="2" d="M 486,782 C 483,824 490,870 516,900 C 547,935 598,960 640,960 C 663,960 692,956 693,946 C 695,938 675,932 666,914 C 645,877 648,832 653,807 L 571,768 Z"/>
+          <path fill="url(#tailLight)" d="M 491,802 C 490,874 519,914 579,941 C 600,951 619,958 640,959 C 602,941 580,910 580,875 C 580,845 588,824 590,804 L 569,789 Z"/>
+          <path fill="#ff967d" opacity=".8" d="M 584,810 C 560,865 566,914 606,945 C 615,952 626,957 635,958 C 601,933 586,904 586,875 C 586,847 594,827 595,817 Z"/>
+          <path fill="url(#silk)" opacity=".3" d="M 502,843 C 503,891 535,919 566,932 C 544,910 550,883 532,870 Z"/>
+        </g>
+        <g class="lower">
+          <path fill="url(#underside)" stroke="#e398dc" stroke-width="2" d="M 382,792 C 366,825 411,847 447,853 C 476,860 502,868 530,874 L 535,797 Z"/>
+          <use href="#lowerShape" fill="url(#lowerBase)"/>
+          <g clip-path="url(#lowerClip)">
+            <use href="#lowerShape" fill="url(#lowerWarm)"/>
+            <path fill="url(#silk)" d="M 508,649 C 495,716 460,736 447,768 C 436,785 462,799 475,803 C 449,808 422,795 423,781 C 427,747 480,701 488,655 Z"/>
+            <path fill="#ffced2" opacity=".22" d="M 508,680 C 499,730 476,753 458,793 L 444,775 C 452,746 480,710 508,680 Z"/>
+            <path fill="#6b2475" opacity=".25" d="M 621,663 C 596,712 582,762 599,813 C 611,849 641,872 670,881 C 646,853 645,831 664,813 C 634,758 640,703 650,675 Z"/>
+            <path fill="url(#blueSilk)" d="M 690,668 C 676,733 699,784 730,828 C 751,857 765,874 739,880 C 715,885 699,880 692,879 C 739,869 722,851 709,829 C 672,772 661,720 670,671 Z"/>
+            <path fill="#cad9ff" opacity=".19" d="M 722,764 C 720,798 747,824 752,847 C 757,866 751,872 738,876 C 740,849 713,827 712,805 Z"/>
+          </g>
+          <use href="#lowerShape" fill="none" stroke="url(#outerRim)" stroke-width="2.1"/>
+          <path d="M 381,800 C 395,785 416,806 442,805 C 478,805 494,796 526,803 C 570,809 593,830 623,854 C 669,891 700,905 748,891 C 775,886 787,875 780,855" fill="none" stroke="url(#warmRim)" stroke-width="4" opacity=".45" filter="url(#edgeGlow)"/>
+          <path d="M 381,800 C 395,785 416,806 442,805 C 478,805 494,796 526,803 C 570,809 593,830 623,854 C 669,891 700,905 748,891 C 775,886 787,875 780,855" fill="none" stroke="url(#warmRim)" stroke-width="2.2"/>
+        </g>
+        <g class="middle">
+          <path fill="url(#underside)" stroke="#e79dea" stroke-width="2" d="M 308,653 C 294,681 327,713 372,722 C 388,726 402,735 416,740 L 495,654 C 416,621 345,622 308,653 Z"/>
+          <path fill="url(#underside)" stroke="#e9a1df" stroke-width="2" d="M 727,724 C 752,785 785,818 830,813 C 865,811 912,785 903,760 C 886,732 817,717 727,724 Z"/>
+          <use href="#middleShape" fill="url(#middleBase)"/>
+          <g clip-path="url(#middleClip)">
+            <use href="#middleShape" fill="url(#middleWarm)"/>
+            <path fill="url(#blueSilk)" d="M 470,505 C 448,553 406,581 359,612 C 335,628 320,641 315,648 C 340,638 348,654 369,649 C 403,630 411,617 437,594 C 465,568 481,538 487,509 Z"/>
+            <path fill="url(#silk)" d="M 508,496 C 492,553 459,586 425,618 C 393,649 421,662 457,666 C 423,650 438,631 455,614 C 495,576 525,535 531,504 Z"/>
+            <path fill="#ffddd0" opacity=".24" d="M 520,558 C 486,592 451,610 439,630 C 433,640 445,649 455,656 C 464,619 502,586 552,552 C 543,546 531,550 520,558 Z"/>
+            <path fill="#c33960" opacity=".23" d="M 641,534 C 631,585 605,620 608,657 C 607,690 631,718 656,733 C 650,714 646,687 668,678 C 638,625 673,573 675,546 Z"/>
+            <path fill="url(#silk)" opacity=".65" d="M 727,554 C 722,604 747,660 765,690 C 778,711 790,725 804,740 C 780,723 750,717 731,725 C 742,713 729,705 720,684 C 702,646 696,602 704,566 Z"/>
+            <path fill="url(#blueSilk)" d="M 780,539 C 785,609 807,653 846,701 C 864,723 888,739 901,758 C 870,742 857,756 841,756 C 859,737 841,714 822,692 C 785,650 765,604 765,552 Z"/>
+          </g>
+          <path fill="none" stroke="url(#outerRim)" stroke-width="2.3" d="M 482,486 C 468,539 422,569 377,600 C 342,622 316,639 308,653 M 799,526 C 804,569 807,618 852,674 C 876,706 902,735 903,761"/>
+          <path class="rim" fill="none" stroke="url(#warmRim)" stroke-width="3" d="M 308,653 C 323,637 343,656 363,652 C 387,650 395,639 410,646 C 435,676 476,670 508,665 C 556,658 585,677 622,711 C 658,743 686,746 721,733 C 757,719 777,721 800,737 C 826,760 839,765 867,755 C 884,749 895,751 903,761"/>
+          <path fill="none" stroke="#fff0bd" stroke-width="1.5" opacity=".8" d="M 409,642 C 422,667 471,671 509,663 C 561,655 588,680 622,710 C 659,743 686,743 721,731"/>
+        </g>
+        <g class="bell">
+          <path fill="url(#underside)" stroke="#f6a0e6" stroke-width="2.3" d="M 303,473 C 285,515 328,554 377,565 C 413,573 437,568 460,551 L 496,487 Z"/>
+          <path fill="url(#underside)" stroke="#ffb7dd" stroke-width="2.4" d="M 781,557 C 794,622 834,660 880,659 C 919,658 960,645 966,609 L 934,560 Z"/>
+          <path fill="#ff96ad" opacity=".2" d="M 797,570 C 805,609 833,647 876,654 C 837,652 818,639 808,621 Z"/>
+          <use href="#bellShape" fill="url(#bellBase)"/>
+          <g clip-path="url(#bellClip)">
+            <use href="#bellShape" fill="url(#bellWarm)" opacity=".22"/>
+            <use href="#bellShape" fill="url(#bellWarm)" clip-path="url(#frontClip)"/>
+            <use href="#bellShape" fill="url(#bellPeach)"/>
+            <path fill="url(#crown)" d="M 320,446 C 401,368 474,290 582,263 C 661,242 742,268 793,303 C 868,355 913,440 935,522 C 914,449 868,393 821,346 C 748,270 663,258 591,280 C 481,314 405,391 320,446 Z"/>
+            <path fill="url(#silk)" opacity=".55" d="M 393,382 C 468,307 555,271 627,270 C 527,313 478,361 429,422 C 407,450 400,482 404,496 C 378,506 345,481 351,461 C 357,430 376,412 393,382 Z"/>
+            <path fill="url(#silk)" d="M 398,475 C 427,421 483,359 534,322 C 590,282 645,270 694,283 C 626,275 565,316 525,356 C 479,402 452,453 433,483 C 429,490 450,496 475,494 C 443,506 420,500 405,496 C 394,493 393,486 398,475 Z"/>
+            <path fill="#ffedcc" opacity=".15" d="M 408,489 C 425,446 477,389 533,347 C 576,315 610,298 647,295 C 571,340 550,386 522,427 C 508,447 488,474 477,488 C 448,490 424,494 408,489 Z"/>
+            <path fill="#6732b5" opacity=".1" filter="url(#softSilk)" d="M 641,327 C 690,302 727,316 751,349 C 780,394 770,451 781,492 C 788,525 800,548 808,564 C 765,584 731,589 693,569 C 663,553 648,533 638,511 C 662,463 649,421 623,402 C 599,385 617,350 641,327 Z"/>
+            <path fill="url(#blueSilk)" d="M 660,280 C 733,275 786,313 817,374 C 850,438 844,479 860,530 C 872,568 890,603 914,613 C 935,620 944,594 940,575 C 931,503 907,421 864,363 C 817,301 739,266 660,280 Z"/>
+            <path fill="#e0b7ff" opacity=".16" d="M 809,365 C 843,407 846,447 854,494 C 861,542 869,571 891,602 C 858,576 844,553 835,512 C 824,464 836,416 809,365 Z"/>
+            <path fill="#ffd6e6" opacity=".13" d="M 813,502 C 829,518 835,547 846,572 C 819,572 797,579 777,586 C 798,570 831,567 823,544 Z"/>
+          </g>
+          <use href="#bellShape" fill="none" stroke="url(#outerRim)" stroke-width="2.6"/>
+          <path fill="none" stroke="#b8f5ff" stroke-width="5" opacity=".38" filter="url(#edgeGlow)" d="M 392,381 C 453,305 552,254 628,252 C 741,242 821,295 878,380 C 923,446 940,507 960,569"/>
+          <path fill="none" stroke="#bef6ff" stroke-width="1.6" d="M 457,319 C 509,280 579,253 628,252 C 741,242 821,295 878,380 C 897,407 912,436 922,461"/>
+          <path fill="none" stroke="#ffe5f4" stroke-width="4" opacity=".65" filter="url(#edgeGlow)" d="M 333,441 C 361,416 376,401 391,381 C 419,348 447,322 479,302"/>
+          <path fill="none" stroke="#fff1e3" stroke-width="1.8" opacity=".75" d="M 398,475 C 427,421 483,359 534,322 C 590,282 645,270 694,283"/>
+          <path class="rim" fill="none" stroke="url(#warmRim)" stroke-width="4.5" opacity=".6" filter="url(#edgeGlow)" d="M 308,489 C 329,511 355,520 383,515 C 413,511 438,494 484,499 C 526,501 567,511 606,542 C 641,569 668,599 714,601 C 751,607 775,587 814,579 C 846,572 861,582 889,615"/>
+          <path fill="none" stroke="url(#warmRim)" stroke-width="2.8" d="M 308,489 C 329,511 355,520 383,515 C 413,511 438,494 484,499 C 526,501 567,511 606,542 C 641,569 668,599 714,601 C 751,607 775,587 814,579 C 846,572 861,582 889,615"/>
+          <path fill="none" stroke="#fffbd7" stroke-width="4" stroke-linecap="round" opacity=".9" d="M 478,493 C 524,491 568,510 594,530"/>
+        </g>
+      </g>
+    </svg>
+  </main>
+  <nav class="controls" aria-label="Animation controls">
+    <button id="pause" type="button" aria-pressed="false">Pause</button>
+    <span class="divider" aria-hidden="true"></span>
+    <button id="still" type="button" aria-pressed="false">Original pose</button>
+    <span class="divider" aria-hidden="true"></span>
+    <label for="motion">Motion</label>
+    <input id="motion" type="range" min="0.25" max="1.75" step="0.05" value="1" aria-label="Animation speed">
+  </nav>
+  <script src="animation.js"></script>
+</body>
+</html>

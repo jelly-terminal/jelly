@@ -2,6 +2,8 @@
 
 ## Stack
 
+The standalone brand animation in `assets/jelly-animation/` is an HTML/SVG study, separate from the native app. It draws the jellyfish with paths and gradients, uses no image assets or libraries, and supports pausing, the original pose, and reduced motion. See its README for preview and embedding details.
+
 | Layer | Choice |
 |---|---|
 | Language | Swift 6, strict concurrency, MainActor by default in the app target |

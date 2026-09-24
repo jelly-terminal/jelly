@@ -54,11 +54,13 @@ final class WhatsNewPresenter {
         let view = WhatsNewView(version: version, document: document, style: style) { [weak self] in
             self?.window?.close()
         }
-        let window = NSWindow(contentViewController: NSHostingController(rootView: view))
+        let controller = NSHostingController(rootView: view)
+        let window = NSWindow(contentViewController: controller)
         window.styleMask = [.titled, .closable]
         window.title = "What’s New"
         window.isReleasedWhenClosed = false
         window.appearance = NSAppearance(named: theme.appearance == .dark ? .darkAqua : .aqua)
+        window.setContentSize(controller.view.fittingSize)
         window.center()
         window.makeKeyAndOrderFront(nil)
         self.window = window

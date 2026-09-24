@@ -22,13 +22,15 @@ final class OnboardingPresenter {
         let view = OnboardingView(theme: theme, keybinds: configStore.config.keybinds) { [weak self] in
             self?.window?.close()
         }
-        let window = NSWindow(contentViewController: NSHostingController(rootView: view))
+        let controller = NSHostingController(rootView: view)
+        let window = NSWindow(contentViewController: controller)
         window.styleMask = [.titled, .closable, .fullSizeContentView]
         window.titlebarAppearsTransparent = true
         window.titleVisibility = .hidden
         window.isMovableByWindowBackground = true
         window.isReleasedWhenClosed = false
         window.appearance = NSAppearance(named: theme.appearance == .dark ? .darkAqua : .aqua)
+        window.setContentSize(controller.view.fittingSize)
         window.center()
         closeObserver = NotificationCenter.default.addObserver(
             forName: NSWindow.willCloseNotification,

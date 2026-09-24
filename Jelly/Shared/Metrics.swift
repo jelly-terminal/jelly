@@ -82,4 +82,15 @@ enum Metrics {
     static let whatsNewHeight: CGFloat = 520
     static let whatsNewTitleSize: CGFloat = 22
     static let whatsNewHeaderPadding: CGFloat = 16
+
+    static let onboardingWidth: CGFloat = 480
+    static let onboardingPadding: CGFloat = 36
+    static let onboardingSpacing: CGFloat = 24
+    static let onboardingIconSize: CGFloat = 128
+    static let onboardingTitleSize: CGFloat = 26
+    static let onboardingRowSpacing: CGFloat = 14
+    static let onboardingSymbolSize: CGFloat = 18
+    static let onboardingSymbolWidth: CGFloat = 28
+    static let onboardingKeyPaddingH: CGFloat = 8
+    static let onboardingKeyPaddingV: CGFloat = 3
 }

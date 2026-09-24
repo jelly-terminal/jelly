@@ -13,6 +13,10 @@ final class WhatsNewPresenter {
         self.configStore = configStore
     }
 
+    var isFirstLaunch: Bool {
+        UserDefaults.standard.string(forKey: Self.lastLaunchedVersionKey) == nil
+    }
+
     func presentIfUpdated() {
         let defaults = UserDefaults.standard
         let version = AppInfo.version

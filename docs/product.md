@@ -64,6 +64,8 @@ Full reference: [config.md](config.md).
 
 Jelly updates itself. It checks once a day, offers the new version with release notes, and relaunches into your restored sessions. **Jelly → Check for Updates…** checks right away. The first launch after an update opens a What’s New window with that version’s release notes; **Jelly → What’s New…** reopens it.
 
+The very first launch opens a Welcome window before any terminal: the Jelly icon, a line about sessions, and the key features (sessions, split panes, the built-in explorer, the command palette) with their current shortcuts. **Get Started** or closing it opens the first window. **Help → Welcome to Jelly** shows it again.
+
 ## Key shortcuts (defaults)
 
 | Action | Keys |

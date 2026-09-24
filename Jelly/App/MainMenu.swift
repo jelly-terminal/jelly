@@ -130,6 +130,7 @@ enum MainMenu {
 
     private static func helpMenu(target: AppDelegate) -> NSMenu {
         let menu = NSMenu(title: "Help")
+        menu.addItem(withTitle: "Welcome to \(AppInfo.name)", action: #selector(AppDelegate.showWelcome), keyEquivalent: "").target = target
         menu.addItem(withTitle: "Report a Bug…", action: #selector(AppDelegate.reportBug), keyEquivalent: "").target = target
         menu.addItem(.separator())
         menu.addItem(withTitle: "Documentation", action: #selector(AppDelegate.openDocumentation), keyEquivalent: "").target = target

@@ -6,6 +6,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var configStore: ConfigStore!
     private var updater: UpdaterService!
     private var whatsNew: WhatsNewPresenter!
+    private var onboarding: OnboardingPresenter!
     private var projects: ProjectStore!
     private var windowControllers: [MainWindowController] = []
     private var settingsController: SettingsWindowController?
@@ -20,13 +21,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         configStore = ConfigStore()
         updater = UpdaterService()
         whatsNew = WhatsNewPresenter(configStore: configStore)
+        onboarding = OnboardingPresenter(configStore: configStore)
         let saved = snapshotStore.load()
         closedWindows = saved?.windows ?? []
         frontWindow = saved?.frontWindow
         projects = ProjectStore(saved?.projects ?? [])
         _ = configStore.observe { [weak self] in self?.configChanged() }
         configChanged()
-        startSession()
+        if whatsNew.isFirstLaunch {
+            onboarding.present { [weak self] in self?.startSession() }
+        } else {
+            startSession()
+        }
         whatsNew.presentIfUpdated()
         autosave = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated { self?.saveSnapshot() }
@@ -156,6 +162,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc func showWhatsNew() {
         whatsNew.present()
+    }
+
+    @objc func showWelcome() {
+        onboarding.present()
     }
 
     @objc func reportBug() {

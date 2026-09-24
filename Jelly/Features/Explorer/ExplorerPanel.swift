@@ -137,6 +137,13 @@ struct ExplorerPanel: View {
         }
     }
 
+    private func removeLastFilterCharacter() -> KeyPress.Result {
+        guard !explorer.filter.isEmpty else { return .ignored }
+        explorer.filter.removeLast()
+        explorer.selection = explorer.rows.first?.entry.url
+        return .handled
+    }
+
     private func handle(_ press: KeyPress) -> KeyPress.Result {
         let command = press.modifiers.contains(.command)
         switch press.key {
@@ -159,9 +166,11 @@ struct ExplorerPanel: View {
         case .escape:
             if explorer.filter.isEmpty { model.focusTerminal() } else { explorer.filter = "" }
         case .delete, .deleteForward, KeyEquivalent("\u{08}"):
-            guard !explorer.filter.isEmpty else { return .ignored }
-            explorer.filter.removeLast()
+            return removeLastFilterCharacter()
         default:
+            if press.characters == "\u{7F}" || press.characters == "\u{08}" {
+                return removeLastFilterCharacter()
+            }
             guard press.modifiers.isSubset(of: [.shift]), press.characters.count == 1,
                   let char = press.characters.first, char.isLetter || char.isNumber || char.isPunctuation
             else { return .ignored }

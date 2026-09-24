@@ -6,6 +6,8 @@
 	<string>https://github.com/jelly-terminal/jelly/releases/latest/download/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>3VKhZhJoIIVcT+gY2yAFeIN63qUsvCq1p+x1S9AdmqA=</string>
+	<key>PostHogAPIKey</key>
+	<string>phc_kBFpEpfrXfvDpAqBGQqcVmGKsxmDo9j4UzWTKpBNRJGZ</string>
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
 </dict>

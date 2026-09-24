@@ -6,6 +6,7 @@ import UniformTypeIdentifiers
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var configStore: ConfigStore!
     private var updater: UpdaterService!
+    private let telemetry = TelemetryService()
     private var whatsNew: WhatsNewPresenter!
     private var onboarding: OnboardingPresenter!
     private var windowControllers: [MainWindowController] = []
@@ -266,5 +267,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             keepsSessions: configStore.settings.session.keepAlive
         )
         updater.apply(configStore.settings.updates)
+        telemetry.apply(configStore.settings.telemetry)
     }
 }

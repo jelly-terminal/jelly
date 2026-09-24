@@ -78,6 +78,9 @@ auto-install = false
 enabled = true
 watch = ["claude"]
 notify = "unfocused"
+
+[settings.telemetry]
+enabled = true
 notify-finished = true
 notify-sound = true
 idle-after = 5
@@ -138,6 +141,7 @@ palette = [
 | `clipboard.osc52-read` | bool | `false` | Let programs read the clipboard. Write is always allowed. |
 | `updates.check` | bool | `true` | Daily update check. |
 | `updates.auto-install` | bool | `false` | Download in the background and install on quit. |
+| `telemetry.enabled` | bool | `true` | Send anonymous usage data (see [product.md](product.md#telemetry)). |
 | `agents.enabled` | bool | `true` | Watch panes for coding agents and show whether they're working, need you, or are done. |
 | `agents.watch` | [string] | `["claude"]` | Built-in agents to watch: `claude`, `codex`, `gemini`, `opencode`, `amp`, `cursor`, `copilot`, `aider`, `goose`, `crush`, `qwen`. |
 | `agents.notify` | string | `"unfocused"` | `unfocused` (only when you aren't looking at that pane), `always`, `never`. |

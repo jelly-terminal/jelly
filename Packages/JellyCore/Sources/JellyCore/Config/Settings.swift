@@ -12,6 +12,7 @@ public struct Settings: Equatable, Sendable {
     public var updates = UpdateSettings()
     public var agents = AgentSettings()
     public var session = SessionSettings()
+    public var telemetry = TelemetrySettings()
 
     public init() {}
 }
@@ -125,6 +126,12 @@ public struct SessionSettings: Equatable, Sendable {
 public struct UpdateSettings: Equatable, Sendable {
     public var check = true
     public var autoInstall = false
+
+    public init() {}
+}
+
+public struct TelemetrySettings: Equatable, Sendable {
+    public var enabled = true
 
     public init() {}
 }

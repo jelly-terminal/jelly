@@ -25,6 +25,9 @@ public enum DefaultConfig {
     # watch = ["claude"]
     # notify = "unfocused"
 
+    [settings.telemetry]
+    # enabled = true
+
     [keybinds]
     # "cmd+d" = "split.right"
 

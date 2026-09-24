@@ -51,6 +51,10 @@ enum SettingsDecoder {
             settings.session.keepAlive = session.bool("keep-alive") ?? settings.session.keepAlive
             reader.merge(session)
         }
+        if var telemetry = reader.table("telemetry") {
+            settings.telemetry.enabled = telemetry.bool("enabled") ?? settings.telemetry.enabled
+            reader.merge(telemetry)
+        }
         if var agents = reader.table("agents") {
             decodeAgents(&agents, into: &settings.agents)
             reader.merge(agents)

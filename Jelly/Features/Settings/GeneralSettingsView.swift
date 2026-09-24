@@ -48,6 +48,14 @@ struct GeneralSettingsView: View {
                         .onSubmit(saveProgram)
                         .onChange(of: isEditingProgram) { _, editing in if !editing { saveProgram() } }
                 }
+
+                Section {
+                    Toggle("Share anonymous usage data", isOn: configStore.toggle(\.telemetry.enabled, at: "telemetry", "enabled"))
+                } header: {
+                    Text("Privacy")
+                } footer: {
+                    Text("Sends the app and macOS version with a random ID when \(AppInfo.name) opens and once a day. Nothing you type, run or see in a terminal is ever sent.")
+                }
             }
         }
         .onAppear { program = settings.shell.program ?? "" }

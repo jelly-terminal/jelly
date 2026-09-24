@@ -54,6 +54,7 @@ Jelly/                         App target (file-system synchronized group)
     Diagnostics/               Config problem banner
     Import/                    PendingImport, ImportSheet, ConfigImportService
     Updates/                   UpdaterService (Sparkle), What's New window
+    Telemetry/                 TelemetryService (PostHog capture over URLSession)
     Settings/                  SettingsWindowController (toolbar tabs), one view per tab, ShortcutRecorder
   Shared/                      Metrics, AppInfo, KeyChord+Event, ThemeColor+SwiftUI, FileWatcher
   Resources/                   Assets.xcassets
@@ -218,6 +219,15 @@ Sparkle 2 via SPM, wrapped by `UpdaterService` and owned by `AppDelegate`.
 - Because Jelly isn't sandboxed, Sparkle's sandbox extras (installer launcher service, mach-lookup exceptions) are not needed.
 
 Pipeline and keys: [release.md](release.md).
+
+## Telemetry
+
+`TelemetryService`, owned by `AppDelegate`, POSTs events to PostHog's `/batch/` endpoint (US cloud) with `URLSession`. There is no SDK.
+
+- The project key is `PostHogAPIKey` in `Config/Jelly-Info.plist`. Debug builds, and builds without the key, never send.
+- The install ID is a random UUID in `UserDefaults`. Events set `$process_person_profile = false` and `$geoip_disable = true`.
+- `app_launched` is sent once per process; `app_active` at most once per calendar day, checked at launch and hourly.
+- `telemetry.enabled` is applied live on every config change.
 
 ## Performance budgets
 

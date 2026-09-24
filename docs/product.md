@@ -66,6 +66,15 @@ Jelly updates itself. It checks once a day, offers the new version with release 
 
 The very first launch opens a Welcome window before any terminal: the Jelly icon, a line about sessions, and the key features (sessions, split panes, the built-in explorer, the command palette) with their current shortcuts. **Get Started** or closing it opens the first window. **Help → Welcome to Jelly** shows it again.
 
+
+## Telemetry
+
+Jelly sends anonymous usage data to PostHog so we know how many people use it and on which versions. It is on by default and turned off with **Settings → General → Share anonymous usage data** or `telemetry.enabled = false`.
+
+- `app_launched` on every launch and `app_active` once per day, each with the app version, macOS version, CPU architecture, locale and a random install ID.
+- Nothing typed, run or shown in a terminal is sent, and neither are paths, titles, commands or config.
+- No person profiles and no GeoIP lookup. Debug builds never send anything.
+
 ## Key shortcuts (defaults)
 
 | Action | Keys |

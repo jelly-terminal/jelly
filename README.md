@@ -72,7 +72,7 @@ Jelly isn't distributed outside this repo yet. Build it from source below, or gr
 
 ## Build from source
 
-Requires Xcode 26+ on macOS 26+. No Apple developer account is needed; see [Signing](CONTRIBUTING.md#signing).
+Requires Xcode 26+ on macOS 26+ and the Metal toolchain (`xcodebuild -downloadComponent MetalToolchain`). No Apple developer account is needed; see [Signing](CONTRIBUTING.md#signing).
 
 ```sh
 git clone git@github.com:jelly-terminal/jelly.git

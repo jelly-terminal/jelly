@@ -22,6 +22,12 @@ Requires Xcode 26+ on macOS 26+. If `xcode-select -p` points at the Command Line
 sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 ```
 
+The terminal renderer needs Xcode's Metal toolchain, which is installed separately:
+
+```sh
+xcodebuild -downloadComponent MetalToolchain
+```
+
 ```sh
 git clone git@github.com:jelly-terminal/jelly.git
 cd jelly

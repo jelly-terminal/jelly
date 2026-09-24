@@ -7,7 +7,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var updater: UpdaterService!
     private var whatsNew: WhatsNewPresenter!
     private var onboarding: OnboardingPresenter!
-    private var projects: ProjectStore!
     private var windowControllers: [MainWindowController] = []
     private var settingsController: SettingsWindowController?
     private var pendingOpenURLs: [URL] = []
@@ -25,7 +24,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let saved = snapshotStore.load()
         closedWindows = saved?.windows ?? []
         frontWindow = saved?.frontWindow
-        projects = ProjectStore(saved?.projects ?? [])
         _ = configStore.observe { [weak self] in self?.configChanged() }
         configChanged()
         if whatsNew.isFirstLaunch {
@@ -88,7 +86,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @discardableResult
     private func openWindow(restoring snapshot: WorkspaceSnapshot.Window?) -> MainWindowController {
-        let controller = MainWindowController(configStore: configStore, projects: projects, snapshot: snapshot)
+        let controller = MainWindowController(configStore: configStore, snapshot: snapshot)
         controller.onClose = { [weak self, weak controller] snapshot in
             guard let self else { return }
             self.windowControllers.removeAll { $0 === controller }
@@ -202,8 +200,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func saveSnapshot() {
         let snapshot = windowControllers.isEmpty
-            ? WorkspaceSnapshot(windows: closedWindows, frontWindow: nil, projects: projects.snapshot)
-            : WorkspaceSnapshot(windows: windowControllers.map(\.model.snapshot), frontWindow: frontIndex, projects: projects.snapshot)
+            ? WorkspaceSnapshot(windows: closedWindows, frontWindow: nil)
+            : WorkspaceSnapshot(windows: windowControllers.map(\.model.snapshot), frontWindow: frontIndex)
         guard snapshot != savedSnapshot else { return }
         snapshotStore.save(snapshot)
         savedSnapshot = snapshot

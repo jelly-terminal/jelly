@@ -14,7 +14,6 @@ struct WorkspaceSnapshotTests {
         #expect(snapshot.windows[0].sessions.map(\.name) == ["Default"])
         #expect(snapshot.windows[0].selectedSession == snapshot.windows[0].sessions[0].id)
         #expect(snapshot.windows[0].sidebarVisible == false)
-        #expect(snapshot.projects.map(\.name) == ["tmp"])
     }
 
     @Test func emptyFileLoadsWithNoWindows() throws {

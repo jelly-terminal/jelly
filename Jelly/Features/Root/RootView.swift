@@ -13,7 +13,7 @@ struct RootView: View {
 
         HStack(spacing: 0) {
             if model.isSidebarVisible {
-                Sidebar(model: model, projects: model.projects, theme: theme, backgroundOpacity: settings.window.backgroundOpacity)
+                Sidebar(model: model, theme: theme, backgroundOpacity: settings.window.backgroundOpacity)
                     .transition(.move(edge: .leading).combined(with: .opacity))
             }
 

@@ -12,9 +12,9 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
     private var observerID: UUID?
     private var trafficLights: TrafficLights?
 
-    init(configStore: ConfigStore, projects: ProjectStore, snapshot: WorkspaceSnapshot.Window?) {
+    init(configStore: ConfigStore, snapshot: WorkspaceSnapshot.Window?) {
         self.configStore = configStore
-        model = WindowModel(configStore: configStore, projects: projects, snapshot: snapshot)
+        model = WindowModel(configStore: configStore, snapshot: snapshot)
 
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 1100, height: 720),

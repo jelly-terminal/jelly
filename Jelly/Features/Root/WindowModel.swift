@@ -18,13 +18,11 @@ final class WindowModel {
     var palette: PaletteModel?
 
     @ObservationIgnored let configStore: ConfigStore
-    @ObservationIgnored let projects: ProjectStore
     @ObservationIgnored let explorer = ExplorerModel()
     @ObservationIgnored weak var window: NSWindow?
 
-    init(configStore: ConfigStore, projects: ProjectStore, snapshot: WorkspaceSnapshot.Window?) {
+    init(configStore: ConfigStore, snapshot: WorkspaceSnapshot.Window?) {
         self.configStore = configStore
-        self.projects = projects
         let restored = (snapshot?.sessions ?? []).map {
             SessionModel(id: $0.id, name: $0.name, configStore: configStore, tabs: $0.tabs, selectedTab: $0.selectedTab)
         }
@@ -121,11 +119,6 @@ final class WindowModel {
 
     func moveSessions(from source: IndexSet, to destination: Int) {
         sessions.move(fromOffsets: source, toOffset: destination)
-    }
-
-    func open(_ project: ProjectStore.Project) {
-        withAnimation(TabBar.animation) { _ = workspace.newTab(directory: project.path) }
-        focusTerminal()
     }
 
     func toggleExplorer() {

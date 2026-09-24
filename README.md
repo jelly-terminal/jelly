@@ -24,7 +24,6 @@
 Jelly is a terminal made for the Mac. It looks like it belongs on macOS 26, with glass-style windows and smooth, fast text, and it keeps your work tidy so you're never hunting through a pile of windows.
 
 - **Sessions.** Group your work into named spaces like *Work*, *Personal* or *Side project*. Switch between them in one click and every tab and split comes with you. Everything is restored the next time you open Jelly.
-- **Projects.** Save your favourite folders in the sidebar. Click one to open a new tab right there, or drag a folder in to add it.
 - **Tabs and splits.** Split any tab right or down as many times as you like. Drag tabs to reorder them, zoom into one pane, and search through everything a pane has printed.
 - **File explorer.** Press ⌘E to see a live file tree of the folder you're working in. It follows you as you move around and updates as files change, which is handy for watching what an AI agent is doing.
 - **Built-in previewer.** Press ⌘⇧M to read Markdown files nicely formatted, or any code file with syntax colours, without leaving the terminal. It refreshes when the file changes.
@@ -62,7 +61,7 @@ Every shortcut can be changed in Settings → Keybinds.
 
 - **Fast.** GPU-drawn, easy on your battery, smooth even under heavy output.
 - **Compatible.** Your shell, prompt and font look the same as in Ghostty or iTerm2.
-- **Organized.** Sessions and projects instead of a pile of unnamed windows.
+- **Organized.** Sessions instead of a pile of unnamed windows.
 - **Simple to configure.** Settings in the app, or one plain text file.
 - **Truly native.** Built for the Mac, not a web page in disguise.
 

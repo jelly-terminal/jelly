@@ -30,7 +30,7 @@ struct OnboardingFeature: Identifiable {
         OnboardingFeature(
             symbol: "command",
             title: "Command palette",
-            detail: "Search actions, tabs, sessions, projects and themes.",
+            detail: "Search actions, tabs, sessions and themes.",
             action: .paletteToggle
         ),
     ]

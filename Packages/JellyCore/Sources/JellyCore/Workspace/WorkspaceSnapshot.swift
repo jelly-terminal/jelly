@@ -48,16 +48,6 @@ public struct WorkspaceSnapshot: Codable, Equatable, Sendable {
         }
     }
 
-    public struct Project: Codable, Equatable, Sendable {
-        public var path: String
-        public var name: String
-
-        public init(path: String, name: String) {
-            self.path = path
-            self.name = name
-        }
-    }
-
     public struct Window: Codable, Equatable, Sendable {
         public var sessions: [Session]
         public var selectedSession: UUID?
@@ -74,21 +64,18 @@ public struct WorkspaceSnapshot: Codable, Equatable, Sendable {
 
     public var windows: [Window]
     public var frontWindow: Int?
-    public var projects: [Project]
 
-    public init(windows: [Window], frontWindow: Int?, projects: [Project]) {
+    public init(windows: [Window], frontWindow: Int?) {
         self.windows = windows
         self.frontWindow = frontWindow
-        self.projects = projects
     }
 
     private enum CodingKeys: String, CodingKey {
-        case windows, frontWindow, projects, sessions, selectedSession, sidebarVisible
+        case windows, frontWindow, sessions, selectedSession, sidebarVisible
     }
 
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        projects = try container.decodeIfPresent([Project].self, forKey: .projects) ?? []
         frontWindow = try container.decodeIfPresent(Int.self, forKey: .frontWindow)
         if let windows = try container.decodeIfPresent([Window].self, forKey: .windows) {
             self.windows = windows
@@ -107,6 +94,5 @@ public struct WorkspaceSnapshot: Codable, Equatable, Sendable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(windows, forKey: .windows)
         try container.encodeIfPresent(frontWindow, forKey: .frontWindow)
-        try container.encode(projects, forKey: .projects)
     }
 }

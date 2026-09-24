@@ -4,7 +4,6 @@ enum PaletteSources {
         ActionPaletteSource(),
         TabPaletteSource(),
         SessionPaletteSource(),
-        ProjectPaletteSource(),
         ThemePaletteSource(),
     ]
 }

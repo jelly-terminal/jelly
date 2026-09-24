@@ -1,10 +1,8 @@
-import AppKit
 import JellyCore
 import SwiftUI
 
 struct Sidebar: View {
     @Bindable var model: WindowModel
-    let projects: ProjectStore
     let theme: Theme
     let backgroundOpacity: Double
 
@@ -32,25 +30,6 @@ struct Sidebar: View {
                 }
             }
 
-            SidebarSection(title: "Projects", theme: theme, addHelp: "Add Project Folder", onAdd: addProject) {
-                if projects.projects.isEmpty {
-                    Text("Drop folders here")
-                        .font(.system(size: Metrics.chromeFontSize))
-                        .foregroundStyle(Color(theme.foreground).opacity(0.4))
-                        .padding(.horizontal, Metrics.sidebarRowPadding)
-                        .padding(.vertical, 4)
-                }
-                ForEach(projects.projects) { project in
-                    ProjectRow(project: project, theme: theme, onOpen: { model.open(project) }, onRemove: {
-                        withAnimation(Self.animation) { projects.remove(project) }
-                    })
-                }
-            }
-            .dropDestination(for: URL.self) { urls, _ in
-                withAnimation(Self.animation) { projects.add(urls) }
-                return true
-            }
-
             Spacer(minLength: 0)
         }
         .padding(Metrics.sidebarPadding)
@@ -63,16 +42,6 @@ struct Sidebar: View {
                 .overlay(shape.strokeBorder(Color(theme.foreground).opacity(0.1), lineWidth: 1))
         }
         .padding(Metrics.sidebarInset)
-    }
-
-    private func addProject() {
-        let panel = NSOpenPanel()
-        panel.canChooseDirectories = true
-        panel.canChooseFiles = false
-        panel.allowsMultipleSelection = true
-        panel.prompt = "Add"
-        guard panel.runModal() == .OK else { return }
-        withAnimation(Self.animation) { projects.add(panel.urls) }
     }
 }
 
@@ -186,42 +155,5 @@ private struct SessionRow: View {
     private func rowBackground(isSelected: Bool) -> Color {
         if isSelected { return Color(theme.accent).opacity(0.22) }
         return isHovered ? Color(theme.foreground).opacity(0.06) : .clear
-    }
-}
-
-private struct ProjectRow: View {
-    let project: ProjectStore.Project
-    let theme: Theme
-    let onOpen: () -> Void
-    let onRemove: () -> Void
-
-    @State private var isHovered = false
-
-    var body: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "folder")
-                .foregroundStyle(Color(theme.foreground).opacity(0.5))
-                .frame(width: 16)
-            Text(project.name)
-                .lineLimit(1)
-                .foregroundStyle(Color(theme.foreground).opacity(0.75))
-            Spacer(minLength: 0)
-        }
-        .font(.system(size: Metrics.chromeFontSize + 0.5))
-        .padding(.horizontal, Metrics.sidebarRowPadding)
-        .frame(height: Metrics.sidebarRowHeight)
-        .background(isHovered ? Color(theme.foreground).opacity(0.06) : .clear, in: .rect(cornerRadius: Metrics.sidebarRowCornerRadius))
-        .contentShape(.rect)
-        .onTapGesture(perform: onOpen)
-        .onHover { isHovered = $0 }
-        .help(project.path)
-        .contextMenu {
-            Button("Open in New Tab", action: onOpen)
-            Button("Show in Finder") {
-                NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: project.path)
-            }
-            Divider()
-            Button("Remove", role: .destructive, action: onRemove)
-        }
     }
 }

@@ -6,7 +6,7 @@ Jelly is a native macOS terminal built around **sessions**: named workspaces tha
 
 - **Fast.** GPU-rendered, idle at 0% CPU, no dropped frames under heavy output.
 - **Compatible.** Your shell, prompt, and font render exactly as they do in Ghostty or iTerm2: fish, zsh, bash, nu, starship, powerlevel10k, Nerd Fonts, ligatures, emoji.
-- **Organized.** Sessions and projects replace a pile of unnamed windows.
+- **Organized.** Sessions replace a pile of unnamed windows.
 - **Configurable in plain text.** One `jelly.toml` for settings and themes. Drop any TOML file on the window to merge it in.
 - **Native.** SwiftUI and AppKit, not a web view.
 
@@ -26,9 +26,9 @@ Jelly is a native macOS terminal built around **sessions**: named workspaces tha
 │  ▸ Work    │                 pane                         │
 │    Personal│                                              │
 │    ...     ├────────────────────────┬─────────────────────┤
-│ Projects   │ ⌁ zsh           ⑂ ⤢   │ ⌁ logs              │  pane headers
-│    aurora  │                        │                     │
-│    ...     │        pane            │       pane          │
+│            │ ⌁ zsh           ⑂ ⤢   │ ⌁ logs              │  pane headers
+│            │                        │                     │
+│            │        pane            │       pane          │
 │            │                        │                     │
 │ ⚡ Connect… │                        │                     │
 │            │                ◉ dev · 3 panes · 112×28      │  status bar
@@ -38,14 +38,13 @@ Jelly is a native macOS terminal built around **sessions**: named workspaces tha
 | Area | Behaviour |
 |---|---|
 | **Sessions** | Named workspaces (Work, Personal, Production…). Selecting one swaps every tab and pane. Create, rename, reorder, delete. Every window comes back on relaunch, in its place, with its sessions, tabs, splits and each pane's directory. |
-| **Projects** | Saved folders. Click to open a new tab in that folder in the current session. Add by dragging a folder onto the list or with `+`. |
 | **Connect…** | Saved SSH hosts (v0.3). |
 | **Tab bar** | One tab per workspace view. Each has an icon and a title that follows the focused pane's process, or a name you set. Drag tabs to reorder them. `+` opens a tab, `⌕` opens search. |
 | **Panes** | Split right or down, as deep as you like. Panes are detached cards with rounded corners and a gap between them; the focused one gets an accent border. Each has a header with its title and split, zoom and close buttons. Resize by dragging the gap between panes, double-click it to equalize. Click a pane to focus it. |
 | **Status bar** | Session name · tab count · pane count when split · grid size of the focused pane (`112×28`). |
 | **Search** | Find in the focused pane's scrollback, with next/previous and match count. |
 | **Explorer** | A read-only file tree on the right (⌘E) rooted at the focused pane's current directory. It follows the pane as you `cd` or switch panes, and updates live when files change, so you can watch an agent working in the terminal. Arrows move, → and ← open and close folders, ↩ or Space previews, ⌘↑ goes to the enclosing folder, typing filters, Esc returns to the terminal. |
-| **Command palette** | ⌘K opens a search field over the window with every action, the current session's tabs, sessions, projects and themes. Typing filters with fuzzy matching (word starts and runs rank first); ↑/↓ or ⌃P/⌃N move, ↩ runs, Esc or a click outside closes. The last few picks show first under Recent. Actions show their shortcut; the current tab, session and theme are checked. Moving onto a theme previews it live across the window without saving; Esc or a click outside puts the old one back, and picking it with ↩ writes it to `jelly.toml` (into the matching light or dark slot when the theme follows the system). |
+| **Command palette** | ⌘K opens a search field over the window with every action, the current session's tabs, sessions and themes. Typing filters with fuzzy matching (word starts and runs rank first); ↑/↓ or ⌃P/⌃N move, ↩ runs, Esc or a click outside closes. The last few picks show first under Recent. Actions show their shortcut; the current tab, session and theme are checked. Moving onto a theme previews it live across the window without saving; Esc or a click outside puts the old one back, and picking it with ↩ writes it to `jelly.toml` (into the matching light or dark slot when the theme follows the system). |
 | **Viewer** | ⌘⇧M, or ↩ in the explorer, opens a file over the panes. Markdown is rendered (headings, lists, task lists, tables, quotes, code, images) with a contents menu and working relative links; other text files show with line numbers. Code is syntax-highlighted in the theme's palette colours. It reloads when the file changes on disk. Esc closes it. Terminals behind it keep running. |
 
 ## Configuration and themes

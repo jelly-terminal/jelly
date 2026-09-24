@@ -54,7 +54,7 @@ struct PaletteView: View {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: Metrics.paletteFieldFontSize))
                 .foregroundStyle(foreground.opacity(0.5))
-            TextField("Search actions, tabs, sessions, projects, themes", text: $palette.query)
+            TextField("Search actions, tabs, sessions, themes", text: $palette.query)
                 .textFieldStyle(.plain)
                 .font(.system(size: Metrics.paletteFieldFontSize))
                 .foregroundStyle(foreground)

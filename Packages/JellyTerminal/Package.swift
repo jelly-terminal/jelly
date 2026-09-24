@@ -9,7 +9,7 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../JellyCore"),
-        .package(url: "https://github.com/migueldeicaza/SwiftTerm", from: "1.2.0"),
+        .package(url: "https://github.com/mxvsh/SwiftTerm", branch: "jelly"),
     ],
     targets: [
         .target(

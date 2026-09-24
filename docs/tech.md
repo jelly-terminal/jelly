@@ -7,7 +7,7 @@
 | Language | Swift 6, strict concurrency, MainActor by default in the app target |
 | App shell | AppKit lifecycle (`NSApplicationDelegate`), `NSWindow` hosting SwiftUI |
 | Chrome | SwiftUI, Liquid Glass (`.glassEffect`, `GlassEffectContainer`) |
-| Terminal | SwiftTerm 1.20+: its `LocalProcessTerminalView` with the Metal renderer on, wrapped by our `TerminalSurface` |
+| Terminal | SwiftTerm 1.20 from our fork (`mxvsh/SwiftTerm`, branch `jelly`): its `LocalProcessTerminalView` with the Metal renderer on, wrapped by our `TerminalSurface` |
 | PTY | SwiftTerm's `LocalProcess` (`openpty` + `login_tty`), reads on a background queue, feeds on main |
 | Config | TOML via our own parser in `JellyCore/TOML` (line numbers, comment-preserving edits), `~/.config/jelly/jelly.toml` |
 | Persistence | JSON in `~/Library/Application Support/<bundle id>/` (v0.2) |
@@ -24,6 +24,7 @@ SwiftTerm ships a Metal renderer (glyph atlases, CoreText run shaping, built-in 
 - Deployment target **macOS 26.0**, Swift 6.
 - **No App Sandbox.** A terminal has to spawn the user's shell with full access to their files. Hardened runtime stays on for notarization.
 - Debug build: bundle ID `com.monawwar.Jelly.Debug`, display name "Jelly (Debug)", so it never collides with an installed release.
+- The fork carries one fix on top of upstream 1.20.0: a line feed onto an existing row clears its soft-wrap flag, as in xterm.js. Without it, programs that redraw in place (Claude Code) get their lines glued together when a pane narrows and then widens. Drop the fork once upstream has the fix.
 - SwiftTerm uses a build-tool plugin: Xcode asks to trust it once; command-line builds pass `-skipPackagePluginValidation`.
 - The Metal toolchain is a separate Xcode component: `xcodebuild -downloadComponent MetalToolchain`.
 

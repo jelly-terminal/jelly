@@ -26,6 +26,12 @@ enum Metrics {
     static let paneButtonSize: CGFloat = 20
     static let paneButtonCornerRadius: CGFloat = 5
 
+    static let agentIndicatorSize: CGFloat = 11
+    static let agentChipIndicatorSize: CGFloat = 9
+    static let agentChipHeight: CGFloat = 18
+    static let agentChipPadding: CGFloat = 7
+    static let agentAttentionBorder: CGFloat = 1.5
+
     static let settingsWidth: CGFloat = 600
     static let settingsHeight: CGFloat = 560
     static let settingsPadding: CGFloat = 16

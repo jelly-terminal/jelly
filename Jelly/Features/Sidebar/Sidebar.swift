@@ -130,6 +130,9 @@ private struct SessionRow: View {
                     .foregroundStyle(Color(theme.foreground).opacity(isSelected ? 1 : 0.75))
             }
             Spacer(minLength: 4)
+            if let tone = session.workspace.agentTone, tone != .ready {
+                AgentIndicator(tone: tone, theme: theme)
+            }
             if !session.workspace.tabs.isEmpty {
                 Text("\(session.workspace.tabs.count)")
                     .monospacedDigit()

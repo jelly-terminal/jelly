@@ -20,6 +20,11 @@ public enum DefaultConfig {
     [settings.shell]
     # program = "/opt/homebrew/bin/fish"
 
+    [settings.agents]
+    # enabled = true
+    # watch = ["claude"]
+    # notify = "unfocused"
+
     [keybinds]
     # "cmd+d" = "split.right"
 

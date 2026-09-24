@@ -36,6 +36,7 @@ public enum KeyAction: Hashable, Sendable {
     case configReload
     case promptPrevious
     case promptNext
+    case agentNextWaiting
     case text(String)
     case none
 
@@ -48,7 +49,7 @@ public enum KeyAction: Hashable, Sendable {
         "markdown.preview": .markdownPreview, "palette.toggle": .paletteToggle, "find": .find, "clear": .clear, "copy": .copy, "paste": .paste,
         "font.increase": .fontIncrease, "font.decrease": .fontDecrease, "font.reset": .fontReset,
         "settings.open": .settingsOpen, "config.open": .configOpen, "config.reload": .configReload,
-        "prompt.previous": .promptPrevious, "prompt.next": .promptNext, "none": .none,
+        "prompt.previous": .promptPrevious, "prompt.next": .promptNext, "agent.next-waiting": .agentNextWaiting, "none": .none,
     ]
 
     public init?(_ string: String) {

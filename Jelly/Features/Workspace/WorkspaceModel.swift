@@ -120,6 +120,10 @@ final class WorkspaceModel {
         tabs.move(fromOffsets: IndexSet(integer: from), toOffset: to > from ? to + 1 : to)
     }
 
+    var agentTone: AgentTone? {
+        AgentTone.summary(of: tabs.lazy.compactMap(\.agentTone))
+    }
+
     var hasForegroundProcesses: Bool {
         tabs.contains { $0.hasForegroundProcess }
     }

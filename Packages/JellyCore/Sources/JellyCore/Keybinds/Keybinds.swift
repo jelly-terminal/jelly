@@ -54,6 +54,7 @@ public struct Keybinds: Equatable, Sendable {
             "cmd+shift+,": .configReload,
             "cmd+up": .promptPrevious,
             "cmd+down": .promptNext,
+            "cmd+shift+a": .agentNextWaiting,
             "cmd+backspace": .text("\u{15}"),
         ]
         for index in 1...9 {

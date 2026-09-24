@@ -20,6 +20,7 @@ final class WindowModel {
     @ObservationIgnored let configStore: ConfigStore
     @ObservationIgnored let explorer = ExplorerModel()
     @ObservationIgnored weak var window: NSWindow?
+    @ObservationIgnored private var agentMonitor: AgentMonitor?
 
     init(configStore: ConfigStore, snapshot: WorkspaceSnapshot.Window?) {
         self.configStore = configStore
@@ -32,6 +33,7 @@ final class WindowModel {
         selectedSessionID = initial.first { $0.id == preferred }?.id ?? initial[0].id
         isSidebarVisible = snapshot?.sidebarVisible ?? configStore.settings.window.sidebar
         selectedSession.activate()
+        agentMonitor = AgentMonitor(window: self)
     }
 
     var selectedSession: SessionModel {
@@ -203,6 +205,69 @@ final class WindowModel {
             return true
         }
         return palette.handle(event)
+    }
+
+    var agentPanes: [PaneLocation] {
+        sessions.filter(\.isActivated).flatMap { session in
+            session.workspace.tabs.flatMap { tab in
+                tab.orderedPanes.map { PaneLocation(session: session, tab: tab, pane: $0) }
+            }
+        }
+    }
+
+    var agentHighlight: AgentHighlight? {
+        let agents = agentPanes.compactMap { location in location.pane.agentTone.map { (location, $0) } }
+        guard let tone = AgentTone.summary(of: agents.map(\.1)),
+              let first = agents.first(where: { $0.1 == tone })
+        else { return nil }
+        return AgentHighlight(location: first.0, tone: tone, others: agents.count { $0.1 == tone } - 1)
+    }
+
+    func revealAgentHighlight() {
+        guard let highlight = agentHighlight else { return }
+        reveal(highlight.location)
+    }
+
+    func isShowing(_ location: PaneLocation) -> Bool {
+        NSApp.isActive && window?.isKeyWindow == true && viewer == nil && isFocused(location)
+    }
+
+    @discardableResult
+    func reveal(_ paneID: PaneID) -> Bool {
+        guard let location = agentPanes.first(where: { $0.pane.id == paneID }) else { return false }
+        reveal(location)
+        return true
+    }
+
+    func revealNextWaitingAgent() {
+        let locations = agentPanes
+        let needsInput = locations.indices.filter { locations[$0].pane.agentTone == .attention }
+        let finished = locations.indices.filter { locations[$0].pane.agentTone == .finished }
+        let waiting = needsInput.isEmpty ? finished : needsInput
+        guard !waiting.isEmpty else {
+            NSSound.beep()
+            return
+        }
+        let current = locations.firstIndex { isFocused($0) } ?? -1
+        let next = waiting.first { $0 > current } ?? waiting[0]
+        reveal(locations[next])
+    }
+
+    private func isFocused(_ location: PaneLocation) -> Bool {
+        location.session.id == selectedSessionID
+            && location.session.workspace.selectedID == location.tab.id
+            && location.tab.focusedPaneID == location.pane.id
+    }
+
+    private func reveal(_ location: PaneLocation) {
+        if viewer != nil { viewer = nil }
+        if location.session.id != selectedSessionID {
+            location.session.activate()
+            selectedSessionID = location.session.id
+        }
+        location.session.workspace.selectedID = location.tab.id
+        location.tab.focus(location.pane.id)
+        focusTerminal()
     }
 
     func terminateAll() {

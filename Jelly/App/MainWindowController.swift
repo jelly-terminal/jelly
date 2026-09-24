@@ -71,6 +71,7 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
         keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
             guard let self, event.window === self.window, self.model.pendingImport == nil else { return event }
             if self.model.handlePaletteKey(event) { return nil }
+            (self.window?.firstResponder as? TerminalSurface)?.recordInput()
             guard let chord = KeyChord(event: event),
                   let action = self.configStore.config.keybinds[chord],
                   self.perform(action)

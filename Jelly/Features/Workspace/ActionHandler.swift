@@ -80,6 +80,8 @@ struct ActionHandler {
             configStore.openConfigFile()
         case .configReload:
             configStore.reload()
+        case .agentNextWaiting:
+            window.revealNextWaitingAgent()
         case .text(let text):
             surface?.sendText(text)
         case .tabRename, .settingsOpen, .promptPrevious, .promptNext, .none:

@@ -63,9 +63,16 @@ public struct ShellLaunch: Equatable, Sendable {
         )
     }
 
+    static let droppedVariables = [
+        "TERM_SESSION_ID", "ITERM_SESSION_ID", "GHOSTTY_RESOURCES_DIR", "GHOSTTY_BIN_DIR", "__CFBundleIdentifier", "XPC_SERVICE_NAME",
+        "CLAUDECODE", "CLAUDE_PID", "CLAUDE_EFFORT", "AI_AGENT", "CLAUDE_CODE_ENTRYPOINT", "CLAUDE_CODE_EXECPATH",
+        "CLAUDE_CODE_CHILD_SESSION", "CLAUDE_CODE_SESSION_ID", "CLAUDE_CODE_SESSION_ATTENDED",
+        "CLAUDE_CODE_MESSAGING_SOCKET", "CLAUDE_CODE_MESSAGING_TOKEN",
+    ]
+
     static func environment(settings: ShellSettings, context: Context) -> [String] {
         var env = context.environment
-        for key in ["TERM_SESSION_ID", "ITERM_SESSION_ID", "GHOSTTY_RESOURCES_DIR", "GHOSTTY_BIN_DIR", "__CFBundleIdentifier", "XPC_SERVICE_NAME"] {
+        for key in droppedVariables {
             env[key] = nil
         }
         env["TERM"] = "xterm-256color"

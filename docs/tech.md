@@ -38,6 +38,7 @@ Jelly/                         App target (file-system synchronized group)
     Workspace/                 SessionModel, WorkspaceModel (tabs), TabModel (pane tree), PaneModel, ActionHandler
     Panes/                     PaneArea (cards, headers, dividers), PaneLayout, PaneHeader
     Sidebar/                   Sidebar (Sessions), SidebarToggle
+    Agents/                    AgentMonitor (1s poll per window), AgentTracker (per pane), AgentNotifier (UserNotifications), AgentPresence (labels), AgentTone, AgentIndicator, AgentPaletteSource
     Explorer/                  ExplorerPanel, ExplorerModel (lazy tree, watchers), DirectoryLister (off main)
     Viewer/                    ViewerCard, ViewerModel (history, links, live reload), ViewerLoader (off main), TextFileView
     Markdown/                  MarkdownView and one view per block kind, MarkdownStyle (theme colours, inline and code highlighting)
@@ -60,6 +61,7 @@ Packages/
       Theme/                   Theme, ThemeColor, ThemeDecoder, BuiltinThemes
       Workspace/               PaneTree, WorkspaceSnapshot, SnapshotStore
       Markdown/                MarkdownParser (CommonMark + GFM blocks), MarkdownDocument (blocks, outline, anchors)
+      Agents/                  AgentProvider, ClaudeCodeAgent (session status file), CommandAgent, AgentCatalog (built-ins + config), ProcessIdentity, TerminalActivity, AgentState
       Palette/                 FuzzyMatcher (subsequence scoring with matched positions)
       Syntax/                  SyntaxHighlighter (byte scanner), SyntaxLanguage (rule tables and aliases), SyntaxToken
       Resources/Themes/        Built-in themes (*.toml)
@@ -67,7 +69,8 @@ Packages/
   JellyTerminal/               Everything that touches SwiftTerm
     Sources/JellyTerminal/
       Surface/                 TerminalSurface, QueryResponder, NSColor+ThemeColor
-      Shell/                   ShellLaunch (program, argv0, environment, directory)
+      Alerts/                  NotificationScanner (OSC 9 / 777 in the output stream)
+      Shell/                   ShellLaunch (program, argv0, environment, directory, dropped variables), ProcessArguments (KERN_PROCARGS2)
       Font/                    FontResolver, FontFeatures
     Tests/JellyTerminalTests/
 Config/
@@ -97,9 +100,10 @@ Dependency direction: **App → JellyTerminal → JellyCore**. Only `JellyTermin
 
 - **Workspace model.** `WindowModel` → `[SessionModel]` → `WorkspaceModel` → `[TabModel]` → `[PaneModel]`. A tab holds a `PaneTree` layout, its panes (each owning one `TerminalSurface`), the focused pane and an optional zoomed pane. All surfaces stay alive; a restored session starts its shells only when first opened. A pane whose shell exits closes itself; the last pane closes the tab.
 - **Pane layout.** `PaneLayout` turns the tree into card frames (with `Metrics.paneGap` between them) and divider handles. `PaneArea` draws it in three layers from the same layout: card fills, then `TerminalHost` (one AppKit container holding every surface, placing the selected tab's surfaces inside their cards and hiding the rest), then headers, borders and divider handles. The container only takes hits inside card bodies, so SwiftUI handles headers and dividers. It watches the window's first responder to report which pane was clicked.
-- **Chrome vs. content.** Terminal output never touches SwiftUI state. Only title, cwd and grid-size callbacks reach `TabModel`.
+- **Chrome vs. content.** Terminal output never touches SwiftUI state. Only title, cwd and grid-size callbacks reach `TabModel`; agent state is polled once a second.
 - **Explorer and viewer.** The explorer follows the focused pane's directory, read from its shell with `proc_pidinfo` once a second while the panel is open. Directory listing, file reading, Markdown parsing and highlighting all run off the main thread; each expanded folder and the open file have a `DispatchSource` watcher, debounced and re-armed after atomic saves. The viewer covers the pane area. While it's open, `TerminalHost` gets no cards, so the surfaces are hidden but stay attached and keep running. Copy and paste go to the terminal only when a surface is first responder; otherwise they go down the responder chain, so viewer text can be copied.
 - **Command palette.** Each feature adds its items through a `PaletteSource` kept in its own folder (`ActionPaletteSource` in Workspace, `TabPaletteSource` in Tabs, `SessionPaletteSource` in Sidebar, `ThemePaletteSource` in Settings). `PaletteSources.all` sets which sources appear and in what order. Items are built fresh each time the palette opens, so nothing needs to be kept in sync. Actions come from `KeyAction.catalog`, so any new bindable action appears on its own. While the palette is open, the window's key monitor sends arrows, ↩ and Esc to it first; any other bound shortcut closes it and runs, except copy, paste and `text:` bindings, which go to the search field. An item can also offer a `preview` that returns its own undo: the model calls it when the item is selected and undoes it when the selection moves or the palette closes; running the item keeps the preview in place until `perform` has run. Themes preview through `ConfigStore.previewTheme`, which `ConfigStore.theme` prefers and which is never written to disk. An item runs after the palette has closed and focus is back on the terminal, so actions that move focus (explorer, viewer) keep it.
+- **Agents.** Once a second, `AgentMonitor` walks the window's panes. A pane whose foreground process group (`tcgetpgrp`) isn't the shell has its leader's arguments read with `sysctl(KERN_PROCARGS2)` and matched against `AgentCatalog` (built-ins in `agents.watch`, plus custom ones); a pane matched once keeps its agent until the group changes. The state comes from the provider when it can report it: `ClaudeCodeAgent` reads `~/.claude/sessions/<pid>.json` (or `$CLAUDE_CONFIG_DIR/sessions`), which Claude Code keeps up to date for its own process: `status` `busy` → working, `waiting` (with `waitingFor`, e.g. "permission prompt") → needs input, `idle` → done. Otherwise `AgentState.guessed` uses the pane's `TerminalActivity`: a bell or OSC 9 / 777 notification (read by `NotificationScanner` from each output chunk, without touching SwiftTerm's own OSC handling) after the last input means it needs you, no output or typing for `agents.idle-after` means done. Nothing here notifies SwiftUI; `PaneModel.agent` changes only when the state does, and `isAgentFinishedUnseen` is set when an agent goes from working to idle while you aren't looking at the pane and cleared on the first tick you are. `AgentTone` (working, attention, finished, ready) is what the chrome draws, summarised per tab and session with attention first; which is all the tab, header, sidebar and status bar read. A change to needs-input (or working → done) posts a notification through `AgentNotifier` unless you're looking at the pane; going back to working withdraws it. To add an agent, conform a type to `AgentProvider` (`id`, `name`, `matches(ProcessIdentity)`, and optionally `state(ofProcess:)`) and list it in `AgentCatalog.builtIn`; a plain command-name match is a `CommandAgent`. Shells don't inherit a parent Claude Code session's markers (`CLAUDECODE`, `CLAUDE_CODE_CHILD_SESSION`, …), so `claude` in a pane always runs as its own session.
 - **Syntax highlighting.** It uses its own lexer in `JellyCore`, with no dependency: a byte scanner driven by per-language tables (comments, strings, keywords, literals, capitalised types, calls, shell variables, tags, diff lines). Colours come from the theme's ANSI palette, so code matches the terminal.
 - **Config.** `ConfigStore` loads and watches the config, tracks light/dark appearance, and notifies each window, which re-applies settings and theme to its surfaces.
 
@@ -212,13 +216,15 @@ Unit tests live in the packages (`swift test`) and only cover logic where a bug 
 - `ConfigImporter`: values replaced in place with comments kept, missing keys added to the right table, inline tables merged, unchanged values skipped, replaced themes flagged, broken configs refused.
 - `ConfigDocument`: invalid values fall back and report their line; syntax errors keep defaults; `none` unbinds; themes need 16 valid colors; hex parsing; built-in themes load.
 - `FuzzyMatcher`: subsequences ignoring case and spaces, word starts and runs beating scattered letters, camelCase boundaries.
+- `ClaudeCodeAgent` / `AgentState` / `AgentCatalog`: Claude session status mapped (and ignored for another pid), guessed state from quiet time and alerts versus input, native binaries and interpreter scripts matched, other programs' arguments ignored, only Claude watched by default, watch list and custom agents from config.
 - `PaneTree`: split, close (the sibling takes the parent's place), focus by direction, ratio bounds, equalize.
 - `SyntaxHighlighter`: tokens for words, escaped strings and comments; aliases; shell variables and literal single quotes; tokens split per line across multi-line comments and strings; diff lines.
 - `MarkdownParser` / `MarkdownDocument`: ATX, setext and rules told apart; soft and hard breaks; fences (longer closers, unclosed); nested lists with tasks, code and lazy lines; quotes with lazy lines; table cells with escaped pipes and code spans; GitHub-style heading anchors.
 
 **JellyTerminal**
-- `ShellLaunch`: order of precedence, `-` prefix on `argv[0]`, working directory, environment (Jelly identity, other terminals' variables dropped, user overrides).
+- `ShellLaunch`: order of precedence, `-` prefix on `argv[0]`, working directory, environment (Jelly identity, other terminals' and parent Claude Code sessions' variables dropped, user overrides).
 - `FontResolver` / `FontFeature`: family matching, feature parsing, ligatures off.
 - `QueryResponder`: XTVERSION answers as Jelly, other replies pass through.
+- `NotificationScanner` / `ProcessArguments`: OSC 9 and 777 with BEL or ST, split chunks, progress reports and other codes ignored, oversized and cancelled sequences dropped; `KERN_PROCARGS2` layout.
 
 Rendering, fonts and shells are verified by hand against the compatibility matrix above.

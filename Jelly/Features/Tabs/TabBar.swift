@@ -181,8 +181,12 @@ private struct TabItem: View {
             .opacity(isHovered ? 1 : 0)
             .allowsHitTesting(isHovered)
             .help("Close Tab")
-            Image(systemName: "terminal")
-                .foregroundStyle(isSelected ? Color(theme.accent) : Color(theme.foreground).opacity(0.5))
+            if let tone = tab.agentTone, tone != .ready {
+                AgentIndicator(tone: tone, theme: theme)
+            } else {
+                Image(systemName: "terminal")
+                    .foregroundStyle(isSelected ? Color(theme.accent) : Color(theme.foreground).opacity(0.5))
+            }
             Text(tab.displayTitle)
                 .lineLimit(1)
                 .truncationMode(.middle)
@@ -194,7 +198,9 @@ private struct TabItem: View {
         .frame(maxWidth: Metrics.tabMaxWidth, alignment: .leading)
         .background {
             ZStack {
-                if isHovered, !isSelected {
+                if !isSelected, tab.agentTone == .attention {
+                    Capsule().fill(AgentTone.attention.color(theme).opacity(0.14))
+                } else if isHovered, !isSelected {
                     Capsule().fill(Color(theme.foreground).opacity(0.06))
                 }
                 if isSelected {

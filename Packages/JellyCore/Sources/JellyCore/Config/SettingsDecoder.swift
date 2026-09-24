@@ -47,6 +47,10 @@ enum SettingsDecoder {
             settings.updates.autoInstall = updates.bool("auto-install") ?? settings.updates.autoInstall
             reader.merge(updates)
         }
+        if var agents = reader.table("agents") {
+            decodeAgents(&agents, into: &settings.agents)
+            reader.merge(agents)
+        }
         return (settings, reader.finished())
     }
 
@@ -76,6 +80,44 @@ enum SettingsDecoder {
             window.paddingX = padding.double("x", in: 0...200) ?? window.paddingX
             window.paddingY = padding.double("y", in: 0...200) ?? window.paddingY
             reader.merge(padding)
+        }
+    }
+
+    private static func decodeAgents(_ reader: inout TableReader, into agents: inout AgentSettings) {
+        agents.enabled = reader.bool("enabled") ?? agents.enabled
+        agents.idleAfter = reader.int("idle-after", in: 1...3600) ?? agents.idleAfter
+        agents.notify = reader.choice("notify", Dictionary(uniqueKeysWithValues: AgentSettings.Notify.allCases.map { ($0.rawValue, $0) })) ?? agents.notify
+        agents.notifySound = reader.bool("notify-sound") ?? agents.notifySound
+        agents.notifyFinished = reader.bool("notify-finished") ?? agents.notifyFinished
+        if let watch = reader.strings("watch") {
+            let known = Set(AgentCatalog.builtIn.map(\.id))
+            for id in watch where !known.contains(id) {
+                reader.report("watch", "unknown agent '\(id)', expected one of \(known.sorted().joined(separator: ", "))")
+            }
+            agents.watch = watch
+        }
+        guard let value = reader.raw("custom") else { return }
+        guard case .array(let items) = value else {
+            reader.report("custom", "expected a list like [{ name = \"My Agent\", commands = [\"my-agent\"] }]")
+            return
+        }
+        for item in items {
+            guard case .table(let table) = item,
+                  case .string(let name)? = table["name"], !name.isEmpty,
+                  case .array(let values)? = table["commands"]
+            else {
+                reader.report("custom", "each agent needs a name and a list of commands")
+                continue
+            }
+            let commands = values.compactMap { value -> String? in
+                if case .string(let command) = value, !command.isEmpty { return command }
+                return nil
+            }
+            guard commands.count == values.count, !commands.isEmpty else {
+                reader.report("custom", "\(name): commands must be a non-empty list of strings")
+                continue
+            }
+            agents.custom.append(AgentSettings.Custom(name: name, commands: commands))
         }
     }
 

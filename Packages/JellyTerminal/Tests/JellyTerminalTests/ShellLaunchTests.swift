@@ -47,6 +47,7 @@ struct ShellLaunchTests {
         settings.env = ["EDITOR": "nvim", "TERM": "xterm-kitty"]
         let launch = ShellLaunch.resolve(settings, context: context(env: [
             "PATH": "/usr/bin", "TERM_SESSION_ID": "x", "GHOSTTY_RESOURCES_DIR": "/g", "LC_CTYPE": "UTF-8",
+            "CLAUDE_CODE_CHILD_SESSION": "1", "CLAUDECODE": "1", "CLAUDE_CONFIG_DIR": "/c",
         ]))
         let env = Dictionary(uniqueKeysWithValues: launch.environment.map { line in
             let parts = line.split(separator: "=", maxSplits: 1).map(String.init)
@@ -59,5 +60,7 @@ struct ShellLaunchTests {
         #expect(env["PATH"] == "/usr/bin")
         #expect(env["LANG"] == nil)
         #expect(env["TERM_SESSION_ID"] == nil && env["GHOSTTY_RESOURCES_DIR"] == nil)
+        #expect(env["CLAUDE_CODE_CHILD_SESSION"] == nil && env["CLAUDECODE"] == nil)
+        #expect(env["CLAUDE_CONFIG_DIR"] == "/c")
     }
 }

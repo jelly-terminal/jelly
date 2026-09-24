@@ -21,6 +21,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         updater = UpdaterService()
         whatsNew = WhatsNewPresenter(configStore: configStore)
         onboarding = OnboardingPresenter(configStore: configStore)
+        AgentNotifier.shared.onOpen = { [weak self] pane in self?.reveal(pane) }
+        AgentNotifier.shared.activate()
         let saved = snapshotStore.load()
         closedWindows = saved?.windows ?? []
         frontWindow = saved?.frontWindow
@@ -190,6 +192,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private var keyController: MainWindowController? {
         windowControllers.first { $0.window?.isKeyWindow == true } ?? windowControllers.last
+    }
+
+    private func reveal(_ pane: PaneID) {
+        guard let controller = windowControllers.first(where: { $0.model.reveal(pane) }) else { return }
+        controller.window?.makeKeyAndOrderFront(nil)
+        NSApp.activate()
     }
 
     private func importFile(_ url: URL) {

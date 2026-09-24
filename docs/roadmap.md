@@ -4,6 +4,7 @@ Jelly is in early development. Config keys and behaviour can change until the st
 
 ## Next
 
+- Agent usage: tokens, cost and model for each agent pane, read from the agent's own session logs
 - Saved SSH hosts under **Connect…**, opened as a tab or a session
 - Per-host theme override (e.g. a red tint for Production)
 - Custom Liquid Glass update sheet instead of Sparkle's default window
@@ -22,7 +23,7 @@ Jelly is in early development. Config keys and behaviour can change until the st
 | **Broadcast input** | Type into every pane of a tab at once. |
 | **Theme gallery** | Browse and install community themes from inside Jelly. |
 | **Triggers** | Regex on output → highlight, notify, or run an action. |
-| **Native notifications** | OSC 9 / OSC 777 and "long command finished" notifications. |
+| **Native notifications** | OSC 9 / OSC 777 from any program, not only agents, and "long command finished" notifications. |
 | **tmux control mode** | tmux windows and panes shown as native tabs and splits. |
 | **Own renderer** | Replace SwiftTerm's view behind `TerminalSurface` if profiling shows it's the bottleneck (libghostty is an option). |
 

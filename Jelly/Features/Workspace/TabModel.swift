@@ -43,6 +43,10 @@ final class TabModel: Identifiable {
         focusedPane.gridSize
     }
 
+    var agentTone: AgentTone? {
+        AgentTone.summary(of: panes.values.lazy.compactMap(\.agentTone))
+    }
+
     var hasForegroundProcess: Bool {
         panes.values.contains { $0.surface.hasForegroundProcess }
     }

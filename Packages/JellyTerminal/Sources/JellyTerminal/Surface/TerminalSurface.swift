@@ -7,6 +7,7 @@ public final class TerminalSurface: LocalProcessTerminalView {
     public private(set) var title = ""
     public private(set) var currentDirectory: String?
     public private(set) var isRunning = false
+    public private(set) var activity = TerminalActivity()
 
     public var onTitleChange: ((String) -> Void)?
     public var onDirectoryChange: ((String?) -> Void)?
@@ -16,6 +17,7 @@ public final class TerminalSurface: LocalProcessTerminalView {
     private let appVersion: String
     private var appliedFont: NSFont?
     private lazy var events = ProcessEvents(surface: self)
+    private var notificationScanner = NotificationScanner()
 
     public init(paneID: PaneID = PaneID(), appVersion: String, settings: Settings, theme: Theme) {
         self.paneID = paneID
@@ -54,10 +56,36 @@ public final class TerminalSurface: LocalProcessTerminalView {
         super.rightMouseDown(with: event)
     }
 
+    public func recordInput() {
+        activity.lastInput = .now
+    }
+
+    public override func dataReceived(slice: ArraySlice<UInt8>) {
+        let now = ContinuousClock.now
+        activity.lastOutput = now
+        for message in notificationScanner.scan(slice) {
+            activity.alert(message, at: now)
+        }
+        super.dataReceived(slice: slice)
+    }
+
+    public override func bell(source: Terminal) {
+        activity.alert(nil, at: .now)
+        super.bell(source: source)
+    }
+
     public var hasForegroundProcess: Bool {
-        guard isRunning, process.childfd >= 0 else { return false }
+        foregroundProcessGroup != nil
+    }
+
+    public var foregroundProcessGroup: pid_t? {
+        guard isRunning, process.childfd >= 0 else { return nil }
         let group = tcgetpgrp(process.childfd)
-        return group > 0 && group != process.shellPid
+        return group > 0 && group != process.shellPid ? group : nil
+    }
+
+    public func processIdentity(of pid: pid_t) -> ProcessIdentity? {
+        ProcessArguments.identity(of: pid)
     }
 
     public var workingDirectory: String? {
@@ -118,10 +146,12 @@ public final class TerminalSurface: LocalProcessTerminalView {
     }
 
     public func pasteClipboard() {
+        recordInput()
         paste(self)
     }
 
     public func sendText(_ text: String) {
+        recordInput()
         send(txt: text)
     }
 

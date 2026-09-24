@@ -25,6 +25,7 @@ Jelly is a terminal made for the Mac. It looks like it belongs on macOS 26, with
 - **Sessions.** Group your work into named spaces like *Work*, *Personal* or *Side project*. Switch between them in one click and every tab and split comes with you. Everything is restored the next time you open Jelly.
 - **Tabs and splits.** Split any tab right or down as many times as you like. Drag tabs to reorder them, zoom into one pane, and search through everything a pane has printed.
 - **File explorer.** Press ⌘E to see a live file tree of the folder you're working in. It follows you as you move around and updates as files change, which is handy for watching what an AI agent is doing.
+- **Agent aware.** Jelly spots Claude Code in your panes, shows whether it's working, needs you, or is done, and sends a notification when it needs you. ⌘⇧A jumps straight to it. Other agents can be switched on in Settings.
 - **Built-in previewer.** Press ⌘⇧M to read Markdown files nicely formatted, or any code file with syntax colours, without leaving the terminal. It refreshes when the file changes.
 - **Your shell, your way.** Works with the shell, prompt and fonts you already use, including Nerd Fonts, ligatures and emoji.
 - **Easy to customise.** Pick a theme, change fonts and rebind any shortcut from Settings (⌘,). Prefer text? Everything lives in one `jelly.toml` file. Drop a theme or config file onto the window to add it.
@@ -51,6 +52,7 @@ Full details on every setting are in the [configuration guide](docs/config.md).
 | Show or hide the sidebar | ⌘0 |
 | Show or hide the file explorer | ⌘E |
 | Preview a Markdown file | ⌘⇧M |
+| Jump to waiting agent | ⌘⇧A |
 | Find | ⌘F |
 | Settings | ⌘, |
 

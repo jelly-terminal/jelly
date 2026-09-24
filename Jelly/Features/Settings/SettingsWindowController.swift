@@ -23,6 +23,7 @@ final class SettingsWindowController: NSWindowController {
         add("General", symbol: "gearshape", GeneralSettingsView(configStore: configStore))
         add("Appearance", symbol: "paintpalette", AppearanceSettingsView(configStore: configStore, onImportTheme: onImportTheme))
         add("Terminal", symbol: "apple.terminal", TerminalSettingsView(configStore: configStore))
+        add("Agents", symbol: "sparkle", AgentSettingsView(configStore: configStore))
         add("Keybinds", symbol: "keyboard", KeybindSettingsView(configStore: configStore))
         add("Updates", symbol: "arrow.triangle.2.circlepath", UpdatesSettingsView(
             configStore: configStore,

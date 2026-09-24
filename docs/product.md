@@ -41,7 +41,8 @@ Jelly is a native macOS terminal built around **sessions**: named workspaces tha
 | **Connect…** | Saved SSH hosts (v0.3). |
 | **Tab bar** | One tab per workspace view. Each has an icon and a title that follows the focused pane's process, or a name you set. Drag tabs to reorder them. `+` opens a tab, `⌕` opens search. |
 | **Panes** | Split right or down, as deep as you like. Panes are detached cards with rounded corners and a gap between them; the focused one gets an accent border. Each has a header with its title and split, zoom and close buttons. Resize by dragging the gap between panes, double-click it to equalize. Click a pane to focus it. |
-| **Status bar** | Session name · tab count · pane count when split · grid size of the focused pane (`112×28`). |
+| **Status bar** | The agent that most needs you, on the left · session name · tab count · pane count when split · grid size of the focused pane (`112×28`). |
+| **Agents** | Jelly notices Claude Code running in a pane (other agents such as Codex, Gemini CLI, OpenCode, Amp, Cursor Agent, Copilot CLI, Aider, Goose, Crush, Qwen Code, or your own can be switched on in Settings → Agents). Tabs and sessions show a small indicator: a spinning ring while it works, an amber dot (and an amber pane border) when it needs you, and a green dot when it finished while you were elsewhere, which clears once you look at the pane. The status bar shows the agent that most needs you; clicking it goes there. Claude Code's state comes from the status it writes for its own process; other agents are guessed from their output. When an agent needs you or finishes and you aren't looking at that pane, a macOS notification says so; clicking it brings the pane forward. ⌘⇧A jumps to the next agent that needs you (or is done), and the palette lists every agent in the window. |
 | **Search** | Find in the focused pane's scrollback, with next/previous and match count. |
 | **Explorer** | A read-only file tree on the right (⌘E) rooted at the focused pane's current directory. It follows the pane as you `cd` or switch panes, and updates live when files change, so you can watch an agent working in the terminal. Arrows move, → and ← open and close folders, ↩ or Space previews, ⌘↑ goes to the enclosing folder, typing filters, Esc returns to the terminal. |
 | **Command palette** | ⌘K opens a search field over the window with every action, the current session's tabs, sessions and themes. Typing filters with fuzzy matching (word starts and runs rank first); ↑/↓ or ⌃P/⌃N move, ↩ runs, Esc or a click outside closes. The last few picks show first under Recent. Actions show their shortcut; the current tab, session and theme are checked. Moving onto a theme previews it live across the window without saving; Esc or a click outside puts the old one back, and picking it with ↩ writes it to `jelly.toml` (into the matching light or dark slot when the theme follows the system). |
@@ -87,6 +88,7 @@ The very first launch opens a Welcome window before any terminal: the Jelly icon
 | Toggle explorer | ⌘E |
 | Preview Markdown (selected file, or the directory's README) | ⌘⇧M |
 | Command palette | ⌘K |
+| Jump to waiting agent | ⌘⇧A |
 | Find | ⌘F |
 | Clear | ⌘⇧K |
 | Reload config | ⌘⇧, |

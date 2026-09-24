@@ -73,6 +73,15 @@ osc52-read = false
 check = true
 auto-install = false
 
+[settings.agents]
+enabled = true
+watch = ["claude"]
+notify = "unfocused"
+notify-finished = true
+notify-sound = true
+idle-after = 5
+custom = [{ name = "My Agent", commands = ["my-agent"] }]
+
 [keybinds]
 "cmd+d" = "split.right"
 "cmd+shift+d" = "split.down"
@@ -126,12 +135,19 @@ palette = [
 | `clipboard.osc52-read` | bool | `false` | Let programs read the clipboard. Write is always allowed. |
 | `updates.check` | bool | `true` | Daily update check. |
 | `updates.auto-install` | bool | `false` | Download in the background and install on quit. |
+| `agents.enabled` | bool | `true` | Watch panes for coding agents and show whether they're working, need you, or are done. |
+| `agents.watch` | [string] | `["claude"]` | Built-in agents to watch: `claude`, `codex`, `gemini`, `opencode`, `amp`, `cursor`, `copilot`, `aider`, `goose`, `crush`, `qwen`. |
+| `agents.notify` | string | `"unfocused"` | `unfocused` (only when you aren't looking at that pane), `always`, `never`. |
+| `agents.notify-finished` | bool | `true` | Also notify when an agent goes from working to done. It always notifies when one needs you. |
+| `agents.notify-sound` | bool | `true` | Play the notification sound. |
+| `agents.idle-after` | int | `5` | For agents other than Claude Code: seconds without output or typing before the agent counts as done (`1`–`3600`). A bell or OSC 9 / 777 notification means it needs you. |
+| `agents.custom` | [table] | `[]` | Your own agents: `{ name = "…", commands = ["…"] }`, state guessed like `idle-after`. A pane runs an agent when its foreground program, or the script a `node`, `bun`, `deno`, `python` or `ruby` runs, has one of these names. Custom agents are checked before built-in ones. |
 
 ## Keybind actions
 
 Keys are written as `modifiers+key`, with modifiers `cmd`, `shift`, `alt` (or `opt`), `ctrl`. Set an action to `"none"` to unbind a default.
 
-`tab.new`, `tab.close`, `tab.next`, `tab.previous`, `tab.goto:<n>`, `tab.move:left|right`, `tab.rename`, `split.right`, `split.down`, `pane.close`, `pane.zoom`, `pane.focus:left|right|up|down`, `pane.equalize`, `session.new`, `session.next`, `session.previous`, `session.goto:<n>`, `sidebar.toggle`, `explorer.toggle`, `markdown.preview`, `palette.toggle`, `find`, `clear`, `copy`, `paste`, `font.increase`, `font.decrease`, `font.reset`, `settings.open`, `config.open`, `config.reload`, `prompt.previous`, `prompt.next`, `text:<string>` (sends literal text; supports `\n`, `\x1b`).
+`tab.new`, `tab.close`, `tab.next`, `tab.previous`, `tab.goto:<n>`, `tab.move:left|right`, `tab.rename`, `split.right`, `split.down`, `pane.close`, `pane.zoom`, `pane.focus:left|right|up|down`, `pane.equalize`, `session.new`, `session.next`, `session.previous`, `session.goto:<n>`, `sidebar.toggle`, `explorer.toggle`, `markdown.preview`, `palette.toggle`, `find`, `clear`, `copy`, `paste`, `font.increase`, `font.decrease`, `font.reset`, `settings.open`, `config.open`, `config.reload`, `prompt.previous`, `prompt.next`, `agent.next-waiting`, `text:<string>` (sends literal text; supports `\n`, `\x1b`).
 
 ## Theme reference
 

@@ -10,6 +10,7 @@ public struct Settings: Equatable, Sendable {
     public var shell = ShellSettings()
     public var clipboard = ClipboardSettings()
     public var updates = UpdateSettings()
+    public var agents = AgentSettings()
 
     public init() {}
 }

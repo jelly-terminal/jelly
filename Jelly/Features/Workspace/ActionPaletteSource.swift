@@ -41,6 +41,7 @@ struct ActionPaletteSource: PaletteSource {
         case .window: "macwindow"
         case .edit: "character.cursor.ibeam"
         case .font: "textformat.size"
+        case .agents: "sparkle"
         case .config: "gearshape"
         }
     }

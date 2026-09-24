@@ -61,11 +61,13 @@ struct PaneArea: View {
         let isFocused = pane.id == tab.focusedPaneID
         let isSplit = tab.panes.count > 1
         let workspace = model.workspace
+        let needsAttention = pane.agentTone == .attention
         return ZStack(alignment: .top) {
             RoundedRectangle(cornerRadius: Metrics.paneCornerRadius, style: .continuous)
                 .strokeBorder(
-                    isFocused && isSplit ? Color(theme.accent).opacity(0.45) : Color(theme.foreground).opacity(0.1),
-                    lineWidth: 1
+                    needsAttention ? AgentTone.attention.color(theme).opacity(0.8)
+                        : isFocused && isSplit ? Color(theme.accent).opacity(0.45) : Color(theme.foreground).opacity(0.1),
+                    lineWidth: needsAttention ? Metrics.agentAttentionBorder : 1
                 )
                 .allowsHitTesting(false)
             PaneHeader(

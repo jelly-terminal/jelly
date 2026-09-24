@@ -6,6 +6,7 @@ extension KeyAction {
         case window = "Window"
         case edit = "Edit"
         case font = "Font"
+        case agents = "Agents"
         case config = "Settings"
     }
 
@@ -19,6 +20,7 @@ extension KeyAction {
         .paletteToggle, .sidebarToggle, .explorerToggle, .markdownPreview, .find,
         .copy, .paste, .clear, .promptPrevious, .promptNext,
         .fontIncrease, .fontDecrease, .fontReset,
+        .agentNextWaiting,
         .settingsOpen, .configOpen, .configReload,
     ]
 
@@ -57,6 +59,7 @@ extension KeyAction {
         case .configReload: "config.reload"
         case .promptPrevious: "prompt.previous"
         case .promptNext: "prompt.next"
+        case .agentNextWaiting: "agent.next-waiting"
         case .text(let text): "text:" + Self.escape(text)
         case .none: "none"
         }
@@ -103,6 +106,7 @@ extension KeyAction {
         case .configReload: "Reload Config"
         case .promptPrevious: "Previous Prompt"
         case .promptNext: "Next Prompt"
+        case .agentNextWaiting: "Jump to Waiting Agent"
         case .text: "Send Text"
         case .none: "None"
         }
@@ -116,6 +120,7 @@ extension KeyAction {
         case .paletteToggle, .sidebarToggle, .explorerToggle, .markdownPreview, .find: .window
         case .clear, .copy, .paste, .promptPrevious, .promptNext, .text, .none: .edit
         case .fontIncrease, .fontDecrease, .fontReset: .font
+        case .agentNextWaiting: .agents
         case .settingsOpen, .configOpen, .configReload: .config
         }
     }

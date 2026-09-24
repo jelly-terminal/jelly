@@ -82,7 +82,9 @@ struct RootView: View {
                         tabCount: workspace.tabs.count,
                         paneCount: workspace.selectedTab?.panes.count ?? 0,
                         gridSize: workspace.selectedTab?.gridSize,
-                        theme: theme
+                        agent: model.agentHighlight,
+                        theme: theme,
+                        onAgent: model.revealAgentHighlight
                     )
                 }
             }

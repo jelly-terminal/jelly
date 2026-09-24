@@ -3,15 +3,11 @@ import Foundation
 public struct ClaudeCodeAgent: AgentProvider {
     public let id = "claude"
     public let name = "Claude Code"
-    public let sessionsDirectory: URL
 
-    public init(sessionsDirectory: URL = Self.defaultSessionsDirectory) {
-        self.sessionsDirectory = sessionsDirectory
-    }
+    public init() {}
 
-    public static var defaultSessionsDirectory: URL {
-        let environment = ProcessInfo.processInfo.environment
-        let configDirectory = environment["CLAUDE_CONFIG_DIR"].map { URL(filePath: ($0 as NSString).expandingTildeInPath) }
+    static func sessionsDirectory(for process: ProcessIdentity) -> URL {
+        let configDirectory = process.environment["CLAUDE_CONFIG_DIR"].map { URL(filePath: ($0 as NSString).expandingTildeInPath) }
             ?? FileManager.default.homeDirectoryForCurrentUser.appending(path: ".claude")
         return configDirectory.appending(path: "sessions")
     }
@@ -20,8 +16,8 @@ public struct ClaudeCodeAgent: AgentProvider {
         process.commandNames.contains("claude")
     }
 
-    public func state(ofProcess pid: Int32) -> AgentState? {
-        guard let data = try? Data(contentsOf: sessionsDirectory.appending(path: "\(pid).json")) else { return nil }
+    public func state(of process: ProcessIdentity, pid: Int32) -> AgentState? {
+        guard let data = try? Data(contentsOf: Self.sessionsDirectory(for: process).appending(path: "\(pid).json")) else { return nil }
         return Self.state(fromSession: data, pid: pid)
     }
 

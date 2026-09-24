@@ -23,7 +23,12 @@ enum ProcessArguments {
         while arguments.count < argc, let argument = string(in: bytes, from: &index) {
             arguments.append(argument)
         }
-        return ProcessIdentity(executable: executable, arguments: arguments)
+        var environment: [String: String] = [:]
+        while index < bytes.endIndex, let entry = string(in: bytes, from: &index), !entry.isEmpty {
+            guard let separator = entry.firstIndex(of: "=") else { continue }
+            environment[String(entry[..<separator])] = String(entry[entry.index(after: separator)...])
+        }
+        return ProcessIdentity(executable: executable, arguments: arguments, environment: environment)
     }
 
     private static func string(in bytes: ArraySlice<UInt8>, from index: inout Int) -> String? {

@@ -1,10 +1,12 @@
 public struct ProcessIdentity: Equatable, Sendable {
     public var executable: String
     public var arguments: [String]
+    public var environment: [String: String]
 
-    public init(executable: String, arguments: [String]) {
+    public init(executable: String, arguments: [String], environment: [String: String] = [:]) {
         self.executable = executable
         self.arguments = arguments
+        self.environment = environment
     }
 
     public var commandNames: Set<String> {

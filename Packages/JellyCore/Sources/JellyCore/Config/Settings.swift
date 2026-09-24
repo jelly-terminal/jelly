@@ -65,12 +65,18 @@ public struct FontSettings: Equatable, Sendable {
 }
 
 public struct WindowSettings: Equatable, Sendable {
+    public enum TabStyle: String, CaseIterable, Sendable {
+        case glass
+        case card
+    }
+
     public var backgroundOpacity = 1.0
     public var blur = 0
     public var paddingX = 10.0
     public var paddingY = 8.0
     public var sidebar = true
     public var statusBar = true
+    public var tabStyle = TabStyle.glass
 
     public init() {}
 }

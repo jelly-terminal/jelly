@@ -49,6 +49,11 @@ struct AppearanceSettingsView: View {
                 }
 
                 Section("Window") {
+                    Picker("Tab style", selection: configStore.binding(\.window.tabStyle, at: ["window", "tab-style"]) { .string($0.rawValue) }) {
+                        Text("Glass").tag(WindowSettings.TabStyle.glass)
+                        Text("Card").tag(WindowSettings.TabStyle.card)
+                    }
+                    .pickerStyle(.segmented)
                     LabeledContent("Background opacity") {
                         Slider(value: $opacity, in: 0.3...1, step: 0.05) { editing in
                             if !editing { configStore.set(.number(opacity), at: ["settings", "window", "background-opacity"]) }

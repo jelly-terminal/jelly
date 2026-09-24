@@ -80,6 +80,7 @@ enum SettingsDecoder {
         window.blur = reader.int("blur", in: 0...100) ?? window.blur
         window.sidebar = reader.bool("sidebar") ?? window.sidebar
         window.statusBar = reader.bool("status-bar") ?? window.statusBar
+        window.tabStyle = reader.choice("tab-style", Dictionary(uniqueKeysWithValues: WindowSettings.TabStyle.allCases.map { ($0.rawValue, $0) })) ?? window.tabStyle
         if var padding = reader.table("padding") {
             window.paddingX = padding.double("x", in: 0...200) ?? window.paddingX
             window.paddingY = padding.double("y", in: 0...200) ?? window.paddingY

@@ -11,6 +11,8 @@ enum Metrics {
     static let tabHorizontalPadding: CGFloat = 12
     static let tabHeight: CGFloat = 30
     static let tabMaxWidth: CGFloat = 200
+    static let tabCardMinWidth: CGFloat = 140
+    static let tabCardCornerRadius: CGFloat = 8
     static let controlSize: CGFloat = 28
     static let bannerCornerRadius: CGFloat = 12
     static let chromeFontSize: CGFloat = 12.5

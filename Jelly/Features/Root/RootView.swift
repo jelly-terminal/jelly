@@ -26,6 +26,7 @@ struct RootView: View {
                     TabBar(
                         workspace: workspace,
                         theme: theme,
+                        style: settings.window.tabStyle,
                         leadingInset: model.isSidebarVisible ? Metrics.chromePadding / 2 : Metrics.tabSpacing,
                         onClose: { workspace.requestClose($0, in: model.window) },
                         onFind: { workspace.selectedTab?.surface.showFind() }

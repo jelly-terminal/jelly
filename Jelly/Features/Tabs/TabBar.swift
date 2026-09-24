@@ -4,6 +4,7 @@ import SwiftUI
 struct TabBar: View {
     let workspace: WorkspaceModel
     let theme: Theme
+    let style: WindowSettings.TabStyle
     let leadingInset: CGFloat
     let onClose: (TabModel) -> Void
     let onFind: () -> Void
@@ -20,6 +21,7 @@ struct TabBar: View {
                             tab: tab,
                             isSelected: tab.id == workspace.selectedID,
                             theme: theme,
+                            style: style,
                             selection: selection,
                             onSelect: { withAnimation(Self.animation) { workspace.selectedID = tab.id } },
                             onClose: { withAnimation(Self.animation) { onClose(tab) } }
@@ -42,6 +44,12 @@ struct TabBar: View {
             } label: {
                 Image(systemName: "plus")
                     .frame(width: Metrics.controlSize, height: Metrics.controlSize)
+                    .background {
+                        if style == .card {
+                            RoundedRectangle(cornerRadius: Metrics.tabCardCornerRadius)
+                                .fill(Color(theme.foreground).opacity(0.06))
+                        }
+                    }
                     .contentShape(.rect)
             }
             .buttonStyle(.plain)
@@ -162,6 +170,7 @@ private struct TabItem: View {
     let tab: TabModel
     let isSelected: Bool
     let theme: Theme
+    let style: WindowSettings.TabStyle
     let selection: Namespace.ID
     let onSelect: () -> Void
     let onClose: () -> Void
@@ -195,24 +204,49 @@ private struct TabItem: View {
         .padding(.leading, Metrics.tabHorizontalPadding / 2)
         .padding(.trailing, Metrics.tabHorizontalPadding)
         .frame(height: Metrics.tabHeight)
-        .frame(maxWidth: Metrics.tabMaxWidth, alignment: .leading)
+        .frame(minWidth: style == .card ? Metrics.tabCardMinWidth : nil, maxWidth: Metrics.tabMaxWidth, alignment: .leading)
         .background {
-            ZStack {
-                if !isSelected, tab.agentTone == .attention {
-                    Capsule().fill(AgentTone.attention.color(theme).opacity(0.14))
-                } else if isHovered, !isSelected {
-                    Capsule().fill(Color(theme.foreground).opacity(0.06))
-                }
-                if isSelected {
-                    Capsule()
-                        .fill(.clear)
-                        .glassEffect(.regular, in: .capsule)
-                        .matchedGeometryEffect(id: "selection", in: selection)
-                }
+            switch style {
+            case .glass: glassBackground
+            case .card: cardBackground
             }
         }
-        .contentShape(.capsule)
+        .contentShape(shape)
         .onTapGesture(perform: onSelect)
         .onHover { hovering in withAnimation(.easeOut(duration: 0.12)) { isHovered = hovering } }
+    }
+
+    private var shape: AnyShape {
+        switch style {
+        case .glass: AnyShape(.capsule)
+        case .card: AnyShape(.rect(cornerRadius: Metrics.tabCardCornerRadius))
+        }
+    }
+
+    private var glassBackground: some View {
+        ZStack {
+            if !isSelected, tab.agentTone == .attention {
+                Capsule().fill(AgentTone.attention.color(theme).opacity(0.14))
+            } else if isHovered, !isSelected {
+                Capsule().fill(Color(theme.foreground).opacity(0.06))
+            }
+            if isSelected {
+                Capsule()
+                    .fill(.clear)
+                    .glassEffect(.regular, in: .capsule)
+                    .matchedGeometryEffect(id: "selection", in: selection)
+            }
+        }
+    }
+
+    private var cardBackground: some View {
+        RoundedRectangle(cornerRadius: Metrics.tabCardCornerRadius)
+            .fill(cardFill)
+            .strokeBorder(Color(theme.foreground).opacity(isSelected ? 0.12 : 0), lineWidth: 1)
+    }
+
+    private var cardFill: Color {
+        if !isSelected, tab.agentTone == .attention { return AgentTone.attention.color(theme).opacity(0.14) }
+        return Color(theme.foreground).opacity(isSelected ? 0.12 : isHovered ? 0.08 : 0.04)
     }
 }

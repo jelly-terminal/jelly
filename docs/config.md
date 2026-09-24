@@ -54,6 +54,7 @@ blur = 20
 padding = { x = 10, y = 8 }
 sidebar = true
 status-bar = true
+tab-style = "glass"
 
 [settings.cursor]
 style = "block"
@@ -126,6 +127,7 @@ palette = [
 | `window.padding` | table | `{ x = 10, y = 8 }` | Points between each pane's edge and its grid (`y` is the bottom; the header sits on top). |
 | `window.sidebar` | bool | `true` | Show the sidebar on launch. |
 | `window.status-bar` | bool | `true` | |
+| `window.tab-style` | string | `"glass"` | `glass` (a glass capsule marks the selected tab) or `card` (every tab is a rounded card, the selected one brighter). |
 | `cursor.style` | string | `"block"` | `block`, `bar`, `underline`. |
 | `cursor.blink` | bool | `true` | |
 | `shell.program` | string | login shell | Absolute path. |

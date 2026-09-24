@@ -18,17 +18,19 @@ struct ExplorerPanel: View {
                 ScrollView {
                     LazyVStack(spacing: 1) {
                         ForEach(explorer.rows) { row in
-                            ExplorerRowView(row: row, isSelected: row.entry.url == explorer.selection, isFocused: isFocused, theme: theme) {
-                                explorer.selection = row.entry.url
-                                isFocused = true
-                                explorer.toggle(row.entry)
-                            }
+                            ExplorerRowView(
+                                row: row,
+                                isSelected: row.entry.url == explorer.selection,
+                                isFocused: isFocused,
+                                theme: theme,
+                                onToggle: {
+                                    select(row.entry)
+                                    explorer.toggle(row.entry)
+                                },
+                                onSelect: { select(row.entry) },
+                                onOpen: { open(row.entry) }
+                            )
                                 .id(row.id)
-                                .onTapGesture(count: 2) { open(row.entry) }
-                                .simultaneousGesture(TapGesture().onEnded {
-                                    explorer.selection = row.entry.url
-                                    isFocused = true
-                                })
                                 .onDrag { NSItemProvider(object: row.entry.url as NSURL) }
                         }
                     }
@@ -110,6 +112,11 @@ struct ExplorerPanel: View {
         .buttonStyle(.plain)
         .foregroundStyle(Color(theme.foreground).opacity(0.6))
         .help(help)
+    }
+
+    private func select(_ entry: ExplorerEntry) {
+        explorer.selection = entry.url
+        isFocused = true
     }
 
     private func open(_ entry: ExplorerEntry) {

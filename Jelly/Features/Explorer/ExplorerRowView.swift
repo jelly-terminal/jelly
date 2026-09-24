@@ -7,6 +7,8 @@ struct ExplorerRowView: View {
     let isFocused: Bool
     let theme: Theme
     let onToggle: () -> Void
+    let onSelect: () -> Void
+    let onOpen: () -> Void
 
     @State private var isHovered = false
 
@@ -23,16 +25,22 @@ struct ExplorerRowView: View {
                 .padding(.horizontal, -4)
                 .opacity(row.entry.isDirectory ? 1 : 0)
                 .allowsHitTesting(row.entry.isDirectory)
-            Image(systemName: symbol)
-                .font(.system(size: Metrics.explorerIconSize))
-                .foregroundStyle(row.entry.isDirectory ? Color(theme.accent) : foreground.opacity(0.55))
-                .frame(width: Metrics.explorerIconSize + 4)
-            Text(row.entry.name)
-                .font(.system(size: Metrics.chromeFontSize))
-                .foregroundStyle(foreground.opacity(row.entry.name.hasPrefix(".") ? 0.5 : 0.85))
-                .lineLimit(1)
-                .truncationMode(.middle)
-            Spacer(minLength: 0)
+            HStack(spacing: 5) {
+                Image(systemName: symbol)
+                    .font(.system(size: Metrics.explorerIconSize))
+                    .foregroundStyle(row.entry.isDirectory ? Color(theme.accent) : foreground.opacity(0.55))
+                    .frame(width: Metrics.explorerIconSize + 4)
+                Text(row.entry.name)
+                    .font(.system(size: Metrics.chromeFontSize))
+                    .foregroundStyle(foreground.opacity(row.entry.name.hasPrefix(".") ? 0.5 : 0.85))
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                Spacer(minLength: 0)
+            }
+            .frame(maxHeight: .infinity)
+            .contentShape(.rect)
+            .onTapGesture(count: 2, perform: onOpen)
+            .simultaneousGesture(TapGesture().onEnded(onSelect))
         }
         .padding(.leading, CGFloat(row.depth) * Metrics.explorerIndent + 4)
         .padding(.trailing, 6)

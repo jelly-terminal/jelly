@@ -11,7 +11,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var settingsController: SettingsWindowController?
     private var pendingOpenURLs: [URL] = []
     private let snapshotStore = SnapshotStore.standard()
-    private var lastSnapshot: WorkspaceSnapshot?
+    private var closedWindows: [WorkspaceSnapshot.Window] = []
+    private var frontWindow: Int?
     private var savedSnapshot: WorkspaceSnapshot?
     private var autosave: Timer?
 
@@ -19,8 +20,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         configStore = ConfigStore()
         updater = UpdaterService()
         whatsNew = WhatsNewPresenter(configStore: configStore)
-        lastSnapshot = snapshotStore.load()
-        projects = ProjectStore(lastSnapshot?.projects ?? [])
+        let saved = snapshotStore.load()
+        closedWindows = saved?.windows ?? []
+        frontWindow = saved?.frontWindow
+        projects = ProjectStore(saved?.projects ?? [])
         _ = configStore.observe { [weak self] in self?.configChanged() }
         configChanged()
         startSession()
@@ -65,16 +68,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc func newWindow() {
-        let restore = windowControllers.isEmpty ? lastSnapshot : nil
-        let controller = MainWindowController(configStore: configStore, projects: projects, snapshot: restore)
+        guard windowControllers.isEmpty, !closedWindows.isEmpty else {
+            openWindow(restoring: nil)
+            return
+        }
+        let restoring = closedWindows
+        let front = frontWindow.flatMap { restoring.indices.contains($0) ? $0 : nil } ?? restoring.count - 1
+        closedWindows = []
+        frontWindow = nil
+        let controllers = restoring.map(openWindow)
+        controllers[front].window?.makeKeyAndOrderFront(nil)
+    }
+
+    @discardableResult
+    private func openWindow(restoring snapshot: WorkspaceSnapshot.Window?) -> MainWindowController {
+        let controller = MainWindowController(configStore: configStore, projects: projects, snapshot: snapshot)
         controller.onClose = { [weak self, weak controller] snapshot in
             guard let self else { return }
-            if self.windowControllers.first === controller { self.lastSnapshot = snapshot }
             self.windowControllers.removeAll { $0 === controller }
+            if self.windowControllers.isEmpty { self.closedWindows = [snapshot] }
             self.saveSnapshot()
         }
         windowControllers.append(controller)
         controller.showWindow(nil)
+        return controller
     }
 
     @objc func performMenuAction(_ sender: NSMenuItem) {
@@ -174,11 +191,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func saveSnapshot() {
-        var snapshot = windowControllers.first?.model.snapshot ?? lastSnapshot
-        snapshot?.projects = projects.snapshot
-        guard let snapshot, snapshot != savedSnapshot else { return }
+        let snapshot = windowControllers.isEmpty
+            ? WorkspaceSnapshot(windows: closedWindows, frontWindow: nil, projects: projects.snapshot)
+            : WorkspaceSnapshot(windows: windowControllers.map(\.model.snapshot), frontWindow: frontIndex, projects: projects.snapshot)
+        guard snapshot != savedSnapshot else { return }
         snapshotStore.save(snapshot)
         savedSnapshot = snapshot
+    }
+
+    private var frontIndex: Int? {
+        NSApp.orderedWindows.lazy.compactMap { window in
+            self.windowControllers.firstIndex { $0.window === window }
+        }.first
     }
 
     private func configChanged() {

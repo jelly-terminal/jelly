@@ -21,7 +21,7 @@ final class WindowModel {
     @ObservationIgnored let explorer = ExplorerModel()
     @ObservationIgnored weak var window: NSWindow?
 
-    init(configStore: ConfigStore, projects: ProjectStore, snapshot: WorkspaceSnapshot?) {
+    init(configStore: ConfigStore, projects: ProjectStore, snapshot: WorkspaceSnapshot.Window?) {
         self.configStore = configStore
         self.projects = projects
         let restored = (snapshot?.sessions ?? []).map {
@@ -47,12 +47,12 @@ final class WindowModel {
         ActionHandler(window: self)
     }
 
-    var snapshot: WorkspaceSnapshot {
-        WorkspaceSnapshot(
+    var snapshot: WorkspaceSnapshot.Window {
+        WorkspaceSnapshot.Window(
             sessions: sessions.map(\.snapshot),
             selectedSession: selectedSessionID,
-            projects: projects.snapshot,
-            sidebarVisible: isSidebarVisible
+            sidebarVisible: isSidebarVisible,
+            frame: window?.frameDescriptor
         )
     }
 

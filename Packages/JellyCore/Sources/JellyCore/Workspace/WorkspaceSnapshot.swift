@@ -58,15 +58,55 @@ public struct WorkspaceSnapshot: Codable, Equatable, Sendable {
         }
     }
 
-    public var sessions: [Session]
-    public var selectedSession: UUID?
-    public var projects: [Project]
-    public var sidebarVisible: Bool?
+    public struct Window: Codable, Equatable, Sendable {
+        public var sessions: [Session]
+        public var selectedSession: UUID?
+        public var sidebarVisible: Bool?
+        public var frame: String?
 
-    public init(sessions: [Session], selectedSession: UUID?, projects: [Project], sidebarVisible: Bool?) {
-        self.sessions = sessions
-        self.selectedSession = selectedSession
+        public init(sessions: [Session], selectedSession: UUID?, sidebarVisible: Bool?, frame: String? = nil) {
+            self.sessions = sessions
+            self.selectedSession = selectedSession
+            self.sidebarVisible = sidebarVisible
+            self.frame = frame
+        }
+    }
+
+    public var windows: [Window]
+    public var frontWindow: Int?
+    public var projects: [Project]
+
+    public init(windows: [Window], frontWindow: Int?, projects: [Project]) {
+        self.windows = windows
+        self.frontWindow = frontWindow
         self.projects = projects
-        self.sidebarVisible = sidebarVisible
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case windows, frontWindow, projects, sessions, selectedSession, sidebarVisible
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        projects = try container.decodeIfPresent([Project].self, forKey: .projects) ?? []
+        frontWindow = try container.decodeIfPresent(Int.self, forKey: .frontWindow)
+        if let windows = try container.decodeIfPresent([Window].self, forKey: .windows) {
+            self.windows = windows
+        } else if let sessions = try container.decodeIfPresent([Session].self, forKey: .sessions) {
+            windows = [Window(
+                sessions: sessions,
+                selectedSession: try container.decodeIfPresent(UUID.self, forKey: .selectedSession),
+                sidebarVisible: try container.decodeIfPresent(Bool.self, forKey: .sidebarVisible)
+            )]
+        } else {
+            windows = []
+        }
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(windows, forKey: .windows)
+        try container.encodeIfPresent(frontWindow, forKey: .frontWindow)
+        try container.encode(projects, forKey: .projects)
     }
 }

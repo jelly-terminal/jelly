@@ -5,14 +5,14 @@ import SwiftUI
 
 final class MainWindowController: NSWindowController, NSWindowDelegate {
     let model: WindowModel
-    var onClose: ((WorkspaceSnapshot) -> Void)?
+    var onClose: ((WorkspaceSnapshot.Window) -> Void)?
 
     private let configStore: ConfigStore
     private var keyMonitor: Any?
     private var observerID: UUID?
     private var trafficLights: TrafficLights?
 
-    init(configStore: ConfigStore, projects: ProjectStore, snapshot: WorkspaceSnapshot?) {
+    init(configStore: ConfigStore, projects: ProjectStore, snapshot: WorkspaceSnapshot.Window?) {
         self.configStore = configStore
         model = WindowModel(configStore: configStore, projects: projects, snapshot: snapshot)
 
@@ -34,7 +34,11 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
         hosting.sceneBridgingOptions = []
         window.contentViewController = hosting
         window.setContentSize(NSSize(width: 1100, height: 720))
-        if !window.setFrameUsingName(Self.frameName) { window.center() }
+        if let frame = snapshot?.frame {
+            window.setFrame(from: frame)
+        } else if !window.setFrameUsingName(Self.frameName) {
+            window.center()
+        }
         window.setFrameAutosaveName(Self.frameName)
         super.init(window: window)
 

@@ -37,7 +37,7 @@ Jelly is a native macOS terminal built around **sessions**: named workspaces tha
 
 | Area | Behaviour |
 |---|---|
-| **Sessions** | Named workspaces (Work, Personal, Production…). Selecting one swaps every tab and pane. Create, rename, reorder, delete. Restored on relaunch. |
+| **Sessions** | Named workspaces (Work, Personal, Production…). Selecting one swaps every tab and pane. Create, rename, reorder, delete. Every window comes back on relaunch, in its place, with its sessions, tabs, splits and each pane's directory. |
 | **Projects** | Saved folders. Click to open a new tab in that folder in the current session. Add by dragging a folder onto the list or with `+`. |
 | **Connect…** | Saved SSH hosts (v0.3). |
 | **Tab bar** | One tab per workspace view. Each has an icon and a title that follows the focused pane's process, or a name you set. Drag tabs to reorder them. `+` opens a tab, `⌕` opens search. |

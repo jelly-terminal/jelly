@@ -247,7 +247,14 @@ extension TerminalSurface: PaneProcessDelegate {
         for message in notificationScanner.scan(data) {
             activity.alert(message, at: now)
         }
+        followMouseMode()
         feed(byteArray: data)
+        followMouseMode()
+    }
+
+    private func followMouseMode() {
+        let reports = terminal.mouseMode != .off
+        if allowMouseReporting != reports { allowMouseReporting = reports }
     }
 
     func paneProcessDidExit(_ exitCode: Int32?) {

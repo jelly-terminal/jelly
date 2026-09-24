@@ -119,6 +119,10 @@ SwiftTerm handles VT parsing and rendering. What it supports and we rely on:
 - Mouse: X10, normal, button, any-event, SGR (1006); alternate scroll (1007)
 - **Kitty keyboard protocol**, OSC 0/2 title, **OSC 7** cwd, OSC 8 hyperlinks, OSC 52 clipboard, **OSC 133** prompt marks
 
+### Selection during output
+
+SwiftTerm drops the selection on every chunk of output while `allowMouseReporting` is on, which is its default, so a spinner redrawing made text impossible to copy. `TerminalSurface` turns `allowMouseReporting` on only while the program has asked for mouse events (`terminal.mouseMode != .off`). Nothing else changes, since SwiftTerm checks the mouse mode before reporting anyway. The selection now stays while a program writes, unless the program has taken over the mouse.
+
 ### Query responses
 
 Modern shells ask the terminal about itself at startup and wait for an answer; fish 4 stalls and warns if Device Attributes goes unanswered. SwiftTerm answers DA1, DA2, DECRQM, DSR, kitty keyboard flags and OSC 10/11/12/4 colour queries. `QueryResponder` rewrites its XTVERSION reply so programs see `Jelly <version>`.

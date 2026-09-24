@@ -27,6 +27,8 @@ SwiftTerm ships a Metal renderer (glyph atlases, CoreText run shaping, built-in 
 - The fork carries one fix on top of upstream 1.20.0: a line feed onto an existing row clears its soft-wrap flag, as in xterm.js. Without it, programs that redraw in place (Claude Code) get their lines glued together when a pane narrows and then widens. Drop the fork once upstream has the fix.
 - SwiftTerm uses a build-tool plugin: Xcode asks to trust it once; command-line builds pass `-skipPackagePluginValidation`.
 - The Metal toolchain is a separate Xcode component: `xcodebuild -downloadComponent MetalToolchain`.
+- The project file stays at object version 77 so Xcode 26 can open it. If Xcode 27 raises it, set Project Format back to Xcode 16.0 in the File inspector.
+- `make` signs with team `996Y4MJA7D` when a certificate for it is in the keychain, and ad-hoc otherwise, so contributors can build without the team's certificates.
 
 ## Project layout
 

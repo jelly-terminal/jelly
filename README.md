@@ -72,7 +72,7 @@ Jelly isn't distributed outside this repo yet. Build it from source below, or gr
 
 ## Build from source
 
-Requires Xcode 26+ on macOS 26+.
+Requires Xcode 26+ on macOS 26+. Without a signing certificate for the Jelly team, `make` signs the app ad-hoc so it runs on your Mac. In Xcode, pick your own team under Signing & Capabilities instead, and don't commit that change.
 
 ```sh
 git clone git@github.com:jelly-terminal/jelly.git

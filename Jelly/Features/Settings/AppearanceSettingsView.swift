@@ -123,7 +123,7 @@ struct AppearanceSettingsView: View {
     }
 
     private func writeAdaptive(light: String, dark: String) {
-        configStore.set(.inlineTable(["light": .string(light), "dark": .string(dark)]), at: ["settings", "theme"])
+        configStore.setAdaptiveTheme(light: light, dark: dark)
     }
 
     private func familyOptions(current: String) -> [String] {

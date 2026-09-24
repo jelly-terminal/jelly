@@ -87,6 +87,13 @@ struct RootView: View {
                 }
             }
         }
+        .overlay {
+            if let palette = model.palette {
+                PaletteView(palette: palette, theme: theme, onClose: model.closePalette)
+                    .transition(.opacity.combined(with: .scale(scale: 0.98, anchor: .top)))
+            }
+        }
+        .animation(.smooth(duration: 0.15), value: model.palette == nil)
         .background {
             WindowBackground(
                 color: theme.background,

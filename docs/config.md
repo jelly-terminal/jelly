@@ -76,7 +76,7 @@ auto-install = false
 [keybinds]
 "cmd+d" = "split.right"
 "cmd+shift+d" = "split.down"
-"cmd+k" = "clear"
+"cmd+shift+k" = "clear"
 "cmd+shift+enter" = "pane.zoom"
 
 [[theme]]
@@ -131,7 +131,7 @@ palette = [
 
 Keys are written as `modifiers+key`, with modifiers `cmd`, `shift`, `alt` (or `opt`), `ctrl`. Set an action to `"none"` to unbind a default.
 
-`tab.new`, `tab.close`, `tab.next`, `tab.previous`, `tab.goto:<n>`, `tab.move:left|right`, `tab.rename`, `split.right`, `split.down`, `pane.close`, `pane.zoom`, `pane.focus:left|right|up|down`, `pane.equalize`, `session.new`, `session.next`, `session.previous`, `session.goto:<n>`, `sidebar.toggle`, `explorer.toggle`, `markdown.preview`, `find`, `clear`, `copy`, `paste`, `font.increase`, `font.decrease`, `font.reset`, `settings.open`, `config.open`, `config.reload`, `prompt.previous`, `prompt.next`, `text:<string>` (sends literal text; supports `\n`, `\x1b`).
+`tab.new`, `tab.close`, `tab.next`, `tab.previous`, `tab.goto:<n>`, `tab.move:left|right`, `tab.rename`, `split.right`, `split.down`, `pane.close`, `pane.zoom`, `pane.focus:left|right|up|down`, `pane.equalize`, `session.new`, `session.next`, `session.previous`, `session.goto:<n>`, `sidebar.toggle`, `explorer.toggle`, `markdown.preview`, `palette.toggle`, `find`, `clear`, `copy`, `paste`, `font.increase`, `font.decrease`, `font.reset`, `settings.open`, `config.open`, `config.reload`, `prompt.previous`, `prompt.next`, `text:<string>` (sends literal text; supports `\n`, `\x1b`).
 
 ## Theme reference
 

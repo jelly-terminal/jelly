@@ -69,8 +69,9 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
 
     private func installKeyMonitor() {
         keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
-            guard let self, event.window === self.window, self.model.pendingImport == nil,
-                  let chord = KeyChord(event: event),
+            guard let self, event.window === self.window, self.model.pendingImport == nil else { return event }
+            if self.model.handlePaletteKey(event) { return nil }
+            guard let chord = KeyChord(event: event),
                   let action = self.configStore.config.keybinds[chord],
                   self.perform(action)
             else { return event }

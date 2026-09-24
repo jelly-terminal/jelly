@@ -15,6 +15,7 @@ final class WindowModel {
     var isExplorerVisible = false
     var explorerFocusRequest = 0
     var viewer: ViewerModel?
+    var palette: PaletteModel?
 
     @ObservationIgnored let configStore: ConfigStore
     @ObservationIgnored let projects: ProjectStore
@@ -179,6 +180,36 @@ final class WindowModel {
             }
             preview(readme)
         }
+    }
+
+    func togglePalette() {
+        if palette != nil {
+            closePalette()
+        } else {
+            palette = PaletteModel(window: self, sources: PaletteSources.all) { [weak self] item, revertPreview in
+                self?.closePalette()
+                DispatchQueue.main.async {
+                    item.perform()
+                    revertPreview?()
+                }
+            }
+        }
+    }
+
+    func closePalette() {
+        guard let palette else { return }
+        palette.cancelPreview()
+        self.palette = nil
+        if viewer == nil { focusTerminal() }
+    }
+
+    func handlePaletteKey(_ event: NSEvent) -> Bool {
+        guard let palette else { return false }
+        if event.charactersIgnoringModifiers == "\u{1B}" {
+            closePalette()
+            return true
+        }
+        return palette.handle(event)
     }
 
     func terminateAll() {

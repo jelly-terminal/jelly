@@ -66,6 +66,18 @@ enum Metrics {
     static let markdownCornerRadius: CGFloat = 8
     static let markdownCodePadding: CGFloat = 12
     static let markdownListMarkerWidth: CGFloat = 16
+    static let paletteWidth: CGFloat = 560
+    static let paletteTopInset: CGFloat = 64
+    static let paletteListHeight: CGFloat = 340
+    static let paletteCornerRadius: CGFloat = 18
+    static let palettePadding: CGFloat = 6
+    static let paletteFieldHeight: CGFloat = 44
+    static let paletteFieldFontSize: CGFloat = 15
+    static let paletteRowHeight: CGFloat = 32
+    static let paletteRowCornerRadius: CGFloat = 8
+    static let paletteIconWidth: CGFloat = 18
+    static let paletteSectionHeight: CGFloat = 24
+
     static let whatsNewWidth: CGFloat = 560
     static let whatsNewHeight: CGFloat = 520
     static let whatsNewTitleSize: CGFloat = 22

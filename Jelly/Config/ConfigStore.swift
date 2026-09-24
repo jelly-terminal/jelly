@@ -13,6 +13,12 @@ final class ConfigStore {
     var fontSizeDelta = 0.0 {
         didSet { notify() }
     }
+    var previewTheme: Theme? {
+        didSet {
+            guard previewTheme?.id != oldValue?.id else { return }
+            notify()
+        }
+    }
 
     @ObservationIgnored private var watcher: ConfigWatcher?
     @ObservationIgnored private var appearanceObservation: NSKeyValueObservation?
@@ -41,7 +47,7 @@ final class ConfigStore {
     }
 
     var theme: Theme {
-        config.theme(dark: isDark)
+        previewTheme ?? config.theme(dark: isDark)
     }
 
     var visibleDiagnostics: [Diagnostic] {

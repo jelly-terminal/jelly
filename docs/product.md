@@ -45,6 +45,7 @@ Jelly is a native macOS terminal built around **sessions**: named workspaces tha
 | **Status bar** | Session name · tab count · pane count when split · grid size of the focused pane (`112×28`). |
 | **Search** | Find in the focused pane's scrollback, with next/previous and match count. |
 | **Explorer** | A read-only file tree on the right (⌘E) rooted at the focused pane's current directory. It follows the pane as you `cd` or switch panes, and updates live when files change, so you can watch an agent working in the terminal. Arrows move, → and ← open and close folders, ↩ or Space previews, ⌘↑ goes to the enclosing folder, typing filters, Esc returns to the terminal. |
+| **Command palette** | ⌘K opens a search field over the window with every action, the current session's tabs, sessions, projects and themes. Typing filters with fuzzy matching (word starts and runs rank first); ↑/↓ or ⌃P/⌃N move, ↩ runs, Esc or a click outside closes. The last few picks show first under Recent. Actions show their shortcut; the current tab, session and theme are checked. Moving onto a theme previews it live across the window without saving; Esc or a click outside puts the old one back, and picking it with ↩ writes it to `jelly.toml` (into the matching light or dark slot when the theme follows the system). |
 | **Viewer** | ⌘⇧M, or ↩ in the explorer, opens a file over the panes. Markdown is rendered (headings, lists, task lists, tables, quotes, code, images) with a contents menu and working relative links; other text files show with line numbers. Code is syntax-highlighted in the theme's palette colours. It reloads when the file changes on disk. Esc closes it. Terminals behind it keep running. |
 
 ## Configuration and themes
@@ -84,7 +85,9 @@ Jelly updates itself. It checks once a day, offers the new version with release 
 | Toggle sidebar | ⌘0 |
 | Toggle explorer | ⌘E |
 | Preview Markdown (selected file, or the directory's README) | ⌘⇧M |
+| Command palette | ⌘K |
 | Find | ⌘F |
+| Clear | ⌘⇧K |
 | Reload config | ⌘⇧, |
 | Settings | ⌘, |
 

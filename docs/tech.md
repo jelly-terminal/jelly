@@ -42,6 +42,7 @@ Jelly/                         App target (file-system synchronized group)
     Viewer/                    ViewerCard, ViewerModel (history, links, live reload), ViewerLoader (off main), TextFileView
     Markdown/                  MarkdownView and one view per block kind, MarkdownStyle (theme colours, inline and code highlighting)
     Tabs/                      TabBar
+    Palette/                   PaletteModel (query, ranking, recents), PaletteView, PaletteRow, PaletteSource and the PaletteSources list
     Terminal/                  TerminalHost (NSViewRepresentable positioning surfaces)
     StatusBar/
     Diagnostics/               Config problem banner
@@ -59,6 +60,7 @@ Packages/
       Theme/                   Theme, ThemeColor, ThemeDecoder, BuiltinThemes
       Workspace/               PaneTree, WorkspaceSnapshot, SnapshotStore
       Markdown/                MarkdownParser (CommonMark + GFM blocks), MarkdownDocument (blocks, outline, anchors)
+      Palette/                 FuzzyMatcher (subsequence scoring with matched positions)
       Syntax/                  SyntaxHighlighter (byte scanner), SyntaxLanguage (rule tables and aliases), SyntaxToken
       Resources/Themes/        Built-in themes (*.toml)
     Tests/JellyCoreTests/
@@ -97,6 +99,7 @@ Dependency direction: **App → JellyTerminal → JellyCore**. Only `JellyTermin
 - **Pane layout.** `PaneLayout` turns the tree into card frames (with `Metrics.paneGap` between them) and divider handles. `PaneArea` draws it in three layers from the same layout: card fills, then `TerminalHost` (one AppKit container holding every surface, placing the selected tab's surfaces inside their cards and hiding the rest), then headers, borders and divider handles. The container only takes hits inside card bodies, so SwiftUI handles headers and dividers. It watches the window's first responder to report which pane was clicked.
 - **Chrome vs. content.** Terminal output never touches SwiftUI state. Only title, cwd and grid-size callbacks reach `TabModel`.
 - **Explorer and viewer.** The explorer follows the focused pane's directory, read from its shell with `proc_pidinfo` once a second while the panel is open. Directory listing, file reading, Markdown parsing and highlighting all run off the main thread; each expanded folder and the open file have a `DispatchSource` watcher, debounced and re-armed after atomic saves. The viewer covers the pane area. While it's open, `TerminalHost` gets no cards, so the surfaces are hidden but stay attached and keep running. Copy and paste go to the terminal only when a surface is first responder; otherwise they go down the responder chain, so viewer text can be copied.
+- **Command palette.** Each feature adds its items through a `PaletteSource` kept in its own folder (`ActionPaletteSource` in Workspace, `TabPaletteSource` in Tabs, `SessionPaletteSource` and `ProjectPaletteSource` in Sidebar, `ThemePaletteSource` in Settings). `PaletteSources.all` sets which sources appear and in what order. Items are built fresh each time the palette opens, so nothing needs to be kept in sync. Actions come from `KeyAction.catalog`, so any new bindable action appears on its own. While the palette is open, the window's key monitor sends arrows, ↩ and Esc to it first; any other bound shortcut closes it and runs, except copy, paste and `text:` bindings, which go to the search field. An item can also offer a `preview` that returns its own undo: the model calls it when the item is selected and undoes it when the selection moves or the palette closes; running the item keeps the preview in place until `perform` has run. Themes preview through `ConfigStore.previewTheme`, which `ConfigStore.theme` prefers and which is never written to disk. An item runs after the palette has closed and focus is back on the terminal, so actions that move focus (explorer, viewer) keep it.
 - **Syntax highlighting.** It uses its own lexer in `JellyCore`, with no dependency: a byte scanner driven by per-language tables (comments, strings, keywords, literals, capitalised types, calls, shell variables, tags, diff lines). Colours come from the theme's ANSI palette, so code matches the terminal.
 - **Config.** `ConfigStore` loads and watches the config, tracks light/dark appearance, and notifies each window, which re-applies settings and theme to its surfaces.
 
@@ -208,6 +211,7 @@ Unit tests live in the packages (`swift test`) and only cover logic where a bug 
 - `KeybindEditor` / `TOMLEditor.remove`: removing a line keeps comments, keys inside inline tables, binding releases old chords and reuses written keys, reset restores defaults, catalog names parse back.
 - `ConfigImporter`: values replaced in place with comments kept, missing keys added to the right table, inline tables merged, unchanged values skipped, replaced themes flagged, broken configs refused.
 - `ConfigDocument`: invalid values fall back and report their line; syntax errors keep defaults; `none` unbinds; themes need 16 valid colors; hex parsing; built-in themes load.
+- `FuzzyMatcher`: subsequences ignoring case and spaces, word starts and runs beating scattered letters, camelCase boundaries.
 - `PaneTree`: split, close (the sibling takes the parent's place), focus by direction, ratio bounds, equalize.
 - `SyntaxHighlighter`: tokens for words, escaped strings and comments; aliases; shell variables and literal single quotes; tokens split per line across multi-line comments and strings; diff lines.
 - `MarkdownParser` / `MarkdownDocument`: ATX, setext and rules told apart; soft and hard breaks; fences (longer closers, unclosed); nested lists with tasks, code and lazy lines; quotes with lazy lines; table cells with escaped pipes and code spans; GitHub-style heading anchors.

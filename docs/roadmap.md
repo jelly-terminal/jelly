@@ -21,6 +21,7 @@ Everything before v1 is a preview. Config keys and behaviour can change between 
 - Search in scrollback
 - Status bar details (session, pane count, grid size)
 - Read-only file explorer following the focused pane, with a Markdown and text viewer and syntax highlighting
+- Command palette (⌘K): actions, tabs, sessions, projects and themes in one searchable list
 
 ## v0.3: Connect
 
@@ -33,7 +34,6 @@ Everything before v1 is a preview. Config keys and behaviour can change between 
 | Idea | Why |
 |---|---|
 | **Notes per directory** | Notes saved locally per project folder and exposed over MCP, so agents running in the terminal can read and write them. |
-| **Command palette** (⌘K) | Every action, session, project and theme in one searchable list. |
 | **Quick Terminal** | Drop-down window on a global hotkey, over any app. |
 | **Command blocks** | Built on OSC 133: fold, copy, or re-run a single command's output; jump between prompts. |
 | **Per-project `jelly.toml`** | A project folder can define its own tabs, split layout, startup commands and theme (e.g. `dev`, `server`, `db`, `logs` opening together). |

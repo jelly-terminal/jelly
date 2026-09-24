@@ -11,6 +11,12 @@ struct ActionHandler {
         let workspace = window.workspace
         let configStore = window.configStore
         let surface = workspace.selectedTab?.surface
+        if window.palette != nil, action != .paletteToggle {
+            switch action {
+            case .copy, .paste, .text: return false
+            default: window.closePalette()
+            }
+        }
         switch action {
         case .tabNew:
             withAnimation(TabBar.animation) { _ = workspace.newTab() }
@@ -53,7 +59,7 @@ struct ActionHandler {
         case .markdownPreview:
             window.togglePreview()
         case .paletteToggle:
-            return false
+            window.togglePalette()
         case .find:
             surface?.showFind()
         case .clear:

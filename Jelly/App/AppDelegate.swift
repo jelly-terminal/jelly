@@ -125,7 +125,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @discardableResult
     private func openWindow(restoring snapshot: WorkspaceSnapshot.Window?) -> MainWindowController {
-        let controller = MainWindowController(configStore: configStore, snapshot: snapshot)
+        let controller = MainWindowController(configStore: configStore, updater: updater, snapshot: snapshot)
         controller.onClose = { [weak self, weak controller] snapshot in
             guard let self else { return }
             self.windowControllers.removeAll { $0 === controller }

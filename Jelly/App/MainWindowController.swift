@@ -13,7 +13,7 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
     private var observerID: UUID?
     private var trafficLights: TrafficLights?
 
-    init(configStore: ConfigStore, snapshot: WorkspaceSnapshot.Window?) {
+    init(configStore: ConfigStore, updater: UpdaterService, snapshot: WorkspaceSnapshot.Window?) {
         self.configStore = configStore
         model = WindowModel(configStore: configStore, snapshot: snapshot)
 
@@ -30,7 +30,7 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
         window.tabbingMode = .disallowed
         window.isMovable = false
         window.titlebarSeparatorStyle = .none
-        let hosting = NSHostingController(rootView: RootView(model: model, configStore: configStore))
+        let hosting = NSHostingController(rootView: RootView(model: model, configStore: configStore, updater: updater))
         hosting.sizingOptions = []
         hosting.sceneBridgingOptions = []
         window.contentViewController = hosting

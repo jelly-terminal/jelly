@@ -5,6 +5,7 @@ import SwiftUI
 struct RootView: View {
     @Bindable var model: WindowModel
     let configStore: ConfigStore
+    let updater: UpdaterService
 
     var body: some View {
         let theme = configStore.theme
@@ -28,6 +29,8 @@ struct RootView: View {
                         theme: theme,
                         style: settings.window.tabStyle,
                         leadingInset: model.isSidebarVisible ? Metrics.chromePadding / 2 : Metrics.tabSpacing,
+                        updateVersion: updater.availableVersion,
+                        onUpdate: updater.checkForUpdates,
                         onClose: { workspace.requestClose($0, in: model.window) },
                         onFind: { workspace.selectedTab?.surface.showFind() }
                     )

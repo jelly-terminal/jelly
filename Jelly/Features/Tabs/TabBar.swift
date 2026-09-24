@@ -6,6 +6,8 @@ struct TabBar: View {
     let theme: Theme
     let style: WindowSettings.TabStyle
     let leadingInset: CGFloat
+    let updateVersion: String?
+    let onUpdate: () -> Void
     let onClose: (TabModel) -> Void
     let onFind: () -> Void
 
@@ -38,6 +40,7 @@ struct TabBar: View {
             }
             .animation(Self.animation, value: workspace.tabs.map(\.id))
             .animation(Self.animation, value: workspace.selectedID)
+            .animation(Self.animation, value: updateVersion)
 
             Button {
                 withAnimation(Self.animation) { _ = workspace.newTab() }
@@ -57,6 +60,18 @@ struct TabBar: View {
             .help("New Tab")
 
             Spacer(minLength: 0)
+
+            if let updateVersion {
+                Button(action: onUpdate) {
+                    Text("Update available")
+                        .padding(.horizontal, Metrics.tabSpacing)
+                        .frame(height: Metrics.controlSize)
+                }
+                .buttonStyle(.glass)
+                .tint(.accentColor)
+                .help("Jelly \(updateVersion) is ready to install")
+                .transition(.opacity.combined(with: .scale(scale: 0.9)))
+            }
 
             Button(action: onFind) {
                 Image(systemName: "magnifyingglass")

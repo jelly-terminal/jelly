@@ -12,9 +12,8 @@
   <img src="https://img.shields.io/badge/swift-6-orange" alt="Swift 6">
 </p>
 
-
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/9caa0397-f89c-482a-99d0-71bcef202c49" width="820" alt="Jelly window">
+  <img src="https://github.com/user-attachments/assets/f237ec07-e753-4974-8b5a-ce5cf6317579" width="820" alt="Jelly window">
 </p>
 
 > **Early development.** Jelly is a preview. Expect rough edges, and expect config keys and behaviour to change between versions until the stable launch at v1.0.0.

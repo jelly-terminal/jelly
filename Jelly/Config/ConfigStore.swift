@@ -24,7 +24,13 @@ final class ConfigStore {
     @ObservationIgnored private var appearanceObservation: NSKeyValueObservation?
     @ObservationIgnored private var listeners: [UUID: () -> Void] = [:]
 
-    init(paths: ConfigPaths = .standard()) {
+    #if DEBUG
+    static let configFileName = "jelly-debug.toml"
+    #else
+    static let configFileName = "jelly.toml"
+    #endif
+
+    init(paths: ConfigPaths = .standard(configFileName: ConfigStore.configFileName)) {
         self.paths = paths
         try? ConfigLoader.createConfigFileIfMissing(paths: paths)
         isDark = NSApp.effectiveAppearance.isDark

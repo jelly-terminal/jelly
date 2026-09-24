@@ -112,7 +112,8 @@ palette = [
 |---|---|---|---|
 | `theme` | string | `"jelly-dark"` | A theme `id`. `{ light = "a", dark = "b" }` follows system appearance. |
 | `scrollback` | int | `10000` | Lines per pane. |
-| `confirm-quit` | bool | `true` | Ask before quitting with running processes. |
+| `confirm-quit` | bool | `true` | Ask before quitting (or closing a window, tab or pane) with running processes. When sessions are kept alive, quitting offers Quit or Quit and End Sessions. |
+| `session.keep-alive` | bool | `true` | Keep each pane's shell and programs running after Jelly quits, crashes or updates, and reattach on the next launch. Off: quitting ends them. |
 | `font.family` | string | `"SF Mono"` | Any installed family. Matched ignoring case, spaces and hyphens. |
 | `font.size` | number | `13` | Points. |
 | `font.fallback` | [string] | `[]` | Tried before the system fallback list. When empty and the main font has no Nerd Font icons, an installed Nerd Font is added automatically. |

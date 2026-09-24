@@ -11,6 +11,7 @@ public struct Settings: Equatable, Sendable {
     public var clipboard = ClipboardSettings()
     public var updates = UpdateSettings()
     public var agents = AgentSettings()
+    public var session = SessionSettings()
 
     public init() {}
 }
@@ -105,6 +106,12 @@ public struct ShellSettings: Equatable, Sendable {
 public struct ClipboardSettings: Equatable, Sendable {
     public var copyOnSelect = false
     public var osc52Read = false
+
+    public init() {}
+}
+
+public struct SessionSettings: Equatable, Sendable {
+    public var keepAlive = true
 
     public init() {}
 }

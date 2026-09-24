@@ -7,8 +7,8 @@
 | Language | Swift 6, strict concurrency, MainActor by default in the app target |
 | App shell | AppKit lifecycle (`NSApplicationDelegate`), `NSWindow` hosting SwiftUI |
 | Chrome | SwiftUI, Liquid Glass (`.glassEffect`, `GlassEffectContainer`) |
-| Terminal | SwiftTerm 1.20 from our fork (`mxvsh/SwiftTerm`, branch `jelly`): its `LocalProcessTerminalView` with the Metal renderer on, wrapped by our `TerminalSurface` |
-| PTY | SwiftTerm's `LocalProcess` (`openpty` + `login_tty`), reads on a background queue, feeds on main |
+| Terminal | SwiftTerm 1.20 from our fork (`mxvsh/SwiftTerm`, branch `jelly`): its `TerminalView` with the Metal renderer on, subclassed by our `TerminalSurface` |
+| PTY | SwiftTerm's `LocalProcess` (`forkpty`), owned by the `jelly-mux` helper so shells outlive the app, or by the app itself as a fallback |
 | Config | TOML via our own parser in `JellyCore/TOML` (line numbers, comment-preserving edits), `~/.config/jelly/jelly.toml` |
 | Persistence | JSON in `~/Library/Application Support/<bundle id>/` (v0.2) |
 | Updates | Sparkle 2 (SPM), EdDSA-signed appcast on GitHub Releases |
@@ -70,8 +70,10 @@ Packages/
   JellyTerminal/               Everything that touches SwiftTerm
     Sources/JellyTerminal/
       Surface/                 TerminalSurface, QueryResponder, NSColor+ThemeColor
+      Process/                 PaneProcess (what a surface talks to), LocalPaneProcess (in-app PTY)
+      Mux/                     Session keep-alive: Protocol/ (frames, socket, channel), Helper/ (MuxServer, MuxHost, MuxSession), Snapshot/ (HeadlessScreen, ScreenSnapshot, TerminalModes), Client/ (MuxClient, MuxPaneProcess)
       Alerts/                  NotificationScanner (OSC 9 / 777 in the output stream)
-      Shell/                   ShellLaunch (program, argv0, environment, directory, dropped variables), ProcessArguments (KERN_PROCARGS2)
+      Shell/                   ShellLaunch (program, argv0, environment, directory, dropped variables), ProcessArguments (KERN_PROCARGS2), ForegroundProcess
       Font/                    FontResolver, FontFeatures
     Tests/JellyTerminalTests/
 Config/
@@ -90,10 +92,10 @@ Dependency direction: **App → JellyTerminal → JellyCore**. Only `JellyTermin
  keyDown ─▶ local event monitor ─▶ KeyChord ─▶ Keybinds ─▶ ActionHandler (tabs, find, font, config)
                  │ not bound
                  ▼
- TerminalSurface (SwiftTerm view) ─▶ LocalProcess ─▶ PTY ─▶ shell
+ TerminalSurface (SwiftTerm view) ─▶ PaneProcess ─▶ jelly-mux (Unix socket) ─▶ PTY ─▶ shell
         ▲                                   │ read queue
         │ feed on main                      ▼
-        └──────────────── bytes ◀── PTY output
+        └──────────────── bytes ◀── PTY output (also fed to a headless terminal in jelly-mux)
         │
         ├─▶ Metal renderer (display-driven, dirty rows only)
         └─▶ callbacks: title, cwd (OSC 7), grid size ─▶ TabModel ─▶ SwiftUI chrome
@@ -180,7 +182,21 @@ See [config.md](config.md) for the format. Internals:
 
 ## Persistence
 
-`SnapshotStore` writes `workspace.json` in Application Support (per bundle ID, so Debug and release never share it): every open window with its frame, sessions, tabs' split layouts, each pane's working directory, the focused pane and custom titles, the selected session and tab, and sidebar visibility; and which window was frontmost. A file from before multiple windows were saved loads as one window. It's saved every 5 seconds when something changed, when the window closes and on quit, so a crash or force-quit loses at most a few seconds. Launch reopens every saved window and brings the frontmost one forward; a missing or unreadable file opens one fresh window. Closing a window while others stay open forgets it. Closing the last one keeps it, so clicking the Dock icon or relaunching brings it back. A tab's directory is read from its shell process (`proc_pidinfo`), so it's right for any shell, with the OSC 7 value as a fallback. Pane IDs (and so `JELLY_PANE`) survive a relaunch. Running processes are not restored; each pane starts its shell in its last directory.
+`SnapshotStore` writes `workspace.json` in Application Support (per bundle ID, so Debug and release never share it): every open window with its frame, sessions, tabs' split layouts, each pane's working directory, the focused pane and custom titles, the selected session and tab, and sidebar visibility; and which window was frontmost. A file from before multiple windows were saved loads as one window. It's saved every 5 seconds when something changed, when the window closes and on quit, so a crash or force-quit loses at most a few seconds. Launch reopens every saved window and brings the frontmost one forward; a missing or unreadable file opens one fresh window. Closing a window while others stay open forgets it. Closing the last one keeps it, so clicking the Dock icon or relaunching brings it back. A tab's directory is read from its shell process (`proc_pidinfo`), so it's right for any shell, with the OSC 7 value as a fallback. Pane IDs (and so `JELLY_PANE`) survive a relaunch, and each pane reattaches to its running shell by that ID (see [Session keep-alive](#session-keep-alive)). A pane whose shell is gone starts a new one in its last directory.
+
+## Session keep-alive
+
+Shells run in a helper, `jelly-mux`, so they outlive the app. The helper is the Jelly executable itself started with `--mux <socket>` (`MuxServer.runIfRequested()` at the top of `main`), so there is no second target to build or sign. The app starts it with `posix_spawn` and `POSIX_SPAWN_SETSID`, so it keeps running when the app quits or crashes, and Sparkle can replace the bundle under it.
+
+- **Socket.** `$TMPDIR/<bundle id>.mux`, mode 0600, and the helper checks the peer's uid. Debug and release builds have separate helpers.
+- **Protocol.** Frames of `[type u8][length u32 LE][payload]`. Control payloads are JSON; input and output are raw bytes. Every connection starts with `hello { version }` both ways. `MuxProtocol.supportedVersions` lists what the app speaks; a helper it can't talk to is left alone and panes fall back to in-app shells. A newer app must keep speaking the versions older helpers use, since a helper started by the previous version is still running after an update.
+- **One connection per pane.** `open { pane, launch?, size, scrollback }` attaches to the pane's session or, with a `launch`, starts a new one. The helper answers `opened { pid, restored }` (and, when restored, the screen as `output`) or `missing`. After that the pane sends `input`, `resize` and `terminate`; the helper sends `output` and `exited`. A closed connection just detaches. A second attach to the same pane takes it over.
+- **Control connections.** `prune { keep }` ends detached sessions whose pane isn't in the saved workspace; the app sends it after every snapshot save and at launch. `endAll` ends everything (Quit and End Sessions, or quitting with `session.keep-alive = false`).
+- **Screen restore.** Each session feeds its output into a `HeadlessScreen`, a SwiftTerm `Terminal` with no view. On reattach it's resized to the pane and `ScreenSnapshot` writes it back as escape sequences: title (OSC 2), directory (OSC 7), every scrollback and screen line with its SGR attributes and soft wraps, the scroll region, DEC and ANSI modes, kitty keyboard flags, the cursor and the current pen. SwiftTerm keeps most modes internal, so they're read with DECRQM queries fed to the headless terminal (after a CAN, so a half-received sequence can't swallow them). SwiftTerm can't read the primary screen while the alternate one is active, so the helper watches the output for `?1049h` / `?1047h` / `?47h` and keeps the primary screen's lines just before the switch; the snapshot writes them, then `?1049h`, then the alternate screen. While no pane is attached, the headless terminal answers the program's queries (DA, DSR, …) itself.
+- **Lifetime.** A session ends when its shell exits (the pane gets `exited` and closes) or when it's terminated: SIGHUP to the shell, then the PTY is closed and the shell reaped. The helper exits 5 seconds after its last session ends, removing the socket; the next pane starts a new one.
+- **Fallback.** Connecting runs off the main thread; keys typed meanwhile are queued. If the helper can't be started or reached within 3 seconds, or `session.keep-alive` is off, the pane runs its shell in the app through `LocalPaneProcess`. A restored pane still reattaches to a running helper when keep-alive is off.
+- **Backpressure.** The helper writes output to the socket on the session's queue, so a pane that isn't reading slows the program down as a PTY would. The app stops reading a pane's socket while more than 4 MB waits to be fed to its view.
+- **What stays in the app.** Agent detection reads the foreground process group from the shell's `proc_bsdinfo.e_tpgid` and the directory from `proc_pidinfo`, which work for either kind of shell. Reboot and logout still end every process; the saved layout and directories cover those.
 
 ## Updates
 
@@ -226,6 +242,7 @@ Unit tests live in the packages (`swift test`) and only cover logic where a bug 
 - `ShellLaunch`: order of precedence, `-` prefix on `argv[0]`, working directory, environment (Jelly identity, other terminals' and parent Claude Code sessions' variables dropped, user overrides).
 - `FontResolver` / `FontFeature`: family matching, feature parsing, ligatures off.
 - `QueryResponder`: XTVERSION answers as Jelly, other replies pass through.
+- `ScreenSnapshot` / `HeadlessScreen`: scrollback, cursor, soft wraps, colours and underline styles, modes, scroll region, keyboard flags, title and directory survive a round trip; the primary screen comes back after leaving the alternate one; DECRQM replies parse. `MuxFrameReader`: frames split across reads, unknown and oversized frames rejected.
 - `NotificationScanner` / `ProcessArguments`: OSC 9 and 777 with BEL or ST, split chunks, progress reports and other codes ignored, oversized and cancelled sequences dropped; `KERN_PROCARGS2` layout.
 
 Rendering, fonts and shells are verified by hand against the compatibility matrix above.

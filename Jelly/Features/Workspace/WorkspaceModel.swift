@@ -36,7 +36,7 @@ final class WorkspaceModel {
     func restoreTab(_ snapshot: WorkspaceSnapshot.Tab) {
         let tab: TabModel
         if let layout = snapshot.restorableLayout, let saved = snapshot.panes {
-            let panes = saved.map { makePane(id: $0.id, directory: $0.directory, inheritedDirectory: nil) }
+            let panes = saved.map { makePane(id: $0.id, directory: $0.directory, inheritedDirectory: nil, reattach: true) }
             tab = TabModel(panes: panes, layout: layout, focused: snapshot.focusedPane)
         } else {
             tab = TabModel(pane: makePane(directory: snapshot.directory, inheritedDirectory: nil))
@@ -139,7 +139,7 @@ final class WorkspaceModel {
         selectedID = tab.id
     }
 
-    private func makePane(id: PaneID = PaneID(), directory: String?, inheritedDirectory: String?) -> PaneModel {
+    private func makePane(id: PaneID = PaneID(), directory: String?, inheritedDirectory: String?, reattach: Bool = false) -> PaneModel {
         let settings = configStore.settings
         var shell = settings.shell
         if let directory { shell.workingDirectory = .path(directory) }
@@ -148,7 +148,7 @@ final class WorkspaceModel {
             surface.frame = reference.frame
         }
         configStore.report(surface.apply(settings: settings, theme: configStore.theme))
-        surface.start(shell: shell, inheritedDirectory: inheritedDirectory)
+        surface.start(shell: shell, inheritedDirectory: inheritedDirectory, keepAlive: settings.session.keepAlive, reattach: reattach)
         return PaneModel(surface: surface)
     }
 

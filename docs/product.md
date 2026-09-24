@@ -37,7 +37,7 @@ Jelly is a native macOS terminal built around **sessions**: named workspaces tha
 
 | Area | Behaviour |
 |---|---|
-| **Sessions** | Named workspaces (Work, Personal, Production…). Selecting one swaps every tab and pane. Create, rename, reorder, delete. Every window comes back on relaunch, in its place, with its sessions, tabs, splits and each pane's directory. |
+| **Sessions** | Named workspaces (Work, Personal, Production…). Selecting one swaps every tab and pane. Create, rename, reorder, delete. Every window comes back on relaunch, in its place, with its sessions, tabs, splits and each pane's directory. Programs keep running when Jelly quits, crashes or updates itself: `claude`, a dev server or an SSH connection is still there after a relaunch, with the same screen and scrollback. When something is running, ⌘Q asks whether to quit and keep it running or **Quit and End Sessions**; **Jelly → Quit and End Sessions** (⌥⌘Q) ends them directly. Closing a pane or tab still ends its program. |
 | **Connect…** | Saved SSH hosts (v0.3). |
 | **Tab bar** | One tab per workspace view. Each has an icon and a title that follows the focused pane's process, or a name you set. Drag tabs to reorder them. `+` opens a tab, `⌕` opens search. |
 | **Panes** | Split right or down, as deep as you like. Panes are detached cards with rounded corners and a gap between them; the focused one gets an accent border. Each has a header with its title and split, zoom and close buttons. Resize by dragging the gap between panes, double-click it to equalize. Click a pane to focus it. |

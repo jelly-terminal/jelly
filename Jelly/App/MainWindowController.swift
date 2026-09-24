@@ -6,6 +6,7 @@ import SwiftUI
 final class MainWindowController: NSWindowController, NSWindowDelegate {
     let model: WindowModel
     var onClose: ((WorkspaceSnapshot.Window) -> Void)?
+    var endsProcessesOnClose = true
 
     private let configStore: ConfigStore
     private var keyMonitor: Any?
@@ -106,7 +107,7 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
         if let keyMonitor { NSEvent.removeMonitor(keyMonitor) }
         if let observerID { configStore.removeObserver(observerID) }
         let snapshot = model.snapshot
-        model.terminateAll()
+        if endsProcessesOnClose { model.terminateAll() }
         onClose?(snapshot)
     }
 }

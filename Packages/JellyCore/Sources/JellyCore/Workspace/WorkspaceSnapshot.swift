@@ -70,6 +70,10 @@ public struct WorkspaceSnapshot: Codable, Equatable, Sendable {
         self.frontWindow = frontWindow
     }
 
+    public var paneIDs: Set<PaneID> {
+        Set(windows.flatMap(\.sessions).flatMap(\.tabs).flatMap { $0.panes ?? [] }.map(\.id))
+    }
+
     private enum CodingKeys: String, CodingKey {
         case windows, frontWindow, sessions, selectedSession, sidebarVisible
     }

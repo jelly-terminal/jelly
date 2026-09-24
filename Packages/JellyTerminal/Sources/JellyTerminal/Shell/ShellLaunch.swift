@@ -1,7 +1,7 @@
 import Foundation
 import JellyCore
 
-public struct ShellLaunch: Equatable, Sendable {
+public struct ShellLaunch: Codable, Equatable, Sendable {
     public var executable: String
     public var argv0: String
     public var args: [String]

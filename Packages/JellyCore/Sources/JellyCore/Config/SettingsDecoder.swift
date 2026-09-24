@@ -47,6 +47,10 @@ enum SettingsDecoder {
             settings.updates.autoInstall = updates.bool("auto-install") ?? settings.updates.autoInstall
             reader.merge(updates)
         }
+        if var session = reader.table("session") {
+            settings.session.keepAlive = session.bool("keep-alive") ?? settings.session.keepAlive
+            reader.merge(session)
+        }
         if var agents = reader.table("agents") {
             decodeAgents(&agents, into: &settings.agents)
             reader.merge(agents)

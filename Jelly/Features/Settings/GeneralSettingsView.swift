@@ -18,6 +18,7 @@ struct GeneralSettingsView: View {
             Form {
                 Section {
                     Toggle("Ask before closing running processes", isOn: configStore.toggle(\.confirmQuit, at: "confirm-quit"))
+                    Toggle("Keep sessions running after quitting", isOn: configStore.toggle(\.session.keepAlive, at: "session", "keep-alive"))
                 }
 
                 Section("Window") {

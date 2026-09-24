@@ -2,7 +2,7 @@ import AppKit
 import JellyCore
 import SwiftTerm
 
-public final class TerminalSurface: LocalProcessTerminalView {
+public final class TerminalSurface: TerminalView {
     public let paneID: PaneID
     public private(set) var title = ""
     public private(set) var currentDirectory: String?
@@ -16,8 +16,10 @@ public final class TerminalSurface: LocalProcessTerminalView {
 
     private let appVersion: String
     private var appliedFont: NSFont?
-    private lazy var events = ProcessEvents(surface: self)
+    private lazy var events = SurfaceEvents(surface: self)
     private var notificationScanner = NotificationScanner()
+    private var process: (any PaneProcess)?
+    private var pendingInput: [UInt8] = []
 
     public init(paneID: PaneID = PaneID(), appVersion: String, settings: Settings, theme: Theme) {
         self.paneID = paneID
@@ -26,7 +28,7 @@ public final class TerminalSurface: LocalProcessTerminalView {
         options.scrollback = settings.scrollback
         options.cursorStyle = Self.cursorStyle(settings.cursor)
         super.init(frame: CGRect(x: 0, y: 0, width: 640, height: 400), font: nil, options: options)
-        processDelegate = events
+        terminalDelegate = events
         optionAsMetaKey = true
         try? setUseMetal(true)
         hideScroller()
@@ -60,15 +62,6 @@ public final class TerminalSurface: LocalProcessTerminalView {
         activity.lastInput = .now
     }
 
-    public override func dataReceived(slice: ArraySlice<UInt8>) {
-        let now = ContinuousClock.now
-        activity.lastOutput = now
-        for message in notificationScanner.scan(slice) {
-            activity.alert(message, at: now)
-        }
-        super.dataReceived(slice: slice)
-    }
-
     public override func bell(source: Terminal) {
         activity.alert(nil, at: .now)
         super.bell(source: source)
@@ -79,9 +72,8 @@ public final class TerminalSurface: LocalProcessTerminalView {
     }
 
     public var foregroundProcessGroup: pid_t? {
-        guard isRunning, process.childfd >= 0 else { return nil }
-        let group = tcgetpgrp(process.childfd)
-        return group > 0 && group != process.shellPid ? group : nil
+        guard isRunning, let pid = process?.shellPid else { return nil }
+        return ForegroundProcess.group(ofShell: pid)
     }
 
     public func processIdentity(of pid: pid_t) -> ProcessIdentity? {
@@ -89,7 +81,7 @@ public final class TerminalSurface: LocalProcessTerminalView {
     }
 
     public var workingDirectory: String? {
-        if isRunning, let live = ProcessDirectory.current(of: process.shellPid) { return live }
+        if isRunning, let pid = process?.shellPid, let live = ProcessDirectory.current(of: pid) { return live }
         return currentDirectory
     }
 
@@ -97,18 +89,43 @@ public final class TerminalSurface: LocalProcessTerminalView {
         (terminal.cols, terminal.rows)
     }
 
-    public func start(shell: ShellSettings, inheritedDirectory: String?) {
+    public func start(shell: ShellSettings, inheritedDirectory: String?, keepAlive: Bool, reattach: Bool) {
         let context = ShellLaunch.Context(inheritedDirectory: inheritedDirectory, appVersion: appVersion, paneID: paneID.rawValue.uuidString)
         let launch = ShellLaunch.resolve(shell, context: context)
         currentDirectory = launch.directory
         isRunning = true
-        startProcess(
-            executable: launch.executable,
-            args: launch.args,
-            environment: launch.environment,
-            execName: launch.argv0,
-            currentDirectory: launch.directory
+        guard keepAlive || reattach else {
+            connect(LocalPaneProcess(launch: launch, delegate: self))
+            return
+        }
+        let request = MuxOpenRequest(
+            pane: paneID.rawValue,
+            launch: keepAlive ? launch : nil,
+            size: MuxWindowSize(windowSize),
+            scrollback: terminal.options.scrollback
         )
+        DispatchQueue.global(qos: .userInitiated).async {
+            let connection = MuxPaneProcess.connect(request, spawning: keepAlive)
+            DispatchQueue.main.async { [weak self] in
+                guard let self, self.isRunning, self.process == nil else {
+                    connection.map(MuxPaneProcess.discard)
+                    return
+                }
+                if let connection {
+                    self.connect(MuxPaneProcess(connection: connection, delegate: self))
+                } else {
+                    self.connect(LocalPaneProcess(launch: launch, delegate: self))
+                }
+            }
+        }
+    }
+
+    private func connect(_ process: any PaneProcess) {
+        self.process = process
+        process.resize(windowSize)
+        guard !pendingInput.isEmpty else { return }
+        process.send(pendingInput[...])
+        pendingInput = []
     }
 
     @discardableResult
@@ -138,7 +155,8 @@ public final class TerminalSurface: LocalProcessTerminalView {
 
     public func stop() {
         guard isRunning else { return }
-        terminate()
+        isRunning = false
+        process?.terminate()
     }
 
     public func copySelection() {
@@ -170,11 +188,17 @@ public final class TerminalSurface: LocalProcessTerminalView {
         send(txt: quoted.joined(separator: " ") + " ")
     }
 
-    public override func send(source: TerminalView, data: ArraySlice<UInt8>) {
-        super.send(source: source, data: QueryResponder.rewrite(data, version: appVersion))
+    fileprivate func write(_ data: ArraySlice<UInt8>) {
+        let data = QueryResponder.rewrite(data, version: appVersion)
+        if let process {
+            process.send(data)
+        } else if isRunning {
+            pendingInput += data
+        }
     }
 
     fileprivate func gridSizeChanged(cols: Int, rows: Int) {
+        process?.resize(windowSize)
         onGridSizeChange?(cols, rows)
     }
 
@@ -187,11 +211,6 @@ public final class TerminalSurface: LocalProcessTerminalView {
         let path = directory.flatMap { URL(string: $0)?.path(percentEncoded: false) } ?? directory
         currentDirectory = path
         onDirectoryChange?(path)
-    }
-
-    fileprivate func processExited(_ exitCode: Int32?) {
-        isRunning = false
-        onExit?(exitCode)
     }
 
     private static func cursorStyle(_ cursor: CursorSettings) -> CursorStyle {
@@ -210,19 +229,46 @@ public final class TerminalSurface: LocalProcessTerminalView {
     }
 }
 
+extension TerminalSurface: PaneProcessDelegate {
+    var windowSize: winsize {
+        let scale = window?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 1
+        let frame = getOptimalFrameSize()
+        return winsize(
+            ws_row: UInt16(clamping: terminal.rows),
+            ws_col: UInt16(clamping: terminal.cols),
+            ws_xpixel: UInt16(clamping: Int(frame.width * scale)),
+            ws_ypixel: UInt16(clamping: Int(frame.height * scale))
+        )
+    }
+
+    func paneProcess(didReceive data: ArraySlice<UInt8>) {
+        let now = ContinuousClock.now
+        activity.lastOutput = now
+        for message in notificationScanner.scan(data) {
+            activity.alert(message, at: now)
+        }
+        feed(byteArray: data)
+    }
+
+    func paneProcessDidExit(_ exitCode: Int32?) {
+        isRunning = false
+        onExit?(exitCode)
+    }
+}
+
 @MainActor
-private final class ProcessEvents: @preconcurrency LocalProcessTerminalViewDelegate {
+private final class SurfaceEvents: @preconcurrency TerminalViewDelegate {
     private weak var surface: TerminalSurface?
 
     init(surface: TerminalSurface) {
         self.surface = surface
     }
 
-    func sizeChanged(source: LocalProcessTerminalView, newCols: Int, newRows: Int) {
+    func sizeChanged(source: TerminalView, newCols: Int, newRows: Int) {
         surface?.gridSizeChanged(cols: newCols, rows: newRows)
     }
 
-    func setTerminalTitle(source: LocalProcessTerminalView, title: String) {
+    func setTerminalTitle(source: TerminalView, title: String) {
         surface?.titleChanged(title)
     }
 
@@ -230,7 +276,25 @@ private final class ProcessEvents: @preconcurrency LocalProcessTerminalViewDeleg
         surface?.directoryChanged(directory)
     }
 
-    func processTerminated(source: TerminalView, exitCode: Int32?) {
-        surface?.processExited(exitCode)
+    func send(source: TerminalView, data: ArraySlice<UInt8>) {
+        surface?.write(data)
+    }
+
+    func scrolled(source: TerminalView, position: Double) {}
+
+    func rangeChanged(source: TerminalView, startY: Int, endY: Int) {}
+
+    func requestOpenLink(source: TerminalView, link: String, params: [String: String]) {
+        TerminalView.openDefaultLink(link)
+    }
+
+    func clipboardCopy(source: TerminalView, content: Data) {
+        guard let text = String(bytes: content, encoding: .utf8) else { return }
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.writeObjects([text as NSString])
+    }
+
+    func clipboardRead(source: TerminalView) -> Data? {
+        NSPasteboard.general.string(forType: .string)?.data(using: .utf8)
     }
 }

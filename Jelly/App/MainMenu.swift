@@ -10,7 +10,7 @@ final class KeyActionBox {
 }
 
 enum MainMenu {
-    static func build(target: AppDelegate, keybinds: Keybinds, updatesAvailable: Bool) -> NSMenu {
+    static func build(target: AppDelegate, keybinds: Keybinds, updatesAvailable: Bool, keepsSessions: Bool) -> NSMenu {
         func item(_ title: String, _ action: KeyAction) -> NSMenuItem {
             let item = NSMenuItem(title: title, action: #selector(AppDelegate.performMenuAction(_:)), keyEquivalent: "")
             item.target = target
@@ -24,7 +24,7 @@ enum MainMenu {
         }
 
         let main = NSMenu()
-        main.addItem(submenu(appMenu(target: target, item: item, updatesAvailable: updatesAvailable)))
+        main.addItem(submenu(appMenu(target: target, item: item, updatesAvailable: updatesAvailable, keepsSessions: keepsSessions)))
         main.addItem(submenu(fileMenu(target: target, item: item)))
         main.addItem(submenu(editMenu(item: item)))
         main.addItem(submenu(viewMenu(item: item)))
@@ -44,7 +44,12 @@ enum MainMenu {
         return item
     }
 
-    private static func appMenu(target: AppDelegate, item: (String, KeyAction) -> NSMenuItem, updatesAvailable: Bool) -> NSMenu {
+    private static func appMenu(
+        target: AppDelegate,
+        item: (String, KeyAction) -> NSMenuItem,
+        updatesAvailable: Bool,
+        keepsSessions: Bool
+    ) -> NSMenu {
         let name = AppInfo.name
         let menu = NSMenu(title: name)
         menu.addItem(withTitle: "About \(name)", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
@@ -64,6 +69,12 @@ enum MainMenu {
             .keyEquivalentModifierMask = [.command, .option]
         menu.addItem(.separator())
         menu.addItem(withTitle: "Quit \(name)", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        if keepsSessions {
+            let endSessions = menu.addItem(withTitle: "Quit and End Sessions", action: #selector(AppDelegate.quitAndEndSessions), keyEquivalent: "q")
+            endSessions.keyEquivalentModifierMask = [.command, .option]
+            endSessions.isAlternate = true
+            endSessions.target = target
+        }
         return menu
     }
 

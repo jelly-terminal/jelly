@@ -1,5 +1,6 @@
 import AppKit
 import JellyCore
+import JellyTerminal
 import UniformTypeIdentifiers
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
@@ -15,6 +16,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var frontWindow: Int?
     private var savedSnapshot: WorkspaceSnapshot?
     private var autosave: Timer?
+    private var endsSessionsOnQuit = false
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         configStore = ConfigStore()
@@ -26,6 +28,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let saved = snapshotStore.load()
         closedWindows = saved?.windows ?? []
         frontWindow = saved?.frontWindow
+        MuxClient.shared.prune(keeping: saved?.paneIDs ?? [])
         _ = configStore.observe { [weak self] in self?.configChanged() }
         configChanged()
         if whatsNew.isFirstLaunch {
@@ -55,14 +58,47 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         else { return .terminateNow }
         let alert = NSAlert()
         alert.messageText = "Quit \(AppInfo.name)?"
-        alert.informativeText = "Processes are still running in some tabs."
+        guard keepsSessionsOnQuit else {
+            alert.informativeText = "Processes are still running in some tabs."
+            alert.addButton(withTitle: "Quit")
+            alert.addButton(withTitle: "Cancel")
+            guard alert.runModal() == .alertFirstButtonReturn else {
+                endsSessionsOnQuit = false
+                return .terminateCancel
+            }
+            return .terminateNow
+        }
+        alert.informativeText = "Processes are still running in some tabs. They keep running and come back when you open \(AppInfo.name) again."
         alert.addButton(withTitle: "Quit")
+        alert.addButton(withTitle: "Quit and End Sessions")
         alert.addButton(withTitle: "Cancel")
-        return alert.runModal() == .alertFirstButtonReturn ? .terminateNow : .terminateCancel
+        switch alert.runModal() {
+        case .alertFirstButtonReturn:
+            return .terminateNow
+        case .alertSecondButtonReturn:
+            endsSessionsOnQuit = true
+            return .terminateNow
+        default:
+            return .terminateCancel
+        }
     }
 
     func applicationWillTerminate(_ notification: Notification) {
         saveSnapshot()
+        for controller in windowControllers {
+            controller.onClose = nil
+            controller.endsProcessesOnClose = false
+        }
+        if !keepsSessionsOnQuit { MuxClient.shared.endAll() }
+    }
+
+    @objc func quitAndEndSessions() {
+        endsSessionsOnQuit = true
+        NSApp.terminate(nil)
+    }
+
+    private var keepsSessionsOnQuit: Bool {
+        configStore.settings.session.keepAlive && !endsSessionsOnQuit
     }
 
     func application(_ application: NSApplication, open urls: [URL]) {
@@ -213,6 +249,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         guard snapshot != savedSnapshot else { return }
         snapshotStore.save(snapshot)
         savedSnapshot = snapshot
+        MuxClient.shared.prune(keeping: snapshot.paneIDs)
     }
 
     private var frontIndex: Int? {
@@ -225,7 +262,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.mainMenu = MainMenu.build(
             target: self,
             keybinds: configStore.config.keybinds,
-            updatesAvailable: updater.isAvailable
+            updatesAvailable: updater.isAvailable,
+            keepsSessions: configStore.settings.session.keepAlive
         )
         updater.apply(configStore.settings.updates)
     }

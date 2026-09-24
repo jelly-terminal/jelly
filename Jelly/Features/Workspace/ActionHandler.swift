@@ -52,6 +52,8 @@ struct ActionHandler {
             window.toggleExplorer()
         case .markdownPreview:
             window.togglePreview()
+        case .paletteToggle:
+            return false
         case .find:
             surface?.showFind()
         case .clear:

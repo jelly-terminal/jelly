@@ -12,26 +12,9 @@ enum SupportLinks {
     static var reportBug: URL {
         var components = URLComponents(url: repository.appendingPathComponent("issues/new"), resolvingAgainstBaseURL: false)!
         components.queryItems = [
-            URLQueryItem(name: "title", value: ""),
-            URLQueryItem(name: "body", value: bugReportBody),
+            URLQueryItem(name: "template", value: "bug_report.yml"),
         ]
         return components.url!
     }
 
-    private static var bugReportBody: String {
-        """
-        **What happened**
-
-
-        **What you expected**
-
-
-        **Steps to reproduce**
-
-
-        **Environment**
-        - Jelly \(AppInfo.version)
-        - macOS \(ProcessInfo.processInfo.operatingSystemVersionString)
-        """
-    }
 }

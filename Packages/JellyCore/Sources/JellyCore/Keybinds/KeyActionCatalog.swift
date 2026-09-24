@@ -16,7 +16,7 @@ extension KeyAction {
         .paneFocus(.left), .paneFocus(.right), .paneFocus(.up), .paneFocus(.down),
         .sessionNew, .sessionNext, .sessionPrevious,
     ] + (1...9).map { .sessionGoto($0) } + [
-        .sidebarToggle, .explorerToggle, .markdownPreview, .find,
+        .paletteToggle, .sidebarToggle, .explorerToggle, .markdownPreview, .find,
         .copy, .paste, .clear, .promptPrevious, .promptNext,
         .fontIncrease, .fontDecrease, .fontReset,
         .settingsOpen, .configOpen, .configReload,
@@ -44,6 +44,7 @@ extension KeyAction {
         case .sidebarToggle: "sidebar.toggle"
         case .explorerToggle: "explorer.toggle"
         case .markdownPreview: "markdown.preview"
+        case .paletteToggle: "palette.toggle"
         case .find: "find"
         case .clear: "clear"
         case .copy: "copy"
@@ -89,6 +90,7 @@ extension KeyAction {
         case .sidebarToggle: "Toggle Sidebar"
         case .explorerToggle: "Toggle Explorer"
         case .markdownPreview: "Preview Markdown"
+        case .paletteToggle: "Command Palette"
         case .find: "Find"
         case .clear: "Clear"
         case .copy: "Copy"
@@ -111,7 +113,7 @@ extension KeyAction {
         case .tabNew, .tabClose, .tabNext, .tabPrevious, .tabGoto, .tabMove, .tabRename: .tabs
         case .splitRight, .splitDown, .paneClose, .paneZoom, .paneFocus, .paneEqualize: .panes
         case .sessionNew, .sessionNext, .sessionPrevious, .sessionGoto: .sessions
-        case .sidebarToggle, .explorerToggle, .markdownPreview, .find: .window
+        case .paletteToggle, .sidebarToggle, .explorerToggle, .markdownPreview, .find: .window
         case .clear, .copy, .paste, .promptPrevious, .promptNext, .text, .none: .edit
         case .fontIncrease, .fontDecrease, .fontReset: .font
         case .settingsOpen, .configOpen, .configReload: .config

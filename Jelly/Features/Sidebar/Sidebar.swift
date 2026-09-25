@@ -119,7 +119,7 @@ private struct SessionRow: View {
                     .onExitCommand { model.cancelRename() }
                     .onAppear {
                         draft = session.name
-                        isEditing = true
+                        DispatchQueue.main.async { isEditing = true }
                     }
                     .onChange(of: isEditing) { _, editing in
                         if !editing, model.renamingSessionID == session.id { model.rename(session, to: draft) }

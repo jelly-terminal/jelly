@@ -69,7 +69,7 @@ final class WindowModel {
 
     func focusTerminal() {
         DispatchQueue.main.async { [weak self] in
-            guard let self, let surface = self.workspace.selectedTab?.surface else { return }
+            guard let self, self.renamingSessionID == nil, let surface = self.workspace.selectedTab?.surface else { return }
             self.window?.makeFirstResponder(surface)
         }
     }

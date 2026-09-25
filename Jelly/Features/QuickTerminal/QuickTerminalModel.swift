@@ -85,6 +85,6 @@ final class QuickTerminalModel {
 
     private func layout(_ surface: TerminalSurface) {
         let height = surface.cellHeight * CGFloat(Metrics.quickTerminalOutputRows)
-        surface.setFrameSize(NSSize(width: outputWidth, height: height))
+        (surface as NSView).setFrameSize(NSSize(width: outputWidth, height: height))
     }
 }

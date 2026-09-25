@@ -58,4 +58,5 @@ Only test logic that is likely to break and hard to notice by using the app: TOM
 - Commit after each completed step.
 - One line, conventional prefix: `feat:`, `fix:`, `perf:`, `refactor:`, `build:`, `docs:`, `test:`, `chore:`.
 - Write the subject as a user-readable sentence; it becomes the release note.
-- No body, no footer, no co-author or tool attribution lines.
+- Add a short body only when the change needs more explanation than the subject can carry.
+- No footer, no co-author or tool attribution lines.

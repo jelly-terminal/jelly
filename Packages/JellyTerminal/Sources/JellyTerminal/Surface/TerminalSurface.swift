@@ -22,6 +22,8 @@ public final class TerminalSurface: TerminalView {
     private var notificationScanner = NotificationScanner()
     private var process: (any PaneProcess)?
     private var pendingInput: [UInt8] = []
+    private var pausedBlinkStyle: CursorStyle?
+    private var blinkResumeTask: Task<Void, Never>?
 
     public init(paneID: PaneID = PaneID(), appVersion: String, settings: Settings, theme: Theme) {
         self.paneID = paneID
@@ -60,8 +62,33 @@ public final class TerminalSurface: TerminalView {
         super.rightMouseDown(with: event)
     }
 
+    private func pauseCursorBlink() {
+        let current = terminal.options.cursorStyle
+        if let steady = Self.steadyStyle(current) {
+            pausedBlinkStyle = current
+            terminal.setCursorStyle(steady)
+        } else if pausedBlinkStyle.flatMap(Self.steadyStyle) != current {
+            return
+        }
+        blinkResumeTask?.cancel()
+        blinkResumeTask = Task { [weak self] in
+            try? await Task.sleep(for: .milliseconds(500))
+            guard !Task.isCancelled else { return }
+            self?.resumeCursorBlink()
+        }
+    }
+
+    private func resumeCursorBlink() {
+        guard let pausedBlinkStyle else { return }
+        self.pausedBlinkStyle = nil
+        if Self.steadyStyle(pausedBlinkStyle) == terminal.options.cursorStyle {
+            terminal.setCursorStyle(pausedBlinkStyle)
+        }
+    }
+
     public func recordInput() {
         activity.lastInput = .now
+        pauseCursorBlink()
     }
 
     public override func bell(source: Terminal) {
@@ -248,6 +275,15 @@ public final class TerminalSurface: TerminalView {
         case (.bar, false): .steadyBar
         case (.underline, true): .blinkUnderline
         case (.underline, false): .steadyUnderline
+        }
+    }
+
+    private static func steadyStyle(_ style: CursorStyle) -> CursorStyle? {
+        switch style {
+        case .blinkBlock: .steadyBlock
+        case .blinkBar: .steadyBar
+        case .blinkUnderline: .steadyUnderline
+        case .steadyBlock, .steadyBar, .steadyUnderline: nil
         }
     }
 

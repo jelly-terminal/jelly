@@ -136,7 +136,7 @@ palette = [
 | `window.status-bar` | bool | `true` | |
 | `window.tab-style` | string | `"glass"` | `glass` (a glass capsule marks the selected tab) or `card` (every tab is a rounded card, the selected one brighter). |
 | `cursor.style` | string | `"block"` | `block`, `bar`, `underline`. |
-| `cursor.blink` | bool | `true` | |
+| `cursor.blink` | bool | `true` | The cursor stays solid while you type and blinks again after a short pause. |
 | `shell.program` | string | login shell | Absolute path. |
 | `shell.args` | [string] | `[]` | The shell always starts as a login shell. |
 | `shell.working-directory` | string | `"inherit"` | `inherit` (from focused pane), `home`, or a path. |

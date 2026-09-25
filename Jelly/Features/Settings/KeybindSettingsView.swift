@@ -5,7 +5,7 @@ struct KeybindSettingsView: View {
     let configStore: ConfigStore
 
     @State private var query = ""
-    @State private var recorder = ShortcutRecorder()
+    @State private var recorder = ShortcutRecorder<KeyAction>()
     @State private var notice: String?
 
     var body: some View {
@@ -43,7 +43,7 @@ struct KeybindSettingsView: View {
     private func row(_ action: KeyAction, keybinds: Keybinds) -> some View {
         let chords = keybinds.chords(for: action)
         let isChanged = chords != Keybinds.defaults.chords(for: action)
-        let isRecording = recorder.action == action
+        let isRecording = recorder.target == action
         return LabeledContent(action.title) {
             HStack(spacing: 6) {
                 if isChanged {

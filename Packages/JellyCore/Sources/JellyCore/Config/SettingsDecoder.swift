@@ -55,6 +55,19 @@ enum SettingsDecoder {
             settings.telemetry.enabled = telemetry.bool("enabled") ?? settings.telemetry.enabled
             reader.merge(telemetry)
         }
+        if var quick = reader.table("quick-terminal") {
+            settings.quickTerminal.enabled = quick.bool("enabled") ?? settings.quickTerminal.enabled
+            if let hotkey = quick.string("hotkey") {
+                if hotkey == "none" {
+                    settings.quickTerminal.hotkey = nil
+                } else if let chord = KeyChord(hotkey), !chord.modifiers.isEmpty || (chord.key.count > 1 && chord.key.hasPrefix("f")) {
+                    settings.quickTerminal.hotkey = chord
+                } else {
+                    quick.report("hotkey", "expected a shortcut with a modifier like \"ctrl+space\", or \"none\"")
+                }
+            }
+            reader.merge(quick)
+        }
         if var agents = reader.table("agents") {
             decodeAgents(&agents, into: &settings.agents)
             reader.merge(agents)

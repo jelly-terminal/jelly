@@ -9,6 +9,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let telemetry = TelemetryService()
     private var whatsNew: WhatsNewPresenter!
     private var onboarding: OnboardingPresenter!
+    private var quickTerminal: QuickTerminalController!
     private var windowControllers: [MainWindowController] = []
     private var settingsController: SettingsWindowController?
     private var pendingOpenURLs: [URL] = []
@@ -24,6 +25,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         updater = UpdaterService()
         whatsNew = WhatsNewPresenter(configStore: configStore)
         onboarding = OnboardingPresenter(configStore: configStore)
+        quickTerminal = QuickTerminalController(configStore: configStore) { [weak self] surface in
+            self?.adoptQuickTerminal(surface)
+        }
         AgentNotifier.shared.onOpen = { [weak self] pane in self?.reveal(pane) }
         AgentNotifier.shared.activate()
         let saved = snapshotStore.load()
@@ -235,6 +239,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         guard let controller = windowControllers.first(where: { $0.model.reveal(pane) }) else { return }
         controller.window?.makeKeyAndOrderFront(nil)
         NSApp.activate()
+    }
+
+    private func adoptQuickTerminal(_ surface: TerminalSurface) {
+        if keyController == nil { newWindow() }
+        guard let controller = keyController else {
+            surface.stop()
+            return
+        }
+        controller.model.workspace.adoptTab(surface)
+        controller.window?.makeKeyAndOrderFront(nil)
+        NSApp.activate()
+        controller.model.focusTerminal()
     }
 
     private func importFile(_ url: URL) {

@@ -13,6 +13,7 @@ public struct Settings: Equatable, Sendable {
     public var agents = AgentSettings()
     public var session = SessionSettings()
     public var telemetry = TelemetrySettings()
+    public var quickTerminal = QuickTerminalSettings()
 
     public init() {}
 }

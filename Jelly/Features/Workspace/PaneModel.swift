@@ -17,6 +17,8 @@ final class PaneModel: Identifiable {
     init(surface: TerminalSurface) {
         self.surface = surface
         gridSize = surface.gridSize
+        title = surface.title
+        directory = surface.currentDirectory
         surface.onTitleChange = { [weak self] in self?.title = $0 }
         surface.onDirectoryChange = { [weak self] in self?.directory = $0 }
         surface.onGridSizeChange = { [weak self] cols, rows in self?.gridSize = (cols, rows) }

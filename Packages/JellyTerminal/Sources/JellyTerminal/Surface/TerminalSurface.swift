@@ -13,6 +13,8 @@ public final class TerminalSurface: TerminalView {
     public var onDirectoryChange: ((String?) -> Void)?
     public var onGridSizeChange: ((Int, Int) -> Void)?
     public var onExit: ((Int32?) -> Void)?
+    public var onContentRowsChange: ((Int) -> Void)?
+    public private(set) var contentRows = 0
 
     private let appVersion: String
     private var appliedFont: NSFont?
@@ -118,6 +120,26 @@ public final class TerminalSurface: TerminalView {
                 }
             }
         }
+    }
+
+    public var cellHeight: CGFloat {
+        getOptimalFrameSize().height / CGFloat(max(terminal.rows, 1))
+    }
+
+    private func updateContentRows() {
+        guard onContentRowsChange != nil else { return }
+        let rows = measuredContentRows()
+        guard rows != contentRows else { return }
+        contentRows = rows
+        onContentRowsChange?(rows)
+    }
+
+    private func measuredContentRows() -> Int {
+        if terminal.isCurrentBufferAlternate { return terminal.rows }
+        let lastFilled = (0..<terminal.rows).last { (terminal.getLine(row: $0)?.getTrimmedLength() ?? 0) > 0 } ?? -1
+        let cursor = terminal.getCursorLocation()
+        let cursorRow = isRunning && cursor.x > 0 ? cursor.y : -1
+        return max(lastFilled, cursorRow) + 1
     }
 
     private func connect(_ process: any PaneProcess) {
@@ -250,6 +272,7 @@ extension TerminalSurface: PaneProcessDelegate {
         followMouseMode()
         feed(byteArray: data)
         followMouseMode()
+        updateContentRows()
     }
 
     private func followMouseMode() {

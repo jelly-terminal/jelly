@@ -86,6 +86,10 @@ notify-sound = true
 idle-after = 5
 custom = [{ name = "My Agent", commands = ["my-agent"] }]
 
+[settings.quick-terminal]
+enabled = true
+hotkey = "ctrl+space"
+
 [keybinds]
 "cmd+d" = "split.right"
 "cmd+shift+d" = "split.down"
@@ -142,6 +146,8 @@ palette = [
 | `updates.check` | bool | `true` | Daily update check. |
 | `updates.auto-install` | bool | `false` | Download in the background and install on quit. |
 | `telemetry.enabled` | bool | `true` | Send anonymous usage data (see [product.md](product.md#telemetry)). |
+| `quick-terminal.enabled` | bool | `true` | Open the quick terminal with its shortcut from any app (see [product.md](product.md#quick-terminal)). |
+| `quick-terminal.hotkey` | string | `"ctrl+space"` | Global shortcut for the quick terminal, like `"ctrl+space"` or `"cmd+shift+space"`. Needs a modifier, except `f1`–`f20`. `"none"` turns the shortcut off. |
 | `agents.enabled` | bool | `true` | Watch panes for coding agents and show whether they're working, need you, or are done. |
 | `agents.watch` | [string] | `["claude"]` | Built-in agents to watch: `claude`, `codex`, `gemini`, `opencode`, `amp`, `cursor`, `copilot`, `aider`, `goose`, `crush`, `qwen`. |
 | `agents.notify` | string | `"unfocused"` | `unfocused` (only when you aren't looking at that pane), `always`, `never`. |

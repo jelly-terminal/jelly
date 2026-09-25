@@ -33,6 +33,14 @@ final class WorkspaceModel {
         return tab
     }
 
+    @discardableResult
+    func adoptTab(_ surface: TerminalSurface) -> TabModel {
+        configStore.report(surface.apply(settings: configStore.settings, theme: configStore.theme))
+        let tab = TabModel(pane: PaneModel(surface: surface))
+        insert(tab)
+        return tab
+    }
+
     func restoreTab(_ snapshot: WorkspaceSnapshot.Tab) {
         let tab: TabModel
         if let layout = snapshot.restorableLayout, let saved = snapshot.panes {

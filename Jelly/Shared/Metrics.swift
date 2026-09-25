@@ -86,6 +86,16 @@ enum Metrics {
     static let paletteIconWidth: CGFloat = 18
     static let paletteSectionHeight: CGFloat = 24
 
+    static let quickTerminalWidth: CGFloat = 560
+    static let quickTerminalScreenBottomRatio: CGFloat = 0.1
+    static let quickTerminalShadowMargin: CGFloat = 40
+    static let quickTerminalPadding: CGFloat = 14
+    static let quickTerminalOutputRows = 16
+    static let quickTerminalOutputPadding: CGFloat = 6
+    static let quickTerminalHeaderHeight: CGFloat = 34
+    static let quickTerminalBadgeHeight: CGFloat = 22
+    static let quickTerminalBadgePadding: CGFloat = 8
+
     static let whatsNewWidth: CGFloat = 560
     static let whatsNewHeight: CGFloat = 520
     static let whatsNewTitleSize: CGFloat = 22

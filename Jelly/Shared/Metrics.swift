@@ -86,6 +86,20 @@ enum Metrics {
     static let paletteIconWidth: CGFloat = 18
     static let paletteSectionHeight: CGFloat = 24
 
+    static let switcherInset: CGFloat = 40
+    static let switcherPadding: CGFloat = 16
+    static let switcherSpacing: CGFloat = 12
+    static let switcherCornerRadius: CGFloat = 24
+    static let switcherTileSpacing: CGFloat = 4
+    static let switcherTileSize: CGFloat = 64
+    static let switcherTileCornerRadius: CGFloat = 16
+    static let switcherSelectionPadding: CGFloat = 8
+    static let switcherSelectionCornerRadius: CGFloat = 20
+    static let switcherBadgeInset: CGFloat = 5
+    static let switcherInitialFontSize: CGFloat = 28
+    static let switcherNameFontSize: CGFloat = 14
+    static let switcherCaptionWidth: CGFloat = 320
+
     static let quickTerminalWidth: CGFloat = 560
     static let quickTerminalScreenBottomRatio: CGFloat = 0.1
     static let quickTerminalShadowMargin: CGFloat = 40

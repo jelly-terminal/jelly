@@ -102,6 +102,18 @@ struct RootView: View {
             }
         }
         .animation(.smooth(duration: 0.15), value: model.palette == nil)
+        .overlay {
+            if let switcher = model.sessionSwitcher, switcher.isVisible {
+                SessionSwitcherView(
+                    switcher: switcher,
+                    theme: theme,
+                    onPick: model.pickInSessionSwitcher,
+                    onCancel: model.cancelSessionSwitcher
+                )
+                .transition(.opacity.combined(with: .scale(scale: 0.97)))
+            }
+        }
+        .animation(.smooth(duration: 0.15), value: model.sessionSwitcher?.isVisible == true)
         .background {
             WindowBackground(
                 color: theme.background,

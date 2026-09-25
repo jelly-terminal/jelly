@@ -10,6 +10,7 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
 
     private let configStore: ConfigStore
     private var keyMonitor: Any?
+    private var modifierMonitor: Any?
     private var observerID: UUID?
     private var trafficLights: TrafficLights?
 
@@ -71,6 +72,7 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
     private func installKeyMonitor() {
         keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
             guard let self, event.window === self.window, self.model.pendingImport == nil else { return event }
+            if self.model.handleSessionSwitcherKey(event) { return nil }
             if self.model.handlePaletteKey(event) { return nil }
             (self.window?.firstResponder as? TerminalSurface)?.recordInput()
             guard let chord = KeyChord(event: event),
@@ -79,6 +81,15 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
             else { return event }
             return nil
         }
+        modifierMonitor = NSEvent.addLocalMonitorForEvents(matching: .flagsChanged) { [weak self] event in
+            guard let self, event.window === self.window else { return event }
+            self.model.handleModifiersChanged(event.modifierFlags)
+            return event
+        }
+    }
+
+    func windowDidResignKey(_ notification: Notification) {
+        model.cancelSessionSwitcher()
     }
 
     private func applyWindowSettings() {
@@ -105,6 +116,7 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
 
     func windowWillClose(_ notification: Notification) {
         if let keyMonitor { NSEvent.removeMonitor(keyMonitor) }
+        if let modifierMonitor { NSEvent.removeMonitor(modifierMonitor) }
         if let observerID { configStore.removeObserver(observerID) }
         let snapshot = model.snapshot
         if endsProcessesOnClose { model.terminateAll() }

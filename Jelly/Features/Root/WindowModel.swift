@@ -7,7 +7,9 @@ import SwiftUI
 @Observable
 final class WindowModel {
     private(set) var sessions: [SessionModel]
-    var selectedSessionID: UUID
+    var selectedSessionID: UUID {
+        didSet { recentSessionIDs = [selectedSessionID] + recentSessionIDs.filter { $0 != selectedSessionID } }
+    }
     var isSidebarVisible: Bool
     var renamingSessionID: UUID?
     var pendingImport: PendingImport?
@@ -16,11 +18,13 @@ final class WindowModel {
     var explorerFocusRequest = 0
     var viewer: ViewerModel?
     var palette: PaletteModel?
+    var sessionSwitcher: SessionSwitcherModel?
 
     @ObservationIgnored let configStore: ConfigStore
     @ObservationIgnored let explorer = ExplorerModel()
     @ObservationIgnored weak var window: NSWindow?
     @ObservationIgnored private var agentMonitor: AgentMonitor?
+    @ObservationIgnored private var recentSessionIDs: [UUID] = []
 
     init(configStore: ConfigStore, snapshot: WorkspaceSnapshot.Window?) {
         self.configStore = configStore
@@ -30,7 +34,9 @@ final class WindowModel {
         let initial = restored.isEmpty ? [SessionModel(name: "Default", configStore: configStore)] : restored
         let preferred = snapshot?.selectedSession
         sessions = initial
-        selectedSessionID = initial.first { $0.id == preferred }?.id ?? initial[0].id
+        let selected = initial.first { $0.id == preferred }?.id ?? initial[0].id
+        selectedSessionID = selected
+        recentSessionIDs = [selected]
         isSidebarVisible = snapshot?.sidebarVisible ?? configStore.settings.window.sidebar
         selectedSession.activate()
         agentMonitor = AgentMonitor(window: self)
@@ -77,6 +83,71 @@ final class WindowModel {
     func selectSession(offset: Int) {
         guard let index = sessions.firstIndex(where: { $0.id == selectedSessionID }) else { return }
         select(sessions[(index + offset + sessions.count) % sessions.count])
+    }
+
+    func switchSession(by offset: Int) {
+        let held = NSEvent.modifierFlags.intersection([.command, .control, .option])
+        guard sessions.count > 1, !held.isEmpty else {
+            selectSession(offset: offset)
+            return
+        }
+        if let sessionSwitcher {
+            sessionSwitcher.move(by: offset)
+            return
+        }
+        let switcher = SessionSwitcherModel(sessions: sessionsByRecency, selectedIndex: 0, heldModifiers: held)
+        switcher.move(by: offset)
+        sessionSwitcher = switcher
+        DispatchQueue.main.asyncAfter(deadline: .now() + SessionSwitcherModel.revealDelay) { [weak self, weak switcher] in
+            guard let switcher, self?.sessionSwitcher === switcher else { return }
+            switcher.isVisible = true
+        }
+    }
+
+    private var sessionsByRecency: [SessionModel] {
+        let rank = Dictionary(uniqueKeysWithValues: recentSessionIDs.enumerated().map { ($1, $0) })
+        return sessions.enumerated()
+            .sorted { (rank[$0.element.id] ?? recentSessionIDs.count + $0.offset) < (rank[$1.element.id] ?? recentSessionIDs.count + $1.offset) }
+            .map(\.element)
+    }
+
+    func commitSessionSwitcher() {
+        guard let switcher = sessionSwitcher else { return }
+        sessionSwitcher = nil
+        select(switcher.selected)
+    }
+
+    func cancelSessionSwitcher() {
+        guard sessionSwitcher != nil else { return }
+        sessionSwitcher = nil
+        focusTerminal()
+    }
+
+    func pickInSessionSwitcher(_ index: Int) {
+        sessionSwitcher?.select(index)
+        commitSessionSwitcher()
+    }
+
+    func handleSessionSwitcherKey(_ event: NSEvent) -> Bool {
+        guard let switcher = sessionSwitcher else { return false }
+        guard let chord = KeyChord(event: event) else { return true }
+        switch configStore.config.keybinds[chord] {
+        case .sessionNext?, .sessionPrevious?: return false
+        default: break
+        }
+        switch chord.key {
+        case "escape": cancelSessionSwitcher()
+        case "enter": commitSessionSwitcher()
+        case "left": switcher.move(by: -1)
+        case "right": switcher.move(by: 1)
+        default: break
+        }
+        return true
+    }
+
+    func handleModifiersChanged(_ flags: NSEvent.ModifierFlags) {
+        guard let switcher = sessionSwitcher, !flags.contains(switcher.heldModifiers) else { return }
+        commitSessionSwitcher()
     }
 
     func selectSession(number: Int) {

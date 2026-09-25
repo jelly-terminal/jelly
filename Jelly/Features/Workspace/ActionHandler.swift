@@ -47,9 +47,9 @@ struct ActionHandler {
         case .sessionNew:
             withAnimation(TabBar.animation) { window.newSession() }
         case .sessionNext:
-            window.selectSession(offset: 1)
+            window.switchSession(by: 1)
         case .sessionPrevious:
-            window.selectSession(offset: -1)
+            window.switchSession(by: -1)
         case .sessionGoto(let number):
             window.selectSession(number: number)
         case .sidebarToggle:

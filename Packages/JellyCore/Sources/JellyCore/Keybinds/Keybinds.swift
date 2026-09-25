@@ -39,6 +39,8 @@ public struct Keybinds: Equatable, Sendable {
             "cmd+shift+n": .sessionNew,
             "cmd+ctrl+]": .sessionNext,
             "cmd+ctrl+[": .sessionPrevious,
+            "ctrl+tab": .sessionNext,
+            "ctrl+shift+tab": .sessionPrevious,
             "cmd+0": .sidebarToggle,
             "cmd+e": .explorerToggle,
             "cmd+shift+m": .markdownPreview,

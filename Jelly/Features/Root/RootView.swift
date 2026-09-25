@@ -50,6 +50,12 @@ struct RootView: View {
                                 .transition(.opacity.combined(with: .scale(scale: 0.98)))
                         }
                     }
+                    .overlay {
+                        if let activity = model.activity {
+                            ActivityOverlay(activity: activity, window: model, theme: theme)
+                                .transition(.opacity.combined(with: .scale(scale: 0.96, anchor: activity.corner.unitPoint)))
+                        }
+                    }
                     .padding(.horizontal, Metrics.chromePadding)
                     .animation(.smooth(duration: 0.2), value: model.viewer == nil)
 

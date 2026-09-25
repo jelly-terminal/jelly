@@ -22,6 +22,7 @@ The defaults. Every shortcut can be rebound in Settings → Keybinds or in the `
 | Toggle explorer | ⌘E |
 | Preview Markdown (selected file, or the directory's README) | ⌘⇧M |
 | Command palette | ⌘K |
+| Toggle activity | none (use the palette, or bind `activity.toggle`) |
 | Jump to waiting agent | ⌘⇧A |
 | Find | ⌘F |
 | Clear | ⌘⇧K |

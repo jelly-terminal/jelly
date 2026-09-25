@@ -19,6 +19,7 @@ final class WindowModel {
     var viewer: ViewerModel?
     var palette: PaletteModel?
     var sessionSwitcher: SessionSwitcherModel?
+    var activity: ActivityModel?
 
     @ObservationIgnored let configStore: ConfigStore
     @ObservationIgnored let explorer = ExplorerModel()
@@ -245,6 +246,23 @@ final class WindowModel {
                 return
             }
             preview(readme)
+        }
+    }
+
+    func toggleActivity() {
+        withAnimation(.smooth(duration: 0.2)) {
+            if let activity {
+                activity.stop()
+                self.activity = nil
+            } else {
+                activity = ActivityModel { [weak self] in self?.paneRoots ?? [] }
+            }
+        }
+    }
+
+    private var paneRoots: [PaneRoot] {
+        agentPanes.compactMap { location in
+            location.pane.surface.shellProcessID.map { PaneRoot(paneID: location.pane.id, shellPID: $0) }
         }
     }
 

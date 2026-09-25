@@ -34,7 +34,7 @@ public struct ProcessIdentity: Equatable, Sendable {
         return name
     }
 
-    private static func isInterpreter(_ name: String) -> Bool {
+    static func isInterpreter(_ name: String) -> Bool {
         ["node", "bun", "deno", "ruby"].contains(name) || name.hasPrefix("python")
     }
 }

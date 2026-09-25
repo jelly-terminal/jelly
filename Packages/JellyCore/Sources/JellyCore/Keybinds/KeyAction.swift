@@ -23,6 +23,7 @@ public enum KeyAction: Hashable, Sendable {
     case sidebarToggle
     case explorerToggle
     case markdownPreview
+    case activityToggle
     case paletteToggle
     case find
     case clear
@@ -46,7 +47,7 @@ public enum KeyAction: Hashable, Sendable {
         "pane.close": .paneClose, "pane.zoom": .paneZoom, "pane.equalize": .paneEqualize,
         "session.new": .sessionNew, "session.next": .sessionNext, "session.previous": .sessionPrevious,
         "sidebar.toggle": .sidebarToggle, "explorer.toggle": .explorerToggle,
-        "markdown.preview": .markdownPreview, "palette.toggle": .paletteToggle, "find": .find, "clear": .clear, "copy": .copy, "paste": .paste,
+        "markdown.preview": .markdownPreview, "activity.toggle": .activityToggle, "palette.toggle": .paletteToggle, "find": .find, "clear": .clear, "copy": .copy, "paste": .paste,
         "font.increase": .fontIncrease, "font.decrease": .fontDecrease, "font.reset": .fontReset,
         "settings.open": .settingsOpen, "config.open": .configOpen, "config.reload": .configReload,
         "prompt.previous": .promptPrevious, "prompt.next": .promptNext, "agent.next-waiting": .agentNextWaiting, "none": .none,

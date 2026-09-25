@@ -11,9 +11,10 @@ struct ActionPaletteSource: PaletteSource {
                 id: "action:" + action.name,
                 title: action.title,
                 subtitle: action.group.rawValue,
-                symbol: Self.symbol(for: action.group),
+                symbol: Self.symbol(for: action),
                 shortcut: keybinds.chord(for: action),
-                keywords: [action.group.rawValue + " " + action.title, action.name]
+                keywords: [action.group.rawValue + " " + action.title, action.name] + Self.extraKeywords(for: action),
+                isCurrent: action == .activityToggle && window.activity != nil
             ) {
                 if action == .settingsOpen {
                     (NSApp.delegate as? AppDelegate)?.showSettings()
@@ -31,6 +32,14 @@ struct ActionPaletteSource: PaletteSource {
         default:
             true
         }
+    }
+
+    private static func extraKeywords(for action: KeyAction) -> [String] {
+        action == .activityToggle ? ["processes ports cpu memory network monitor"] : []
+    }
+
+    private static func symbol(for action: KeyAction) -> String {
+        action == .activityToggle ? "gauge.with.dots.needle.33percent" : symbol(for: action.group)
     }
 
     private static func symbol(for group: KeyAction.Group) -> String {

@@ -73,6 +73,11 @@ public final class TerminalSurface: TerminalView {
         foregroundProcessGroup != nil
     }
 
+    public var shellProcessID: pid_t? {
+        guard isRunning, let pid = process?.shellPid, pid > 0 else { return nil }
+        return pid
+    }
+
     public var foregroundProcessGroup: pid_t? {
         guard isRunning, let pid = process?.shellPid else { return nil }
         return ForegroundProcess.group(ofShell: pid)

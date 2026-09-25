@@ -100,6 +100,34 @@ enum Metrics {
     static let switcherNameFontSize: CGFloat = 14
     static let switcherCaptionWidth: CGFloat = 320
 
+    static let activityWidth: CGFloat = 372
+    static let activityHeight: CGFloat = 360
+    static let activityInset: CGFloat = 12
+    static let activityCornerRadius: CGFloat = 16
+    static let activityHeaderHeight: CGFloat = 42
+    static let activityTabHeight: CGFloat = 26
+    static let activityTabPadding: CGFloat = 10
+    static let activityPadding: CGFloat = 6
+    static let activityRowPadding: CGFloat = 8
+    static let activityRowHeight: CGFloat = 26
+    static let activityPaneRowHeight: CGFloat = 42
+    static let activityRowCornerRadius: CGFloat = 8
+    static let activitySectionHeight: CGFloat = 24
+    static let activityDisclosureWidth: CGFloat = 12
+    static let activityIndent: CGFloat = 12
+    static let activitySessionDot: CGFloat = 6
+    static let activityCPUColumn: CGFloat = 46
+    static let activityMemoryColumn: CGFloat = 62
+    static let activityPortWidth: CGFloat = 60
+    static let activityPortHeight: CGFloat = 22
+    static let activityPortCornerRadius: CGFloat = 6
+    static let activityCardSpacing: CGFloat = 6
+    static let activityCardPadding: CGFloat = 12
+    static let activityCardCornerRadius: CGFloat = 12
+    static let activityCardLabelWidth: CGFloat = 132
+    static let activityValueFontSize: CGFloat = 19
+    static let activitySparklineWidth: CGFloat = 1.5
+
     static let quickTerminalWidth: CGFloat = 560
     static let quickTerminalScreenBottomRatio: CGFloat = 0.1
     static let quickTerminalShadowMargin: CGFloat = 40

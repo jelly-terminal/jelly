@@ -58,6 +58,8 @@ struct ActionHandler {
             window.toggleExplorer()
         case .markdownPreview:
             window.togglePreview()
+        case .activityToggle:
+            window.toggleActivity()
         case .paletteToggle:
             window.togglePalette()
         case .find:

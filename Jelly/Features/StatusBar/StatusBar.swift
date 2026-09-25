@@ -3,6 +3,7 @@ import SwiftUI
 
 struct StatusBar: View {
     let sessionName: String
+    let sessionColor: SessionColor
     let tabCount: Int
     let paneCount: Int
     let gridSize: (cols: Int, rows: Int)?
@@ -18,7 +19,7 @@ struct StatusBar: View {
             Spacer()
             HStack(spacing: 8) {
                 Circle()
-                    .fill(Color(theme.palette[2]))
+                    .fill(sessionColor.color(theme))
                     .frame(width: 6, height: 6)
                 Text(sessionName)
                 separator

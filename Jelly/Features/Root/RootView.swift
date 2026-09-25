@@ -26,6 +26,7 @@ struct RootView: View {
                     }
                     TabBar(
                         workspace: workspace,
+                        sessionColor: model.selectedSession.color,
                         theme: theme,
                         style: settings.window.tabStyle,
                         leadingInset: model.isSidebarVisible ? Metrics.chromePadding / 2 : Metrics.tabSpacing,
@@ -83,6 +84,7 @@ struct RootView: View {
                 if settings.window.statusBar {
                     StatusBar(
                         sessionName: model.selectedSession.name,
+                        sessionColor: model.selectedSession.color,
                         tabCount: workspace.tabs.count,
                         paneCount: workspace.selectedTab?.panes.count ?? 0,
                         gridSize: workspace.selectedTab?.gridSize,

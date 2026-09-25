@@ -37,12 +37,14 @@ public struct WorkspaceSnapshot: Codable, Equatable, Sendable {
     public struct Session: Codable, Equatable, Sendable {
         public var id: UUID
         public var name: String
+        public var color: SessionColor?
         public var tabs: [Tab]
         public var selectedTab: Int?
 
-        public init(id: UUID, name: String, tabs: [Tab], selectedTab: Int?) {
+        public init(id: UUID, name: String, color: SessionColor? = nil, tabs: [Tab], selectedTab: Int?) {
             self.id = id
             self.name = name
+            self.color = color
             self.tabs = tabs
             self.selectedTab = selectedTab
         }

@@ -25,7 +25,7 @@ final class WindowModel {
     init(configStore: ConfigStore, snapshot: WorkspaceSnapshot.Window?) {
         self.configStore = configStore
         let restored = (snapshot?.sessions ?? []).map {
-            SessionModel(id: $0.id, name: $0.name, configStore: configStore, tabs: $0.tabs, selectedTab: $0.selectedTab)
+            SessionModel(id: $0.id, name: $0.name, color: $0.color ?? .default, configStore: configStore, tabs: $0.tabs, selectedTab: $0.selectedTab)
         }
         let initial = restored.isEmpty ? [SessionModel(name: "Default", configStore: configStore)] : restored
         let preferred = snapshot?.selectedSession

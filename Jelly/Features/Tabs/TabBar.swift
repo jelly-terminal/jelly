@@ -3,6 +3,7 @@ import SwiftUI
 
 struct TabBar: View {
     let workspace: WorkspaceModel
+    let sessionColor: SessionColor
     let theme: Theme
     let style: WindowSettings.TabStyle
     let leadingInset: CGFloat
@@ -22,6 +23,7 @@ struct TabBar: View {
                         TabItem(
                             tab: tab,
                             isSelected: tab.id == workspace.selectedID,
+                            color: sessionColor.color(theme),
                             theme: theme,
                             style: style,
                             selection: selection,
@@ -184,6 +186,7 @@ private struct TabDrag {
 private struct TabItem: View {
     let tab: TabModel
     let isSelected: Bool
+    let color: Color
     let theme: Theme
     let style: WindowSettings.TabStyle
     let selection: Namespace.ID
@@ -209,7 +212,7 @@ private struct TabItem: View {
                 AgentIndicator(tone: tone, theme: theme)
             } else {
                 Image(systemName: "terminal")
-                    .foregroundStyle(isSelected ? Color(theme.accent) : Color(theme.foreground).opacity(0.5))
+                    .foregroundStyle(color.opacity(isSelected ? 1 : 0.6))
             }
             Text(tab.displayTitle)
                 .lineLimit(1)

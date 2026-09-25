@@ -66,7 +66,7 @@ Packages/
       Config/                  Settings, decoders, Loader, Importer, Watcher, Diagnostics
       Keybinds/                KeyChord, KeyAction, KeyActionCatalog (names, titles, groups), Keybinds, KeybindEditor
       Theme/                   Theme, ThemeColor, ThemeDecoder, BuiltinThemes
-      Workspace/               PaneTree, WorkspaceSnapshot, SnapshotStore
+      Workspace/               PaneTree, WorkspaceSnapshot, SnapshotStore, SessionColor
       Markdown/                MarkdownParser (CommonMark + GFM blocks), MarkdownDocument (blocks, outline, anchors)
       Agents/                  AgentProvider, ClaudeCodeAgent (session status file), CommandAgent, AgentCatalog (built-ins + config), ProcessIdentity, TerminalActivity, AgentState
       Palette/                 FuzzyMatcher (subsequence scoring with matched positions)
@@ -193,7 +193,7 @@ See [config.md](config.md) for the format. Internals:
 
 ## Persistence
 
-`SnapshotStore` writes `workspace.json` in Application Support (per bundle ID, so Debug and release never share it): every open window with its frame, sessions, tabs' split layouts, each pane's working directory, the focused pane and custom titles, the selected session and tab, and sidebar visibility; and which window was frontmost. A file from before multiple windows were saved loads as one window. It's saved every 5 seconds when something changed, when the window closes and on quit, so a crash or force-quit loses at most a few seconds. Launch reopens every saved window and brings the frontmost one forward; a missing or unreadable file opens one fresh window. Closing a window while others stay open forgets it. Closing the last one keeps it, so clicking the Dock icon or relaunching brings it back. A tab's directory is read from its shell process (`proc_pidinfo`), so it's right for any shell, with the OSC 7 value as a fallback. Pane IDs (and so `JELLY_PANE`) survive a relaunch, and each pane reattaches to its running shell by that ID (see [Session keep-alive](#session-keep-alive)). A pane whose shell is gone starts a new one in its last directory.
+`SnapshotStore` writes `workspace.json` in Application Support (per bundle ID, so Debug and release never share it): every open window with its frame, sessions (with their colour), tabs' split layouts, each pane's working directory, the focused pane and custom titles, the selected session and tab, and sidebar visibility; and which window was frontmost. A file from before multiple windows were saved loads as one window. It's saved every 5 seconds when something changed, when the window closes and on quit, so a crash or force-quit loses at most a few seconds. Launch reopens every saved window and brings the frontmost one forward; a missing or unreadable file opens one fresh window. Closing a window while others stay open forgets it. Closing the last one keeps it, so clicking the Dock icon or relaunching brings it back. A tab's directory is read from its shell process (`proc_pidinfo`), so it's right for any shell, with the OSC 7 value as a fallback. Pane IDs (and so `JELLY_PANE`) survive a relaunch, and each pane reattaches to its running shell by that ID (see [Session keep-alive](#session-keep-alive)). A pane whose shell is gone starts a new one in its last directory.
 
 ## Session keep-alive
 

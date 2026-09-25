@@ -7,14 +7,16 @@ import Observation
 final class SessionModel: Identifiable {
     let id: UUID
     var name: String
+    var color: SessionColor
     let workspace: WorkspaceModel
 
     @ObservationIgnored private var pendingTabs: [WorkspaceSnapshot.Tab]
     @ObservationIgnored private var pendingSelection: Int?
 
-    init(id: UUID = UUID(), name: String, configStore: ConfigStore, tabs: [WorkspaceSnapshot.Tab] = [], selectedTab: Int? = nil) {
+    init(id: UUID = UUID(), name: String, color: SessionColor = .default, configStore: ConfigStore, tabs: [WorkspaceSnapshot.Tab] = [], selectedTab: Int? = nil) {
         self.id = id
         self.name = name
+        self.color = color
         workspace = WorkspaceModel(configStore: configStore)
         pendingTabs = tabs
         pendingSelection = selectedTab
@@ -44,10 +46,10 @@ final class SessionModel: Identifiable {
 
     var snapshot: WorkspaceSnapshot.Session {
         guard pendingTabs.isEmpty else {
-            return WorkspaceSnapshot.Session(id: id, name: name, tabs: pendingTabs, selectedTab: pendingSelection)
+            return WorkspaceSnapshot.Session(id: id, name: name, color: color, tabs: pendingTabs, selectedTab: pendingSelection)
         }
         let tabs = workspace.tabs.map(\.snapshot)
         let selected = workspace.tabs.firstIndex { $0.id == workspace.selectedID }
-        return WorkspaceSnapshot.Session(id: id, name: name, tabs: tabs, selectedTab: selected)
+        return WorkspaceSnapshot.Session(id: id, name: name, color: color, tabs: tabs, selectedTab: selected)
     }
 }

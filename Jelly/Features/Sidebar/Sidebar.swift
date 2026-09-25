@@ -109,7 +109,7 @@ private struct SessionRow: View {
         let isSelected = session.id == model.selectedSessionID
         HStack(spacing: 8) {
             Image(systemName: isSelected ? "rectangle.stack.fill" : "rectangle.stack")
-                .foregroundStyle(isSelected ? Color(theme.accent) : Color(theme.foreground).opacity(0.5))
+                .foregroundStyle(session.color.color(theme).opacity(isSelected ? 1 : 0.7))
                 .frame(width: 16)
             if model.renamingSessionID == session.id {
                 TextField("Name", text: $draft)
@@ -150,9 +150,29 @@ private struct SessionRow: View {
         .onHover { isHovered = $0 }
         .contextMenu {
             Button("Rename") { model.renamingSessionID = session.id }
+            Picker("Color", selection: Bindable(session).color) {
+                ForEach(SessionColor.allCases, id: \.self) { color in
+                    Label {
+                        Text(color.name)
+                    } icon: {
+                        Image(nsImage: Self.swatch(color.color(theme)))
+                    }
+                }
+            }
             Button("Delete", role: .destructive) { withAnimation(Sidebar.animation) { model.requestDelete(session) } }
                 .disabled(model.sessions.count < 2)
         }
+    }
+
+    private static func swatch(_ color: Color) -> NSImage {
+        let size = NSSize(width: 12, height: 12)
+        let image = NSImage(size: size, flipped: false) { rect in
+            NSColor(color).setFill()
+            NSBezierPath(ovalIn: rect.insetBy(dx: 1, dy: 1)).fill()
+            return true
+        }
+        image.isTemplate = false
+        return image
     }
 
     private func rowBackground(isSelected: Bool) -> Color {

@@ -24,6 +24,10 @@ final class SessionModel: Identifiable {
         pendingTabs.isEmpty && !workspace.tabs.isEmpty
     }
 
+    var tabCount: Int {
+        pendingTabs.isEmpty ? workspace.tabs.count : pendingTabs.count
+    }
+
     func activate() {
         guard workspace.tabs.isEmpty else { return }
         let restored = pendingTabs

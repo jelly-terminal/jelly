@@ -133,8 +133,8 @@ private struct SessionRow: View {
             if let tone = session.workspace.agentTone, tone != .ready {
                 AgentIndicator(tone: tone, theme: theme)
             }
-            if !session.workspace.tabs.isEmpty {
-                Text("\(session.workspace.tabs.count)")
+            if session.tabCount > 0 {
+                Text("\(session.tabCount)")
                     .monospacedDigit()
                     .font(.system(size: Metrics.statusFontSize))
                     .foregroundStyle(Color(theme.foreground).opacity(0.4))

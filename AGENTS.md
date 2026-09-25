@@ -5,6 +5,7 @@ Jelly is a native macOS 26+ terminal: SwiftUI + AppKit chrome with Liquid Glass,
 - `docs/product.md`: what Jelly does and how it looks
 - `docs/tech.md`: architecture, layout, engine, fonts, renderer, testing scope
 - `docs/config.md`: `jelly.toml` format and every key
+- `docs/shortcuts.md`: every default keyboard shortcut
 - `docs/release.md`: signing, notarization, Sparkle, CI
 - `docs/roadmap.md`: what's in which version
 

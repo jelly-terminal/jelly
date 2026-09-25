@@ -37,26 +37,13 @@ Full details on every setting are in the [configuration guide](docs/config.md).
 
 | Action | Keys |
 |---|---|
-| New tab | ⌘T |
-| Close pane (or the tab, if it's the last pane) | ⌘W |
-| Close tab | ⌘⌥W |
+| Command palette | ⌘K |
 | Split right / down | ⌘D / ⌘⇧D |
-| Move between panes above / below | ⌘⌥↑ / ⌘⌥↓ |
-| Zoom a pane | ⌘⇧↩ |
-| Equalize panes | ⌘⌃= |
-| Next / previous tab | ⌘⌥→ / ⌘⌥←, or ⌘⇧] / ⌘⇧[ |
-| Go to tab 1–9 | ⌘1 … ⌘9 |
-| New session | ⌘⇧N |
-| Next / previous session | ⌘⌃] / ⌘⌃[ |
-| Go to session 1–9 | ⌘⌃1 … ⌘⌃9 |
-| Show or hide the sidebar | ⌘0 |
-| Show or hide the file explorer | ⌘E |
-| Preview a Markdown file | ⌘⇧M |
+| Next / previous tab | ⌘⌥→ / ⌘⌥← |
+| Switch session | ⌃⇥ |
 | Jump to waiting agent | ⌘⇧A |
-| Find | ⌘F |
-| Settings | ⌘, |
 
-Every shortcut can be changed in Settings → Keybinds.
+See [all shortcuts](docs/shortcuts.md). Every shortcut can be changed in Settings → Keybinds.
 
 ## Goals
 

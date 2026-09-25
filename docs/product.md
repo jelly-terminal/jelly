@@ -86,32 +86,6 @@ Jelly sends anonymous usage data to PostHog so we know how many people use it an
 - Nothing typed, run or shown in a terminal is sent, and neither are paths, titles, commands or config.
 - No person profiles and no GeoIP lookup. Debug builds never send anything.
 
-## Key shortcuts (defaults)
+## Key shortcuts
 
-| Action | Keys |
-|---|---|
-| New tab | ⌘T |
-| Close pane (the tab when it's the last) | ⌘W |
-| Close tab | ⌘⌥W |
-| Split right | ⌘D |
-| Split down | ⌘⇧D |
-| Focus pane above / below | ⌘⌥↑ / ⌘⌥↓ |
-| Zoom pane | ⌘⇧↩ |
-| Equalize panes | ⌘⌃= |
-| Next / previous tab | ⌘⌥→ / ⌘⌥←, or ⌘⇧] / ⌘⇧[ |
-| Move tab left / right | ⌘⇧← / ⌘⇧→ |
-| Tab 1–9 | ⌘1 … ⌘9 |
-| New session | ⌘⇧N |
-| Next / previous session | ⌃⇥ / ⌃⇧⇥, or ⌘⌃] / ⌘⌃[ |
-| Session 1–9 | ⌘⌃1 … ⌘⌃9 |
-| Toggle sidebar | ⌘0 |
-| Toggle explorer | ⌘E |
-| Preview Markdown (selected file, or the directory's README) | ⌘⇧M |
-| Command palette | ⌘K |
-| Jump to waiting agent | ⌘⇧A |
-| Find | ⌘F |
-| Clear | ⌘⇧K |
-| Reload config | ⌘⇧, |
-| Settings | ⌘, |
-
-All shortcuts can be rebound in `[keybinds]`.
+Every default shortcut is listed in [shortcuts.md](shortcuts.md). All of them can be rebound in Settings → Keybinds or in `[keybinds]`.

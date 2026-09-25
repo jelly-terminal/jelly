@@ -95,10 +95,10 @@ Jelly sends anonymous usage data to PostHog so we know how many people use it an
 | Close tab | ⌘⌥W |
 | Split right | ⌘D |
 | Split down | ⌘⇧D |
-| Focus pane | ⌘⌥ arrows |
+| Focus pane above / below | ⌘⌥↑ / ⌘⌥↓ |
 | Zoom pane | ⌘⇧↩ |
 | Equalize panes | ⌘⌃= |
-| Next / previous tab | ⌘⇧] / ⌘⇧[ |
+| Next / previous tab | ⌘⌥→ / ⌘⌥←, or ⌘⇧] / ⌘⇧[ |
 | Move tab left / right | ⌘⇧← / ⌘⇧→ |
 | Tab 1–9 | ⌘1 … ⌘9 |
 | New session | ⌘⇧N |

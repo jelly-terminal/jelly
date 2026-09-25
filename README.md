@@ -41,10 +41,10 @@ Full details on every setting are in the [configuration guide](docs/config.md).
 | Close pane (or the tab, if it's the last pane) | ⌘W |
 | Close tab | ⌘⌥W |
 | Split right / down | ⌘D / ⌘⇧D |
-| Move between panes | ⌘⌥ arrows |
+| Move between panes above / below | ⌘⌥↑ / ⌘⌥↓ |
 | Zoom a pane | ⌘⇧↩ |
 | Equalize panes | ⌘⌃= |
-| Next / previous tab | ⌘⇧] / ⌘⇧[ |
+| Next / previous tab | ⌘⌥→ / ⌘⌥←, or ⌘⇧] / ⌘⇧[ |
 | Go to tab 1–9 | ⌘1 … ⌘9 |
 | New session | ⌘⇧N |
 | Next / previous session | ⌘⌃] / ⌘⌃[ |

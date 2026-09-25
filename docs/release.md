@@ -16,6 +16,8 @@ Installed Jelly ─▶ Sparkle ─▶ jelly-terminal/jelly/releases/latest/downl
 2. Push `main`.
 3. `scripts/release.sh` — asks for a patch/minor/major/custom bump off the latest tag, then tags and pushes.
 
+If the release workflow fails, fix it on `main`, push, then run `scripts/reversion.sh`. It deletes the latest tag on the remote, retags `HEAD` with the same version and pushes it again so the workflow reruns. It refuses if a GitHub release for that tag already exists.
+
 Tags with a `-` (`v0.1.0-beta.1`) become pre-releases. The workflow refuses tags that aren't on `main`.
 
 ## Versions

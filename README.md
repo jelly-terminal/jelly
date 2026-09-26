@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/f237ec07-e753-4974-8b5a-ce5cf6317579" width="820" alt="Jelly window">
+  <img src="https://github.com/user-attachments/assets/e2a0c269-bd50-425c-877a-b83e2de6ac00" width="1920" alt="Jelly window">
 </p>
 
 > **Early development.** Jelly is a preview. Expect rough edges, and expect config keys and behaviour to change between versions until the stable launch at v1.0.0.

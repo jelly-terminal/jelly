@@ -56,6 +56,7 @@ enum Metrics {
     static let sidebarSectionCornerRadius: CGFloat = 12
     static let sidebarRowHeight: CGFloat = 30
     static let sidebarRowPadding: CGFloat = 8
+    static let sidebarRowSpacing: CGFloat = 2
     static let sidebarRowCornerRadius: CGFloat = 8
 
     static let explorerWidth: CGFloat = 250

@@ -25,9 +25,7 @@ struct Sidebar: View {
             SidebarSection(title: "Sessions", theme: theme, addHelp: "New Session") {
                 withAnimation(Self.animation) { model.newSession() }
             } content: {
-                ForEach(model.sessions) { session in
-                    SessionRow(model: model, session: session, theme: theme)
-                }
+                SessionList(model: model, theme: theme)
             }
 
             Spacer(minLength: 0)
@@ -94,6 +92,71 @@ private struct SidebarSection<Content: View>: View {
         .padding(Metrics.sidebarSectionPadding)
         .background(Color(theme.foreground).opacity(0.04), in: .rect(cornerRadius: Metrics.sidebarSectionCornerRadius))
     }
+}
+
+private struct SessionList: View {
+    @Bindable var model: WindowModel
+    let theme: Theme
+
+    @State private var drag: SessionDrag?
+
+    private static let space = "SessionList"
+    private static let slot = Metrics.sidebarRowHeight + Metrics.sidebarRowSpacing
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Metrics.sidebarRowSpacing) {
+            ForEach(Array(model.sessions.enumerated()), id: \.element.id) { index, session in
+                SessionRow(model: model, session: session, theme: theme)
+                    .offset(y: dragOffset(at: index))
+                    .zIndex(drag?.from == index ? 1 : 0)
+                    .highPriorityGesture(reorderGesture(from: index), including: model.renamingSessionID == session.id ? .subviews : .all)
+            }
+        }
+        .coordinateSpace(.named(Self.space))
+    }
+
+    private func dragOffset(at index: Int) -> CGFloat {
+        guard let drag else { return 0 }
+        if index == drag.from { return clampedTranslation(drag) }
+        if index > drag.from, index <= drag.index { return -Self.slot }
+        if index < drag.from, index >= drag.index { return Self.slot }
+        return 0
+    }
+
+    private func clampedTranslation(_ drag: SessionDrag) -> CGFloat {
+        let upper = CGFloat(model.sessions.count - 1 - drag.from) * Self.slot
+        return min(max(drag.translation, -CGFloat(drag.from) * Self.slot), upper)
+    }
+
+    private func reorderGesture(from index: Int) -> some Gesture {
+        DragGesture(minimumDistance: 4, coordinateSpace: .named(Self.space))
+            .onChanged { value in
+                var next = drag ?? SessionDrag(from: index, index: index, translation: 0)
+                next.translation = value.translation.height
+                let target = next.from + Int((clampedTranslation(next) / Self.slot).rounded())
+                next.index = min(max(target, 0), model.sessions.count - 1)
+                if next.index != drag?.index {
+                    withAnimation(Sidebar.animation) { drag = next }
+                } else {
+                    drag = next
+                }
+            }
+            .onEnded { _ in
+                guard let drag else { return }
+                withAnimation(Sidebar.animation) {
+                    if drag.index != drag.from {
+                        model.moveSessions(from: IndexSet(integer: drag.from), to: drag.index > drag.from ? drag.index + 1 : drag.index)
+                    }
+                    self.drag = nil
+                }
+            }
+    }
+}
+
+private struct SessionDrag {
+    let from: Int
+    var index: Int
+    var translation: CGFloat
 }
 
 private struct SessionRow: View {

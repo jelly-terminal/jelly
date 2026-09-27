@@ -58,6 +58,8 @@ struct ActionHandler {
             window.toggleExplorer()
         case .markdownPreview:
             window.togglePreview()
+        case .statusBarToggle:
+            configStore.set(.bool(!configStore.config.settings.window.statusBar), at: ["settings", "window", "status-bar"])
         case .activityToggle:
             window.toggleActivity()
         case .paletteToggle:

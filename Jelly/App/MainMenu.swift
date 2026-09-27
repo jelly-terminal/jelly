@@ -119,6 +119,7 @@ enum MainMenu {
         menu.addItem(item("Toggle Explorer", .explorerToggle))
         menu.addItem(item("Preview Markdown", .markdownPreview))
         menu.addItem(item("Toggle Activity", .activityToggle))
+        menu.addItem(item("Toggle Status Bar", .statusBarToggle))
         menu.addItem(item("Jump to Waiting Agent", .agentNextWaiting))
         menu.addItem(.separator())
         menu.addItem(withTitle: "Enter Full Screen", action: #selector(NSWindow.toggleFullScreen(_:)), keyEquivalent: "f")

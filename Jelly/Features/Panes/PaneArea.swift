@@ -62,6 +62,7 @@ struct PaneArea: View {
         let isSplit = tab.panes.count > 1
         let workspace = model.workspace
         let needsAttention = pane.agentTone == .attention
+        let color = model.selectedSession.color.color(theme)
         return ZStack(alignment: .top) {
             RoundedRectangle(cornerRadius: Metrics.paneCornerRadius, style: .continuous)
                 .strokeBorder(
@@ -76,6 +77,7 @@ struct PaneArea: View {
                 isZoomed: tab.zoomedPaneID != nil,
                 isSplit: isSplit,
                 theme: theme,
+                color: color,
                 onFocus: { tab.focus(pane.id) },
                 onSplitRight: { workspace.split(.horizontal, pane: pane.id) },
                 onSplitDown: { workspace.split(.vertical, pane: pane.id) },

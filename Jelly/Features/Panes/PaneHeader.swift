@@ -7,6 +7,7 @@ struct PaneHeader: View {
     let isZoomed: Bool
     let isSplit: Bool
     let theme: Theme
+    let color: Color
     let onFocus: () -> Void
     let onSplitRight: () -> Void
     let onSplitDown: () -> Void
@@ -17,9 +18,9 @@ struct PaneHeader: View {
 
     var body: some View {
         HStack(spacing: 6) {
-            Image(systemName: "apple.terminal")
+            Image(systemName: "terminal")
                 .font(.system(size: Metrics.paneHeaderIconSize))
-                .foregroundStyle(isFocused ? Color(theme.accent) : Color(theme.foreground).opacity(0.4))
+                .foregroundStyle(isFocused ? color : Color(theme.foreground).opacity(0.4))
             Text(pane.displayTitle)
                 .lineLimit(1)
                 .truncationMode(.middle)

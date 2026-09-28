@@ -5,6 +5,7 @@ struct ExplorerRowView: View {
     let row: ExplorerRow
     let isSelected: Bool
     let isFocused: Bool
+    let status: GitChange.Kind?
     let theme: Theme
     let onToggle: () -> Void
     let onSelect: () -> Void
@@ -32,10 +33,13 @@ struct ExplorerRowView: View {
                     .frame(width: Metrics.explorerIconSize + 4)
                 Text(row.entry.name)
                     .font(.system(size: Metrics.chromeFontSize))
-                    .foregroundStyle(foreground.opacity(row.entry.name.hasPrefix(".") ? 0.5 : 0.85))
+                    .foregroundStyle(nameColor)
                     .lineLimit(1)
                     .truncationMode(.middle)
                 Spacer(minLength: 0)
+                if let status {
+                    statusBadge(status)
+                }
             }
             .frame(maxHeight: .infinity)
             .contentShape(.rect)
@@ -52,6 +56,27 @@ struct ExplorerRowView: View {
         .contentShape(.rect)
         .onHover { isHovered = $0 }
         .help(row.entry.name)
+    }
+
+    private var nameColor: Color {
+        let opacity = row.entry.name.hasPrefix(".") ? 0.5 : 0.85
+        guard let status else { return Color(theme.foreground).opacity(opacity) }
+        return status.color(in: theme).opacity(opacity + 0.15)
+    }
+
+    @ViewBuilder
+    private func statusBadge(_ status: GitChange.Kind) -> some View {
+        if row.entry.isDirectory {
+            Circle()
+                .fill(status.color(in: theme).opacity(0.8))
+                .frame(width: Metrics.explorerStatusDotSize, height: Metrics.explorerStatusDotSize)
+                .frame(width: Metrics.changesBadgeWidth)
+        } else {
+            Text(status.letter)
+                .font(.system(size: Metrics.statusFontSize, weight: .bold, design: .monospaced))
+                .foregroundStyle(status.color(in: theme))
+                .frame(width: Metrics.changesBadgeWidth)
+        }
     }
 
     private var background: Color {

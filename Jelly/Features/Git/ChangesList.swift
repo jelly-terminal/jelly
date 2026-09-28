@@ -45,12 +45,6 @@ struct ChangesList: View {
                     .foregroundStyle(Color(theme.foreground).opacity(0.4))
             }
         }
-        .task(id: changes.repository) {
-            while !Task.isCancelled {
-                await changes.refresh()
-                try? await Task.sleep(for: .seconds(2))
-            }
-        }
     }
 
     private func sectionHeader(_ area: GitChange.Area, count: Int) -> some View {

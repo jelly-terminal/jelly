@@ -11,6 +11,7 @@ final class ChangesModel {
     private(set) var repository: URL?
     private(set) var status: GitStatus?
     private(set) var state: State = .idle
+    private(set) var decorations = GitDecorations()
     var selection: GitChange.ID?
     var filter = ""
 
@@ -52,6 +53,7 @@ final class ChangesModel {
                 if root != repository {
                     repository = root
                     status = nil
+                    decorations = GitDecorations()
                     selection = nil
                     filter = ""
                     state = .loading
@@ -70,7 +72,10 @@ final class ChangesModel {
         isRefreshing = true
         defer { isRefreshing = false }
         guard let result = await GitClient.status(of: repository), repository == self.repository else { return }
-        if result != status { status = result }
+        if result != status {
+            status = result
+            decorations = GitDecorations(status: result, repository: repository)
+        }
         state = .ready
         if let selection, !result.changes.contains(where: { $0.id == selection }) {
             let path = selection.split(separator: ":", maxSplits: 1).last.map(String.init)
@@ -88,6 +93,7 @@ final class ChangesModel {
     private func reset(to state: State) {
         repository = nil
         status = nil
+        decorations = GitDecorations()
         selection = nil
         self.state = state
     }

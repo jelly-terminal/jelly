@@ -225,9 +225,7 @@ final class WindowModel {
 
     func syncExplorer() {
         explorer.follow(workspace.selectedTab?.surface.workingDirectory)
-        if explorerMode == .changes {
-            changes.follow(explorer.root?.path(percentEncoded: false))
-        }
+        changes.follow(explorer.root?.path(percentEncoded: false))
     }
 
     func showDiff(_ change: GitChange) {

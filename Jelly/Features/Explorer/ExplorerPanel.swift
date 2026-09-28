@@ -44,12 +44,19 @@ struct ExplorerPanel: View {
                 try? await Task.sleep(for: .seconds(1))
             }
         }
+        .task(id: model.changes.repository) {
+            while !Task.isCancelled {
+                await model.changes.refresh()
+                try? await Task.sleep(for: .seconds(2))
+            }
+        }
         .onAppear { explorer.resume() }
         .onDisappear { explorer.stop() }
     }
 
     private var files: some View {
         let foreground = Color(theme.foreground)
+        let decorations = model.changes.decorations
         return ScrollViewReader { proxy in
                 ScrollView {
                     LazyVStack(spacing: 1) {
@@ -58,6 +65,7 @@ struct ExplorerPanel: View {
                                 row: row,
                                 isSelected: row.entry.url == explorer.selection,
                                 isFocused: isFocused,
+                                status: decorations.kind(for: row.entry),
                                 theme: theme,
                                 onToggle: {
                                     select(row.entry)

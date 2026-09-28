@@ -47,7 +47,7 @@ Jelly/                         App target (file-system synchronized group)
     Agents/                    AgentMonitor (1s poll per window), AgentTracker (per pane), AgentNotifier (UserNotifications), AgentPresence (labels), AgentTone, AgentIndicator, AgentPaletteSource
     Activity/                  ActivityModel (2s sampling loop while open), ActivityOverlay (drag, corner snap), ActivityWidget, one view per tab, Sparkline, MetricCard
     Explorer/                  ExplorerPanel, ExplorerModel (lazy tree, watchers), DirectoryLister (off main)
-    Viewer/                    ViewerCard, ViewerModel (history, links, live reload), ViewerLoader (off main), TextFileView
+    Viewer/                    ViewerCard, ViewerModel (history, links, live reload), ViewerLoader (off main), TextFileView, ImageFileView
     Markdown/                  MarkdownView and one view per block kind, MarkdownStyle (theme colours, inline and code highlighting)
     Tabs/                      TabBar
     Palette/                   PaletteModel (query, ranking, recents), PaletteView, PaletteRow, PaletteSource and the PaletteSources list

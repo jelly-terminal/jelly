@@ -39,7 +39,7 @@ struct ViewerCard: View {
             if !viewer.history.isEmpty {
                 headerButton("chevron.left", help: "Back", action: viewer.back)
             }
-            Image(systemName: isMarkdown ? "doc.richtext" : "doc.text")
+            Image(systemName: headerSymbol)
                 .font(.system(size: Metrics.paneHeaderIconSize + 1))
                 .foregroundStyle(style.secondary)
             Text(viewer.title)
@@ -73,9 +73,12 @@ struct ViewerCard: View {
         .frame(height: Metrics.paneHeaderHeight + 4)
     }
 
-    private var isMarkdown: Bool {
-        if case .markdown = viewer.content { return true }
-        return false
+    private var headerSymbol: String {
+        switch viewer.content {
+        case .markdown: "doc.richtext"
+        case .image: "photo"
+        default: "doc.text"
+        }
     }
 
     private func headerButton(_ symbol: String, help: String, action: @escaping () -> Void) -> some View {
@@ -99,6 +102,8 @@ struct ViewerCard: View {
             MarkdownView(document: document, style: style, anchor: $viewer.pendingAnchor)
         case .text(let lines, let tokens, let truncated):
             TextFileView(lines: lines, tokens: tokens, truncated: truncated, style: style)
+        case .image(let image):
+            ImageFileView(image: image, style: style)
         case .unavailable(let message):
             VStack(spacing: 8) {
                 Image(systemName: "doc.questionmark")

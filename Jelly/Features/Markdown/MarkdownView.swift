@@ -15,12 +15,11 @@ struct MarkdownView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: Metrics.markdownBlockSpacing) {
                     ForEach(groups, id: \.firstIndex) { group in
-                        if group.paragraphs.isEmpty {
+                        if group.flowing.isEmpty {
                             MarkdownBlockView(block: document.blocks[group.firstIndex], style: style, depth: 0)
                                 .id(group.firstIndex)
                         } else {
-                            MarkdownParagraphRun(paragraphs: group.paragraphs, style: style)
-                                .id(group.firstIndex)
+                            MarkdownFlowView(flow: MarkdownFlowBuilder.build(group.flowing, style: style), style: style)
                         }
                     }
                 }

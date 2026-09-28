@@ -2,19 +2,19 @@ import JellyCore
 
 struct MarkdownBlockGroup {
     let firstIndex: Int
-    let paragraphs: [String]
+    let flowing: [(index: Int, block: MarkdownBlock)]
 
     static func grouping(_ blocks: [MarkdownBlock]) -> [MarkdownBlockGroup] {
         var groups: [MarkdownBlockGroup] = []
         for (index, block) in blocks.enumerated() {
-            guard case .paragraph(let text) = block else {
-                groups.append(MarkdownBlockGroup(firstIndex: index, paragraphs: []))
+            guard MarkdownFlowBuilder.isFlowing(block) else {
+                groups.append(MarkdownBlockGroup(firstIndex: index, flowing: []))
                 continue
             }
-            if let last = groups.last, !last.paragraphs.isEmpty {
-                groups[groups.count - 1] = MarkdownBlockGroup(firstIndex: last.firstIndex, paragraphs: last.paragraphs + [text])
+            if let last = groups.last, !last.flowing.isEmpty {
+                groups[groups.count - 1] = MarkdownBlockGroup(firstIndex: last.firstIndex, flowing: last.flowing + [(index, block)])
             } else {
-                groups.append(MarkdownBlockGroup(firstIndex: index, paragraphs: [text]))
+                groups.append(MarkdownBlockGroup(firstIndex: index, flowing: [(index, block)]))
             }
         }
         return groups

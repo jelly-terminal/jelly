@@ -1,3 +1,4 @@
+import AppKit
 import JellyCore
 import SwiftUI
 
@@ -25,6 +26,7 @@ struct ViewerCard: View {
         }
         .clipShape(.rect(cornerRadius: Metrics.paneCornerRadius, style: .continuous))
         .environment(\.openURL, OpenURLAction { viewer.handle($0) })
+        .environment(\.textKeyHandler, handleTextKey)
         .focusable()
         .focusEffectDisabled()
         .focused($isFocused)
@@ -102,6 +104,23 @@ struct ViewerCard: View {
             }
             .font(.system(size: Metrics.statusFontSize, weight: .medium).monospacedDigit())
         }
+    }
+
+    private func handleTextKey(_ event: NSEvent) -> Bool {
+        let modifiers = event.modifierFlags.intersection([.command, .control, .option, .shift])
+        if event.keyCode == 53, modifiers.isEmpty {
+            onClose()
+            return true
+        }
+        guard viewer.diff != nil else { return false }
+        switch (event.keyCode, modifiers) {
+        case (125, .option): onStepChange(1)
+        case (126, .option): onStepChange(-1)
+        case (_, []) where event.charactersIgnoringModifiers == "]": viewer.moveHunk(by: 1)
+        case (_, []) where event.charactersIgnoringModifiers == "[": viewer.moveHunk(by: -1)
+        default: return false
+        }
+        return true
     }
 
     private func handleDiffKey(_ press: KeyPress) -> KeyPress.Result {

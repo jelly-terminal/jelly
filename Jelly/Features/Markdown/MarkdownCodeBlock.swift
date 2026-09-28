@@ -16,7 +16,6 @@ struct MarkdownCodeBlock: View {
                 .font(style.code(size: Metrics.markdownCodeSize))
                 .foregroundStyle(style.text)
                 .lineSpacing(3)
-                .textSelection(.enabled)
                 .fixedSize()
                 .padding(Metrics.markdownCodePadding)
         }

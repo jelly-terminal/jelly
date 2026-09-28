@@ -26,7 +26,6 @@ struct MarkdownTableView: View {
                 Text(style.inline(cell))
                     .font(isHeader ? style.bodyFont.weight(.semibold) : style.bodyFont)
                     .foregroundStyle(style.text)
-                    .textSelection(.enabled)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 7)
                     .frame(maxWidth: .infinity, alignment: alignment(column))

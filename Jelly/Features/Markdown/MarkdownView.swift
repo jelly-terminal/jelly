@@ -6,15 +6,25 @@ struct MarkdownView: View {
     let style: MarkdownStyle
     @Binding var anchor: String?
 
+    private var groups: [MarkdownBlockGroup] {
+        MarkdownBlockGroup.grouping(document.blocks)
+    }
+
     var body: some View {
         ScrollViewReader { proxy in
             ScrollView {
-                LazyVStack(alignment: .leading, spacing: Metrics.markdownBlockSpacing) {
-                    ForEach(Array(document.blocks.enumerated()), id: \.offset) { index, block in
-                        MarkdownBlockView(block: block, style: style, depth: 0)
-                            .id(index)
+                VStack(alignment: .leading, spacing: Metrics.markdownBlockSpacing) {
+                    ForEach(groups, id: \.firstIndex) { group in
+                        if group.paragraphs.isEmpty {
+                            MarkdownBlockView(block: document.blocks[group.firstIndex], style: style, depth: 0)
+                                .id(group.firstIndex)
+                        } else {
+                            MarkdownParagraphRun(paragraphs: group.paragraphs, style: style)
+                                .id(group.firstIndex)
+                        }
                     }
                 }
+                .textSelection(.enabled)
                 .frame(maxWidth: Metrics.markdownMaxWidth, alignment: .leading)
                 .padding(Metrics.viewerPadding)
                 .frame(maxWidth: .infinity)

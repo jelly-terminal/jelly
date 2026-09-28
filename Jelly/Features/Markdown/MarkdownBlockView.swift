@@ -19,14 +19,12 @@ struct MarkdownBlockView: View {
                 }
             }
             .padding(.top, level <= 2 ? 8 : 4)
-            .textSelection(.enabled)
         case .paragraph(let text):
             Text(style.inline(text))
                 .font(style.bodyFont)
                 .foregroundStyle(style.text)
                 .lineSpacing(Metrics.markdownLineSpacing)
                 .fixedSize(horizontal: false, vertical: true)
-                .textSelection(.enabled)
         case .code(let language, let text):
             MarkdownCodeBlock(language: language, text: text, style: style)
         case .quote(let blocks):

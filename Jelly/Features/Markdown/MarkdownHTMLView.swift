@@ -22,7 +22,6 @@ struct MarkdownHTMLView: View {
                 Text(style.inline(text))
                     .font(style.bodyFont)
                     .foregroundStyle(style.text)
-                    .textSelection(.enabled)
             }
         }
     }

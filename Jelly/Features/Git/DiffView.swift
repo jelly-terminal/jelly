@@ -14,23 +14,18 @@ struct DiffView: View {
     private let lineHeight = Metrics.codeLineHeight
 
     var body: some View {
-        let numberWidth = CGFloat(max(String(largestLineNumber).count, 2)) * Metrics.markdownCodeSize * 0.62
+        let font = style.codeFont.withSize(Metrics.markdownCodeSize)
         ScrollView([.vertical, .horizontal]) {
             HStack(alignment: .top, spacing: 0) {
-                Text(gutter(\.oldNumber))
-                    .frame(width: numberWidth, alignment: .trailing)
-                Text(gutter(\.newNumber))
-                    .frame(width: numberWidth, alignment: .trailing)
+                SelectableText(text: gutter(\.oldNumber, font: font), wraps: false, isSelectable: false)
+                    .frame(width: numberWidth(font), alignment: .trailing)
+                SelectableText(text: gutter(\.newNumber, font: font), wraps: false, isSelectable: false)
+                    .frame(width: numberWidth(font), alignment: .trailing)
                     .padding(.leading, Metrics.diffGutterSpacing)
-                Text(markers)
+                SelectableText(text: markers(font: font), wraps: false, isSelectable: false)
                     .padding(.horizontal, Metrics.diffGutterSpacing)
-                Text(content)
-                    .foregroundStyle(style.text)
-                    .fixedSize()
-                    .textSelection(.enabled)
+                SelectableText(text: content(font: font), wraps: false)
             }
-            .foregroundStyle(style.secondary.opacity(0.7))
-            .font(style.code(size: Metrics.markdownCodeSize))
             .padding(.vertical, Metrics.diffVerticalPadding)
             .padding(.horizontal, Metrics.diffPadding)
             .frame(minWidth: viewportWidth, alignment: .leading)
@@ -42,8 +37,10 @@ struct DiffView: View {
         .onChange(of: hunkMove) { _, move in jump(by: move.offset) }
     }
 
-    private var largestLineNumber: Int {
-        document.rows.last { $0.newNumber != nil || $0.oldNumber != nil }.map { max($0.oldNumber ?? 0, $0.newNumber ?? 0) } ?? 0
+    private func numberWidth(_ font: NSFont) -> CGFloat {
+        let largest = document.rows.reduce(0) { max($0, $1.oldNumber ?? 0, $1.newNumber ?? 0) }
+        let digits = String(repeating: "0", count: max(String(largest).count, 2))
+        return ceil(NSAttributedString(string: digits, attributes: [.font: font]).size().width)
     }
 
     private var tints: some View {
@@ -65,49 +62,61 @@ struct DiffView: View {
         }
     }
 
-    private var paragraphStyle: NSParagraphStyle {
+    private func lines(_ lines: [NSAttributedString], font: NSFont, color: NSColor, alignment: NSTextAlignment = .left) -> NSAttributedString {
         let paragraph = NSMutableParagraphStyle()
         paragraph.minimumLineHeight = lineHeight
         paragraph.maximumLineHeight = lineHeight
-        return paragraph
-    }
-
-    private func gutter(_ number: KeyPath<DiffDocument.Row, Int?>) -> AttributedString {
-        var result = AttributedString(document.rows.map { $0[keyPath: number].map(String.init) ?? "" }.joined(separator: "\n"))
-        result.paragraphStyle = paragraphStyle
+        paragraph.alignment = alignment
+        paragraph.lineBreakMode = .byClipping
+        let natural = NSLayoutManager().defaultLineHeight(for: font)
+        let result = NSMutableAttributedString()
+        for (index, line) in lines.enumerated() {
+            if index > 0 { result.append(NSAttributedString(string: "\n")) }
+            result.append(line)
+        }
+        let whole = NSRange(location: 0, length: result.length)
+        result.addAttributes([.font: font, .paragraphStyle: paragraph, .baselineOffset: max(lineHeight - natural, 0) / 2], range: whole)
+        result.enumerateAttribute(.foregroundColor, in: whole) { value, range, _ in
+            if value == nil { result.addAttribute(.foregroundColor, value: color, range: range) }
+        }
         return result
     }
 
-    private var markers: AttributedString {
-        var result = AttributedString()
-        for (index, row) in document.rows.enumerated() {
-            var marker = AttributedString(row.kind == .added ? "+" : row.kind == .removed ? "-" : " ")
-            if let color = tint(for: row.kind), row.kind != .hunk { marker.foregroundColor = color.opacity(1) }
-            result += marker
-            if index < document.rows.count - 1 { result += AttributedString("\n") }
-        }
-        result.paragraphStyle = paragraphStyle
-        return result
+    private func gutter(_ number: KeyPath<DiffDocument.Row, Int?>, font: NSFont) -> NSAttributedString {
+        let numbers = document.rows.map { NSAttributedString(string: $0[keyPath: number].map(String.init) ?? "") }
+        return lines(numbers, font: font, color: NSColor(style.secondary.opacity(0.7)), alignment: .right)
     }
 
-    private var content: AttributedString {
-        var result = AttributedString()
-        for (index, row) in document.rows.enumerated() {
-            result += line(row)
-            if index < document.rows.count - 1 { result += AttributedString("\n") }
+    private func markers(font: NSFont) -> NSAttributedString {
+        let added = NSColor(Color(style.theme.palette[2]))
+        let removed = NSColor(Color(style.theme.palette[1]))
+        let markers = document.rows.map { row -> NSAttributedString in
+            switch row.kind {
+            case .added: NSAttributedString(string: "+", attributes: [.foregroundColor: added])
+            case .removed: NSAttributedString(string: "-", attributes: [.foregroundColor: removed])
+            case .hunk, .context: NSAttributedString(string: " ")
+            }
         }
-        result.paragraphStyle = paragraphStyle
-        return result
+        return lines(markers, font: font, color: NSColor(style.secondary))
     }
 
-    private func line(_ row: DiffDocument.Row) -> AttributedString {
-        guard !row.text.isEmpty else { return AttributedString() }
-        guard row.kind != .hunk else {
-            var header = AttributedString(row.text)
-            header.foregroundColor = style.secondary
-            return header
+    private func content(font: NSFont) -> NSAttributedString {
+        var colors: [SyntaxToken.Kind: NSColor] = [:]
+        let secondary = NSColor(style.secondary)
+        let rows = document.rows.map { row -> NSAttributedString in
+            guard row.kind != .hunk else { return NSAttributedString(string: row.text, attributes: [.foregroundColor: secondary]) }
+            let line = NSMutableAttributedString(string: row.text)
+            let utf8 = Array(row.text.utf8)
+            for token in row.tokens where token.range.upperBound <= utf8.count {
+                let location = String(decoding: utf8[..<token.range.lowerBound], as: UTF8.self).utf16.count
+                let length = String(decoding: utf8[token.range], as: UTF8.self).utf16.count
+                let color = colors[token.kind] ?? NSColor(style.color(for: token.kind))
+                colors[token.kind] = color
+                line.addAttribute(.foregroundColor, value: color, range: NSRange(location: location, length: length))
+            }
+            return line
         }
-        return row.tokens.isEmpty ? AttributedString(row.text) : style.highlighted(row.text, tokens: row.tokens)
+        return lines(rows, font: font, color: NSColor(style.text))
     }
 
     private func jump(by offset: Int) {

@@ -8,7 +8,7 @@ struct TextFileView: View {
     let truncated: Bool
     let style: MarkdownStyle
 
-    @State private var viewportWidth: CGFloat = 0
+    @State private var viewportSize: CGSize = .zero
 
     var body: some View {
         let digits = max(String(lines.count).count, 2)
@@ -32,9 +32,9 @@ struct TextFileView: View {
                 }
             }
             .padding(Metrics.viewerPadding)
-            .frame(minWidth: viewportWidth, alignment: .leading)
+            .frame(minWidth: viewportSize.width, minHeight: viewportSize.height, alignment: .topLeading)
         }
-        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { viewportWidth = $0 }
+        .onGeometryChange(for: CGSize.self) { $0.size } action: { viewportSize = $0 }
     }
 
     private var lineParagraphStyle: NSParagraphStyle {

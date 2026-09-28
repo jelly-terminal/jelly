@@ -242,6 +242,22 @@ final class WindowModel {
         }
     }
 
+    var viewerHasChanges: Bool {
+        guard let viewer, viewer.diff == nil else { return false }
+        return changes.change(at: viewer.url) != nil
+    }
+
+    func toggleViewerDiff() {
+        guard let viewer else { return }
+        if let diff = viewer.diff {
+            guard diff.change.kind != .deleted else { return }
+            viewer.open(viewer.url)
+        } else if let change = changes.change(at: viewer.url) {
+            changes.selection = change.id
+            showDiff(change)
+        }
+    }
+
     func stepChange(by offset: Int) {
         changes.moveSelection(by: offset)
         if let change = changes.selectedChange { showDiff(change) }

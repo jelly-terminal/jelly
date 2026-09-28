@@ -5,8 +5,10 @@ import SwiftUI
 struct ViewerCard: View {
     @Bindable var viewer: ViewerModel
     let theme: Theme
+    let hasChanges: Bool
     let onClose: () -> Void
     let onStepChange: (Int) -> Void
+    let onToggleDiff: () -> Void
 
     @FocusState private var isFocused: Bool
 
@@ -73,6 +75,11 @@ struct ViewerCard: View {
                 .frame(width: Metrics.paneButtonSize, height: Metrics.paneButtonSize)
                 .foregroundStyle(style.secondary)
                 .help("Contents")
+            }
+            if let diff = viewer.diff, diff.change.kind != .deleted {
+                headerButton("doc.text", help: "Show File", action: onToggleDiff)
+            } else if hasChanges {
+                headerButton("plus.forwardslash.minus", help: "Show Changes", action: onToggleDiff)
             }
             headerButton("xmark", help: "Close", action: onClose)
         }

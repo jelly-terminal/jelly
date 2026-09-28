@@ -46,7 +46,14 @@ struct RootView: View {
                     ZStack(alignment: .top) {
                         PaneArea(model: model, theme: theme, settings: settings, isCovered: model.viewer != nil)
                         if let viewer = model.viewer {
-                            ViewerCard(viewer: viewer, theme: theme, onClose: model.closeViewer, onStepChange: model.stepChange)
+                            ViewerCard(
+                                viewer: viewer,
+                                theme: theme,
+                                hasChanges: model.viewerHasChanges,
+                                onClose: model.closeViewer,
+                                onStepChange: model.stepChange,
+                                onToggleDiff: model.toggleViewerDiff
+                            )
                                 .transition(.opacity.combined(with: .scale(scale: 0.98)))
                         }
                     }

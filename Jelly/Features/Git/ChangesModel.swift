@@ -39,6 +39,16 @@ final class ChangesModel {
         return status?.changes.first { $0.id == selection }
     }
 
+    func change(at url: URL) -> GitChange? {
+        guard let repository, let changes = status?.changes else { return nil }
+        let root = repository.path(percentEncoded: false)
+        let path = url.standardizedFileURL.path(percentEncoded: false)
+        guard path.hasPrefix(root) else { return nil }
+        let relative = String(path.dropFirst(root.count)).trimmingPrefix("/")
+        let areas: [GitChange.Area] = [.unstaged, .staged, .untracked]
+        return areas.lazy.compactMap { area in changes.first { $0.area == area && $0.path == relative } }.first
+    }
+
     func follow(_ directory: String?) {
         guard let directory, directory != followedDirectory else { return }
         followedDirectory = directory

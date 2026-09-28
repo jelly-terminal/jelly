@@ -56,6 +56,8 @@ struct ActionHandler {
             withAnimation(Sidebar.animation) { window.isSidebarVisible.toggle() }
         case .explorerToggle:
             window.toggleExplorer()
+        case .changesToggle:
+            window.toggleChanges()
         case .markdownPreview:
             window.togglePreview()
         case .statusBarToggle:

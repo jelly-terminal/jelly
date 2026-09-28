@@ -35,11 +35,19 @@ struct ActionPaletteSource: PaletteSource {
     }
 
     private static func extraKeywords(for action: KeyAction) -> [String] {
-        action == .activityToggle ? ["processes ports cpu memory network monitor"] : []
+        switch action {
+        case .activityToggle: ["processes ports cpu memory network monitor"]
+        case .changesToggle: ["git status diff staged modified"]
+        default: []
+        }
     }
 
     private static func symbol(for action: KeyAction) -> String {
-        action == .activityToggle ? "gauge.with.dots.needle.33percent" : symbol(for: action.group)
+        switch action {
+        case .activityToggle: "gauge.with.dots.needle.33percent"
+        case .changesToggle: "arrow.triangle.branch"
+        default: symbol(for: action.group)
+        }
     }
 
     private static func symbol(for group: KeyAction.Group) -> String {

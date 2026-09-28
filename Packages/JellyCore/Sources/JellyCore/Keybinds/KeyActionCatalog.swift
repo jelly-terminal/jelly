@@ -17,7 +17,7 @@ extension KeyAction {
         .paneFocus(.left), .paneFocus(.right), .paneFocus(.up), .paneFocus(.down),
         .sessionNew, .sessionNext, .sessionPrevious,
     ] + (1...9).map { .sessionGoto($0) } + [
-        .paletteToggle, .sidebarToggle, .explorerToggle, .markdownPreview, .activityToggle, .statusBarToggle, .find,
+        .paletteToggle, .sidebarToggle, .explorerToggle, .changesToggle, .markdownPreview, .activityToggle, .statusBarToggle, .find,
         .copy, .paste, .clear, .promptPrevious, .promptNext,
         .fontIncrease, .fontDecrease, .fontReset,
         .agentNextWaiting,
@@ -45,6 +45,7 @@ extension KeyAction {
         case .sessionGoto(let number): "session.goto:\(number)"
         case .sidebarToggle: "sidebar.toggle"
         case .explorerToggle: "explorer.toggle"
+        case .changesToggle: "changes.toggle"
         case .markdownPreview: "markdown.preview"
         case .activityToggle: "activity.toggle"
         case .statusBarToggle: "statusbar.toggle"
@@ -94,6 +95,7 @@ extension KeyAction {
         case .sessionGoto(let number): number == 9 ? "Last Session" : "Session \(number)"
         case .sidebarToggle: "Toggle Sidebar"
         case .explorerToggle: "Toggle Explorer"
+        case .changesToggle: "Toggle Changes"
         case .markdownPreview: "Preview Markdown"
         case .activityToggle: "Toggle Activity"
         case .statusBarToggle: "Toggle Status Bar"
@@ -121,7 +123,7 @@ extension KeyAction {
         case .tabNew, .tabClose, .tabNext, .tabPrevious, .tabGoto, .tabMove, .tabRename: .tabs
         case .splitRight, .splitDown, .paneClose, .paneZoom, .paneFocus, .paneEqualize: .panes
         case .sessionNew, .sessionNext, .sessionPrevious, .sessionGoto: .sessions
-        case .paletteToggle, .sidebarToggle, .explorerToggle, .markdownPreview, .activityToggle, .statusBarToggle, .find: .window
+        case .paletteToggle, .sidebarToggle, .explorerToggle, .changesToggle, .markdownPreview, .activityToggle, .statusBarToggle, .find: .window
         case .clear, .copy, .paste, .promptPrevious, .promptNext, .text, .none: .edit
         case .fontIncrease, .fontDecrease, .fontReset: .font
         case .agentNextWaiting: .agents

@@ -14,7 +14,43 @@ struct ExplorerPanel: View {
         VStack(spacing: 0) {
             header
             Rectangle().fill(foreground.opacity(0.08)).frame(height: 1)
-            ScrollViewReader { proxy in
+            switch model.explorerMode {
+            case .files: files
+            case .changes:
+                ChangesList(model: model, changes: model.changes, theme: theme, isFocused: isFocused) { change in
+                    model.changes.selection = change.id
+                    isFocused = true
+                    model.showDiff(change)
+                }
+            }
+        }
+        .frame(width: Metrics.explorerWidth)
+        .frame(maxHeight: .infinity)
+        .background {
+            let shape = RoundedRectangle(cornerRadius: Metrics.paneCornerRadius, style: .continuous)
+            shape
+                .fill(Color(theme.background, opacity: backgroundOpacity))
+                .overlay(shape.strokeBorder(foreground.opacity(0.1), lineWidth: 1))
+        }
+        .clipShape(.rect(cornerRadius: Metrics.paneCornerRadius, style: .continuous))
+        .focusable()
+        .focusEffectDisabled()
+        .focused($isFocused)
+        .onKeyPress(phases: .down) { model.explorerMode == .files ? handle($0) : handleChanges($0) }
+        .onChange(of: model.explorerFocusRequest, initial: true) { isFocused = true }
+        .task(id: model.workspace.selectedTab?.focusedPaneID) {
+            while !Task.isCancelled {
+                model.syncExplorer()
+                try? await Task.sleep(for: .seconds(1))
+            }
+        }
+        .onAppear { explorer.resume() }
+        .onDisappear { explorer.stop() }
+    }
+
+    private var files: some View {
+        let foreground = Color(theme.foreground)
+        return ScrollViewReader { proxy in
                 ScrollView {
                     LazyVStack(spacing: 1) {
                         ForEach(explorer.rows) { row in
@@ -48,58 +84,94 @@ struct ExplorerPanel: View {
                         .foregroundStyle(foreground.opacity(0.4))
                 }
             }
-        }
-        .frame(width: Metrics.explorerWidth)
-        .frame(maxHeight: .infinity)
-        .background {
-            let shape = RoundedRectangle(cornerRadius: Metrics.paneCornerRadius, style: .continuous)
-            shape
-                .fill(Color(theme.background, opacity: backgroundOpacity))
-                .overlay(shape.strokeBorder(foreground.opacity(0.1), lineWidth: 1))
-        }
-        .clipShape(.rect(cornerRadius: Metrics.paneCornerRadius, style: .continuous))
-        .focusable()
-        .focusEffectDisabled()
-        .focused($isFocused)
-        .onKeyPress(phases: .down, action: handle)
-        .onChange(of: model.explorerFocusRequest, initial: true) { isFocused = true }
-        .task(id: model.workspace.selectedTab?.focusedPaneID) {
-            while !Task.isCancelled {
-                model.syncExplorer()
-                try? await Task.sleep(for: .seconds(1))
-            }
-        }
-        .onAppear { explorer.resume() }
-        .onDisappear { explorer.stop() }
     }
 
     private var header: some View {
-        let foreground = Color(theme.foreground)
-        return HStack(spacing: 4) {
-            headerButton("chevron.up", help: "Enclosing Folder (⌘↑)", action: explorer.goUp)
-            Text(explorer.root?.lastPathComponent ?? "")
-                .font(.system(size: Metrics.chromeFontSize, weight: .semibold))
-                .foregroundStyle(foreground.opacity(0.75))
-                .lineLimit(1)
-                .truncationMode(.middle)
-                .help(explorer.root?.path(percentEncoded: false) ?? "")
-            Spacer(minLength: 4)
-            if !explorer.filter.isEmpty {
-                Text(explorer.filter)
-                    .font(.system(size: Metrics.statusFontSize, weight: .medium))
-                    .foregroundStyle(Color(theme.accent))
-                    .lineLimit(1)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(Color(theme.accent).opacity(0.15), in: .capsule)
+        HStack(spacing: 4) {
+            modeButton(.files, symbol: "folder", help: "Files")
+            modeButton(.changes, symbol: "arrow.triangle.branch", help: "Changes")
+            Rectangle()
+                .fill(Color(theme.foreground).opacity(0.12))
+                .frame(width: 1, height: Metrics.paneHeaderIconSize + 4)
+                .padding(.horizontal, 2)
+            switch model.explorerMode {
+            case .files: filesHeader
+            case .changes: changesHeader
             }
-            headerButton(explorer.showHidden ? "eye" : "eye.slash", help: explorer.showHidden ? "Hide Hidden Files" : "Show Hidden Files") {
-                explorer.showHidden.toggle()
-            }
-            headerButton("xmark", help: "Close Explorer", action: model.toggleExplorer)
+            headerButton("xmark", help: "Close Explorer", action: model.hideExplorer)
         }
         .padding(.horizontal, Metrics.paneHeaderPadding - 4)
         .frame(height: Metrics.paneHeaderHeight + 4)
+    }
+
+    @ViewBuilder
+    private var filesHeader: some View {
+        headerButton("chevron.up", help: "Enclosing Folder (⌘↑)", action: explorer.goUp)
+        title(explorer.root?.lastPathComponent ?? "", help: explorer.root?.path(percentEncoded: false) ?? "")
+        Spacer(minLength: 4)
+        filterBadge(explorer.filter)
+        headerButton(explorer.showHidden ? "eye" : "eye.slash", help: explorer.showHidden ? "Hide Hidden Files" : "Show Hidden Files") {
+            explorer.showHidden.toggle()
+        }
+    }
+
+    @ViewBuilder
+    private var changesHeader: some View {
+        let changes = model.changes
+        let status = changes.status
+        title(status.map { $0.branch ?? $0.commit.map { String($0.prefix(7)) } ?? "detached" } ?? "",
+              help: changes.repository?.path(percentEncoded: false) ?? "")
+        if let status, status.ahead + status.behind > 0 {
+            Text([status.ahead > 0 ? "↑\(status.ahead)" : nil, status.behind > 0 ? "↓\(status.behind)" : nil].compactMap { $0 }.joined(separator: " "))
+                .font(.system(size: Metrics.statusFontSize, weight: .medium).monospacedDigit())
+                .foregroundStyle(Color(theme.foreground).opacity(0.5))
+                .help(status.upstream.map { "Compared with \($0)" } ?? "")
+        }
+        Spacer(minLength: 4)
+        filterBadge(changes.filter)
+    }
+
+    private func title(_ text: String, help: String) -> some View {
+        Text(text)
+            .font(.system(size: Metrics.chromeFontSize, weight: .semibold))
+            .foregroundStyle(Color(theme.foreground).opacity(0.75))
+            .lineLimit(1)
+            .truncationMode(.middle)
+            .help(help)
+    }
+
+    @ViewBuilder
+    private func filterBadge(_ filter: String) -> some View {
+        if !filter.isEmpty {
+            Text(filter)
+                .font(.system(size: Metrics.statusFontSize, weight: .medium))
+                .foregroundStyle(Color(theme.accent))
+                .lineLimit(1)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(Color(theme.accent).opacity(0.15), in: .capsule)
+        }
+    }
+
+    private func modeButton(_ mode: ExplorerMode, symbol: String, help: String) -> some View {
+        let isSelected = model.explorerMode == mode
+        return Button {
+            model.explorerMode = mode
+            model.syncExplorer()
+            isFocused = true
+        } label: {
+            Image(systemName: symbol)
+                .font(.system(size: Metrics.paneHeaderIconSize, weight: .semibold))
+                .frame(width: Metrics.paneButtonSize, height: Metrics.paneButtonSize)
+                .background {
+                    RoundedRectangle(cornerRadius: Metrics.paneButtonCornerRadius, style: .continuous)
+                        .fill(isSelected ? Color(theme.accent).opacity(0.18) : .clear)
+                }
+                .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(isSelected ? Color(theme.accent) : Color(theme.foreground).opacity(0.5))
+        .help(help)
     }
 
     private func headerButton(_ symbol: String, help: String, action: @escaping () -> Void) -> some View {
@@ -144,6 +216,45 @@ struct ExplorerPanel: View {
         return .handled
     }
 
+    private func handleChanges(_ press: KeyPress) -> KeyPress.Result {
+        let changes = model.changes
+        switch press.key {
+        case .upArrow, .downArrow:
+            changes.moveSelection(by: press.key == .upArrow ? -1 : 1)
+            if model.viewer?.diff != nil, let change = changes.selectedChange { model.showDiff(change) }
+        case .return, .space:
+            guard let change = changes.selectedChange else { return .ignored }
+            model.showDiff(change)
+        case .escape:
+            if changes.filter.isEmpty { model.focusTerminal() } else { changes.filter = "" }
+        case .delete, .deleteForward, KeyEquivalent("\u{08}"):
+            return removeLastChangesFilterCharacter()
+        default:
+            if press.characters == "\u{7F}" || press.characters == "\u{08}" {
+                return removeLastChangesFilterCharacter()
+            }
+            guard let char = typedCharacter(press) else { return .ignored }
+            changes.filter.append(char)
+            changes.selection = changes.changes.first?.id
+        }
+        return .handled
+    }
+
+    private func removeLastChangesFilterCharacter() -> KeyPress.Result {
+        let changes = model.changes
+        guard !changes.filter.isEmpty else { return .ignored }
+        changes.filter.removeLast()
+        changes.selection = changes.changes.first?.id
+        return .handled
+    }
+
+    private func typedCharacter(_ press: KeyPress) -> Character? {
+        guard press.modifiers.isSubset(of: [.shift]), press.characters.count == 1,
+              let char = press.characters.first, char.isLetter || char.isNumber || char.isPunctuation
+        else { return nil }
+        return char
+    }
+
     private func handle(_ press: KeyPress) -> KeyPress.Result {
         let command = press.modifiers.contains(.command)
         switch press.key {
@@ -171,9 +282,7 @@ struct ExplorerPanel: View {
             if press.characters == "\u{7F}" || press.characters == "\u{08}" {
                 return removeLastFilterCharacter()
             }
-            guard press.modifiers.isSubset(of: [.shift]), press.characters.count == 1,
-                  let char = press.characters.first, char.isLetter || char.isNumber || char.isPunctuation
-            else { return .ignored }
+            guard let char = typedCharacter(press) else { return .ignored }
             explorer.filter.append(char)
             explorer.selection = explorer.rows.first?.entry.url
         }

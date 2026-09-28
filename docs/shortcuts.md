@@ -20,6 +20,7 @@ The defaults. Every shortcut can be rebound in Settings → Keybinds or in the `
 | Session 1–9 | ⌘⌃1 … ⌘⌃9 |
 | Toggle sidebar | ⌘0 |
 | Toggle explorer | ⌘E |
+| Toggle changes (git status and diffs) | ⌘⇧G |
 | Preview Markdown (selected file, or the directory's README) | ⌘⇧M |
 | Command palette | ⌘K |
 | Toggle status bar | ⌘⇧B |

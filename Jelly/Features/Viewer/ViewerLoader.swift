@@ -44,7 +44,7 @@ enum ViewerLoader {
 
     nonisolated static let highlightLineLimit = 50_000
 
-    private nonisolated static func language(for url: URL) -> SyntaxLanguage? {
+    nonisolated static func language(for url: URL) -> SyntaxLanguage? {
         let name = url.lastPathComponent.lowercased()
         if name == "dockerfile" || name.hasPrefix("dockerfile.") { return SyntaxLanguage.named("docker") }
         if name == "makefile" || name == "gnumakefile" { return SyntaxLanguage.named("make") }

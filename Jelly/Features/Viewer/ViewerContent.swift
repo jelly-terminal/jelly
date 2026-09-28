@@ -6,5 +6,6 @@ nonisolated enum ViewerContent: Sendable {
     case markdown(MarkdownDocument)
     case text(lines: [String], tokens: [[SyntaxToken]]?, truncated: Bool)
     case image(CGImage)
+    case diff(DiffDocument)
     case unavailable(String)
 }

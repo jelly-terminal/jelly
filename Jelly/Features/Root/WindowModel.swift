@@ -15,6 +15,7 @@ final class WindowModel {
     var pendingImport: PendingImport?
     var importError: String?
     var isExplorerVisible = false
+    var explorerMode = ExplorerMode.files
     var explorerFocusRequest = 0
     var viewer: ViewerModel?
     var palette: PaletteModel?
@@ -23,6 +24,7 @@ final class WindowModel {
 
     @ObservationIgnored let configStore: ConfigStore
     @ObservationIgnored let explorer = ExplorerModel()
+    @ObservationIgnored let changes = ChangesModel()
     @ObservationIgnored weak var window: NSWindow?
     @ObservationIgnored private var agentMonitor: AgentMonitor?
     @ObservationIgnored private var recentSessionIDs: [UUID] = []
@@ -196,24 +198,65 @@ final class WindowModel {
     }
 
     func toggleExplorer() {
-        withAnimation(Sidebar.animation) { isExplorerVisible.toggle() }
-        if isExplorerVisible {
-            syncExplorer()
-            explorerFocusRequest += 1
-        } else if viewer == nil {
-            focusTerminal()
+        toggleExplorer(.files)
+    }
+
+    func toggleChanges() {
+        toggleExplorer(.changes)
+    }
+
+    func hideExplorer() {
+        withAnimation(Sidebar.animation) { isExplorerVisible = false }
+        if viewer == nil { focusTerminal() }
+    }
+
+    private func toggleExplorer(_ mode: ExplorerMode) {
+        if isExplorerVisible, explorerMode == mode {
+            hideExplorer()
+            return
         }
+        explorerMode = mode
+        if !isExplorerVisible {
+            withAnimation(Sidebar.animation) { isExplorerVisible = true }
+        }
+        syncExplorer()
+        explorerFocusRequest += 1
     }
 
     func syncExplorer() {
         explorer.follow(workspace.selectedTab?.surface.workingDirectory)
+        if explorerMode == .changes {
+            changes.follow(explorer.root?.path(percentEncoded: false))
+        }
+    }
+
+    func showDiff(_ change: GitChange) {
+        guard let repository = changes.repository else { return }
+        guard change.area != .conflicted else {
+            preview(repository.appending(path: change.path))
+            return
+        }
+        let target = DiffTarget(change: change, repository: repository)
+        if let viewer {
+            viewer.open(target)
+        } else {
+            viewer = ViewerModel(diff: target, codeFont: codeFont)
+        }
+    }
+
+    func stepChange(by offset: Int) {
+        changes.moveSelection(by: offset)
+        if let change = changes.selectedChange { showDiff(change) }
+    }
+
+    private var codeFont: NSFont {
+        FontResolver.resolve(configStore.settings.font, size: Metrics.markdownCodeSize).font
     }
 
     func preview(_ url: URL) {
         if let viewer {
             viewer.open(url)
         } else {
-            let codeFont = FontResolver.resolve(configStore.settings.font, size: Metrics.markdownCodeSize).font
             viewer = ViewerModel(url: url, codeFont: codeFont)
         }
     }
@@ -232,7 +275,7 @@ final class WindowModel {
             closeViewer()
             return
         }
-        if isExplorerVisible, let entry = explorer.selectedEntry, !entry.isDirectory {
+        if isExplorerVisible, explorerMode == .files, let entry = explorer.selectedEntry, !entry.isDirectory {
             preview(entry.url)
             return
         }

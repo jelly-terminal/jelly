@@ -43,6 +43,7 @@ public struct Keybinds: Equatable, Sendable {
             "ctrl+shift+tab": .sessionPrevious,
             "cmd+0": .sidebarToggle,
             "cmd+e": .explorerToggle,
+            "cmd+shift+g": .changesToggle,
             "cmd+shift+b": .statusBarToggle,
             "cmd+shift+m": .markdownPreview,
             "cmd+f": .find,

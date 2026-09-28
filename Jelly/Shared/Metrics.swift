@@ -65,6 +65,13 @@ enum Metrics {
     static let explorerIndent: CGFloat = 14
     static let explorerIconSize: CGFloat = 12
     static let explorerChevronWidth: CGFloat = 10
+    static let changesSectionHeight: CGFloat = 26
+    static let changesBadgeWidth: CGFloat = 14
+
+    static let codeLineHeight: CGFloat = markdownCodeSize * 1.55
+    static let diffPadding: CGFloat = 16
+    static let diffVerticalPadding: CGFloat = 6
+    static let diffGutterSpacing: CGFloat = 10
 
     static let viewerPadding: CGFloat = 28
     static let markdownMaxWidth: CGFloat = 760

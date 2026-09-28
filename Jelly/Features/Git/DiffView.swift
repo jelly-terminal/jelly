@@ -7,7 +7,7 @@ struct DiffView: View {
     let style: MarkdownStyle
     let hunkMove: ViewerModel.HunkMove
 
-    @State private var viewportWidth: CGFloat = 0
+    @State private var viewportSize: CGSize = .zero
     @State private var position = ScrollPosition()
     @State private var scroll = ScrollOffset()
 
@@ -28,12 +28,12 @@ struct DiffView: View {
             }
             .padding(.vertical, Metrics.diffVerticalPadding)
             .padding(.horizontal, Metrics.diffPadding)
-            .frame(minWidth: viewportWidth, alignment: .leading)
+            .frame(minWidth: viewportSize.width, minHeight: viewportSize.height, alignment: .topLeading)
             .background(alignment: .topLeading) { tints }
         }
         .scrollPosition($position)
         .onScrollGeometryChange(for: CGFloat.self) { $0.contentOffset.y } action: { scroll.y = $1 }
-        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { viewportWidth = $0 }
+        .onGeometryChange(for: CGSize.self) { $0.size } action: { viewportSize = $0 }
         .onChange(of: hunkMove) { _, move in jump(by: move.offset) }
     }
 

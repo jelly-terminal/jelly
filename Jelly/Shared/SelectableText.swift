@@ -19,8 +19,7 @@ struct SelectableText: NSViewRepresentable {
 
     func updateNSView(_ view: SelectableTextView, context: Context) {
         if view.textStorage?.isEqual(to: text) != true {
-            view.textStorage?.setAttributedString(text)
-            view.invalidateIntrinsicContentSize()
+            view.setText(text)
         }
         view.wraps = wraps
         view.isSelectable = isSelectable

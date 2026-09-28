@@ -7,6 +7,7 @@ final class SelectableTextView: NSTextView {
     }
     var onLink: ((URL) -> Void)?
     var onKey: ((NSEvent) -> Bool)?
+    private var naturalWidth: CGFloat?
 
     convenience init() {
         self.init(usingTextLayoutManager: false)
@@ -25,15 +26,29 @@ final class SelectableTextView: NSTextView {
         isAutomaticLinkDetectionEnabled = false
     }
 
+    func setText(_ text: NSAttributedString) {
+        textStorage?.setAttributedString(text)
+        naturalWidth = nil
+        invalidateIntrinsicContentSize()
+    }
+
     func fittingSize(for width: CGFloat?) -> CGSize {
         guard let textContainer, let layoutManager else { return .zero }
-        let containerWidth = wraps ? max(width ?? Metrics.markdownMaxWidth, 1) : .greatestFiniteMagnitude
+        let containerWidth = wraps ? max(width ?? Metrics.markdownMaxWidth, 1) : measuredNaturalWidth()
         if textContainer.size.width != containerWidth {
             textContainer.size = CGSize(width: containerWidth, height: .greatestFiniteMagnitude)
         }
         layoutManager.ensureLayout(for: textContainer)
         let used = layoutManager.usedRect(for: textContainer)
-        return CGSize(width: wraps ? containerWidth : ceil(used.width), height: ceil(used.height))
+        return CGSize(width: containerWidth, height: ceil(used.height))
+    }
+
+    private func measuredNaturalWidth() -> CGFloat {
+        if let naturalWidth { return naturalWidth }
+        let unbounded = CGSize(width: CGFloat.greatestFiniteMagnitude, height: .greatestFiniteMagnitude)
+        let width = max(ceil(textStorage?.boundingRect(with: unbounded, options: .usesLineFragmentOrigin).width ?? 0), 1)
+        naturalWidth = width
+        return width
     }
 
     func rect(of range: NSRange) -> CGRect? {

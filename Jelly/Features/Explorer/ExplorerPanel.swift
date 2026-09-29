@@ -76,6 +76,7 @@ struct ExplorerPanel: View {
                             )
                                 .id(row.id)
                                 .onDrag { NSItemProvider(object: row.entry.url as NSURL) }
+                                .contextMenu { menu(for: row.entry) }
                         }
                     }
                     .padding(Metrics.explorerPadding)
@@ -192,6 +193,33 @@ struct ExplorerPanel: View {
         .buttonStyle(.plain)
         .foregroundStyle(Color(theme.foreground).opacity(0.6))
         .help(help)
+    }
+
+    @ViewBuilder
+    private func menu(for entry: ExplorerEntry) -> some View {
+        Button(entry.isDirectory ? "Open Folder" : "Open File") { open(entry) }
+        if entry.isDirectory {
+            Button("Open Terminal Here") {
+                withAnimation(TabBar.animation) { _ = model.workspace.newTab(directory: entry.url.path(percentEncoded: false)) }
+            }
+        }
+        Divider()
+        Button("Reveal in Finder") { NSWorkspace.shared.activateFileViewerSelecting([entry.url]) }
+        Button("Copy Path") { copy(entry.url.path(percentEncoded: false)) }
+        Button("Copy Relative Path") { copy(relativePath(of: entry.url)) }
+    }
+
+    private func relativePath(of url: URL) -> String {
+        let path = url.path(percentEncoded: false)
+        guard let root = explorer.root?.path(percentEncoded: false) else { return path }
+        if path == root { return "." }
+        let prefix = root.hasSuffix("/") ? root : root + "/"
+        return path.hasPrefix(prefix) ? String(path.dropFirst(prefix.count)) : path
+    }
+
+    private func copy(_ string: String) {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(string, forType: .string)
     }
 
     private func select(_ entry: ExplorerEntry) {
